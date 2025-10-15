@@ -1,0 +1,29 @@
+.custom-breadcrumb {
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+  background: #fff;
+  padding: 10px 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.custom-breadcrumb a {
+  text-decoration: none;
+  color: #007bff;
+  transition: color 0.2s ease-in-out;
+}
+
+.custom-breadcrumb a:hover {
+  color: #0056b3;
+}
+
+.custom-breadcrumb .separator {
+  margin: 0 5px;
+  color: #aaa;
+}
+
+.custom-breadcrumb .active {
+  font-weight: bold;
+  color: #333;
+}
