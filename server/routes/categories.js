@@ -5,13 +5,35 @@ const pLimit = require('p-limit');
 const cloudinary = require("../utils/cloudinary.js");
 
 
-router.get(`/`, async (req, res) => {
-    const categoryList = await Category.find();
+router.get('/', async (req, res) => {
+   try {
+        const page = parseInt(req.query.page) || 1;
+        const perPage = 5;
+        const totalPosts = await Category.countDocuments();
+        const totalPages = Math.ceil(totalPosts / perPage);
 
-    if (!categoryList) {
+        if (page > totalPages) {
+            return res.status(404).json({ message: "Page not found" })
+        }
+
+        const categoryList = await Category.find()
+            .skip((page - 1) * perPage)
+            .limit(perPage)
+            .exec();
+
+        if (!categoryList) {
+        res.status(500).json({ success: false })
+        }
+        
+        return res.status(200).json({
+            "categoryList":categoryList,
+            "totalPages":totalPages,
+            "page":page
+        });
+        
+    }catch(error){
         res.status(500).json({ success: false })
     }
-    res.send(categoryList);
 });
 
 
@@ -112,54 +134,196 @@ router.post('/create', async (req, res) => {
 
 
 
-router.put('/:id', async (req,res) => {
+// router.put('/:id', async (req,res) => {
+//         const imagesToUpload = req.body.images.map((image) => {
+//         return limit(async () => {
+//             const result = await cloudinary.uploader.upload(image);
+//             // console.log(`Successfully uploaded ${image}`);
+//             // console.log(`> Result: ${result.secure_url}`);
+//             return result;
+//         })
+//     });
+
+//     const uploadStatus = await Promise.all(imagesToUpload);
+
+//     const imgurl = uploadStatus.map((item) => {
+//         return item.secure_url
+//     })
+
+
+
+//     if(!uploadStatus) {
+//         return res.status(500).json({
+//             error:"images cannot upload!",
+//             status:false
+//         })
+//     }
+//     const category = await Category.findByIdAndUpdate(
+//         req.params.id,
+//         { 
+//             name: req.body.name,
+//             images: imgurl,
+//             color: req.body.color
+//         },
+//         {new: true}
+//     )
+    
+//     if (!category) {
+//         return res.status(500).json({
+//             message: 'Category cannot be updated!',
+//             success: false
+//         })
+//     }
+
+
+//     res.send(category);
+    
+// })
+
+router.put('/:id', async (req, res) => {
+    try {
+        const limit = pLimit(2);
+
         const imagesToUpload = req.body.images.map((image) => {
-        return limit(async () => {
-            const result = await cloudinary.uploader.upload(image);
-            // console.log(`Successfully uploaded ${image}`);
-            // console.log(`> Result: ${result.secure_url}`);
-            return result;
-        })
-    });
+            return limit(async () => {
+                const result = await cloudinary.uploader.upload(image);
+                return result;
+            });
+        });
 
-    const uploadStatus = await Promise.all(imagesToUpload);
+        const uploadStatus = await Promise.all(imagesToUpload);
 
-    const imgurl = uploadStatus.map((item) => {
-        return item.secure_url
-    })
+        if (!uploadStatus) {
+            return res.status(500).json({
+                error: "images cannot upload!",
+                success: false
+            });
+        }
 
+        const imgurl = uploadStatus.map((item) => item.secure_url);
 
+        const category = await Category.findByIdAndUpdate(
+            req.params.id,
+            {
+                name: req.body.name,
+                images: imgurl,
+                color: req.body.color
+            },
+            { new: true }
+        );
 
-    if(!uploadStatus) {
-        return res.status(500).json({
-            error:"images cannot upload!",
-            status:false
-        })
+        if (!category) {
+            return res.status(404).json({
+                message: 'Category not found!',
+                success: false
+            });
+        }
+
+        res.status(200).json(category);
+
+    } catch (error) {
+        console.error("Update category error:", error);
+        res.status(500).json({ success: false, error: error.message });
     }
-    const category = await Category.findByIdAndUpdate(
-        req.params.id,
-        { 
-            name: req.body.name,
-            images: imgurl,
-            color: req.body.color
-        },
-        {new: true}
-    )
-    
-    if (!category) {
-        return res.status(500).json({
-            message: 'Category cannot be updated!',
-            success: false
-        })
-    }
-
-
-    res.send(category);
-    
-})
+});
 
 
 module.exports = router;
+
+
+// const { Category } = require('../models/category');
+// const express = require('express');
+// const router = express.Router();
+// const pLimit = require('p-limit');
+// const cloudinary = require("../utils/cloudinary.js");
+
+// // GET ALL
+// router.get('/', async (req, res) => {
+//     try {
+//         const categoryList = await Category.find();
+//         res.json(categoryList);
+//     } catch (err) {
+//         res.status(500).json({ success: false });
+//     }
+// });
+
+// // GET BY ID
+// router.get('/:id', async (req, res) => {
+//     try {
+//         const category = await Category.findById(req.params.id);
+//         if (!category) {
+//             return res.status(404).json({ message: "Category not found" });
+//         }
+//         res.json(category);
+//     } catch (err) {
+//         res.status(500).json({ error: err.message });
+//     }
+// });
+
+// // CREATE
+// router.post('/create', async (req, res) => {
+//     try {
+//         const limit = pLimit(2);
+
+//         const imagesToUpload = req.body.images.map(image =>
+//             limit(() => cloudinary.uploader.upload(image))
+//         );
+
+//         const uploadStatus = await Promise.all(imagesToUpload);
+//         const imgurl = uploadStatus.map(item => item.secure_url);
+
+//         const category = new Category({
+//             name: req.body.name,
+//             images: imgurl,
+//             color: req.body.color
+//         });
+
+//         const savedCategory = await category.save();
+//         res.status(201).json(savedCategory);
+
+//     } catch (err) {
+//         console.log(err);
+//         res.status(500).json({ error: err.message });
+//     }
+// });
+
+// // UPDATE FIXED
+// router.put('/:id', async (req, res) => {
+//     try {
+//         const limit = pLimit(2); 
+
+//         const imagesToUpload = req.body.images.map(image =>
+//             limit(() => cloudinary.uploader.upload(image))
+//         );
+
+//         const uploadStatus = await Promise.all(imagesToUpload);
+//         const imgurl = uploadStatus.map(item => item.secure_url);
+
+//         const category = await Category.findByIdAndUpdate(
+//             req.params.id,
+//             {
+//                 name: req.body.name,
+//                 images: imgurl,
+//                 color: req.body.color
+//             },
+//             { new: true }
+//         );
+
+//         res.json(category);
+
+//     } catch (err) {
+//         console.log(err);
+//         res.status(500).json({ error: err.message });
+//     }
+// });
+
+// // DELETE
+// router.delete('/:id', async (req, res) => {
+//     await Category.findByIdAndDelete(req.params.id);
+//     res.json({ success: true });
+// });
+
+// module.exports = router;
 
 
 // const { Category } = require('../models/category');
