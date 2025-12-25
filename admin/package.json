@@ -10,6 +10,8 @@
     "axios": "^1.13.2",
     "bootstrap": "^5.3.3",
     "dotenv": "^17.2.3",
+    "json": "^11.0.0",
+    "manifest": "^4.17.13",
     "notistack": "^3.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
