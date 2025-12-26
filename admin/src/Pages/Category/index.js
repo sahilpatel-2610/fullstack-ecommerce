@@ -23,6 +23,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Link } from "react-router-dom";
+import { MyContext } from "../../App";
 
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
@@ -54,7 +55,7 @@ const Category = () => {
     const [catData, setCatData] = useState([]);
     const [open, setOpen] = React.useState(false);
 
-    // const [editFields, setEditFields] = useState({});
+    const [editFields, setEditFields] = useState({});
     const [editId, setEditId] = useState(null);
 
     const [page, setPage] = useState(1);
@@ -65,19 +66,22 @@ const Category = () => {
         images: [],
         color:''
     });
+
+    const context = useContext(MyContext);
     
     
 
-    // useEffect(() => {
-    //     // window.scrollTo(0,0);
+    useEffect(() => {
+        window.scrollTo(0,0);
+        context.setProgress(20)
+        fetchDataFromApi('/api/category').then((res) => {
+            setCatData(res);
+            console.log(res);
+            context.setProgress(100);
+        })
 
-    //     fetchDataFromApi('/api/category').then((res) => {
-    //         setCatData(res);
-    //         // console.log(res);
-    //     })
 
-
-    // },[]);
+    },[]);
 
     
     const handleClose = () => {
@@ -107,37 +111,37 @@ const Category = () => {
   
 
 
-    // const editCategory = (id) => {
-    //     setOpen(true);
-    //     setEditId(id);
-
-    //     fetchDataFromApi(`/api/category/${id}`).then((res) => {
-
-    //         setFormFields({
-    //             name: res.name,
-    //             images: res.images,
-    //             color: res.color
-    //         })
-    //         console.log(res);
-
-    //     })
-
-    // }
-
-
-    const editCategory = async (id) => {
+    const editCategory = (id) => {
         setOpen(true);
         setEditId(id);
 
-        const res = await fetchDataFromApi(`/api/category/${id}`);
-        const data = res.data || res;
+        fetchDataFromApi(`/api/category/${id}`).then((res) => {
 
-        setFormFields({
-            name: res.name || "",
-            images: res.images || [],
-            color: res.color || ""
-        });
-    };
+            setFormFields({
+                name: res.name,
+                images: res.images,
+                color: res.color
+            })
+            console.log(res);
+
+        })
+
+    }
+
+
+    // const editCategory = async (id) => {
+    //     setOpen(true);
+    //     setEditId(id);
+
+    //     const res = await fetchDataFromApi(`/api/category/${id}`);
+    //     const data = res.data || res;
+
+    //     setFormFields({
+    //         name: res.name || "",
+    //         images: res.images || [],
+    //         color: res.color || ""
+    //     });
+    // };
 
     // const categoryEditFun = (e) => {
     //     e.preventDefault();
@@ -206,9 +210,10 @@ const Category = () => {
     // };
 
     const handleChange = (event, value) => {
+        context.setProgress(40);
         fetchDataFromApi(`/api/category?page=${value}`).then((res) => {
             setCatData(res);
-            console.log(res);
+            context.setProgress(100);
         })
     }
     
@@ -385,50 +390,52 @@ const Category = () => {
                 <form>
                 <DialogContent>
                     
-                    <TextField
-                        autoFocus
-                        required
-                        margin="dense"
-                        id="name"
-                        name="name"
-                        label="Category Name"
-                        type="text"
-                        fullWidth
-                        value={formFields.name}
-                        onChange={changeInput}
-                    />
+                    <div className="form-group mb-3">
+                        <TextField
+                            autoFocus
+                            required
+                            margin="dense"
+                            id="name"
+                            name="name"
+                            label="Category Name"
+                            type="text"
+                            fullWidth
+                            value={formFields.name}
+                            onChange={changeInput}
+                        />
+                    </div>
 
+                    <div className="form-group mb-3">
+                        <TextField
+                            autoFocus
+                            required
+                            margin="dense"
+                            id="images"
+                            name="images"
+                            label="Category Image"
+                            type="text"
+                            fullWidth
+                            value={formFields.images}
+                            onChange={addImgUrl}
+                        />
+                    </div>
 
-                    <TextField
-                        autoFocus
-                        required
-                        margin="dense"
-                        id="images"
-                        name="images"
-                        label="Category Image"
-                        type="text"
-                        fullWidth
-                        value={formFields.images?.[0] || ""}
-                        onChange={(e) => 
-                            setFormFields({
-                                ...formFields,
-                                images: [e.target.value]
-                            })
-                        } 
-                    />
-
-                    <TextField
-                        autoFocus
-                        required
-                        margin="dense"
-                        id="color"
-                        name="color"
-                        label="Category Color"
-                        type="text"
-                        fullWidth
-                        value={formFields.color}
-                        onChange={changeInput}
-                    />
+                   
+                     <div className="form-group mb-3">
+                        <TextField
+                            autoFocus
+                            required
+                            margin="dense"
+                            id="color"
+                            name="color"
+                            label="Category Color"
+                            type="text"
+                            fullWidth
+                            value={formFields.color}
+                            onChange={changeInput}
+                        />
+                     </div>
+                    
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} variant="outlined">Cancel</Button>

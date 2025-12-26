@@ -13,13 +13,16 @@ h1,h2,h3,h4,h5,h6,p{color: #403e57;}
 
 h4{line-height: 32px;}
 
+.topLoadingBar{height: 4px !important; background: #1866ee !important;}
+body.dark .topLoadingBar{background: #ff6179 !important;}
+
 .btn-blue{background: #0858f7 !important; font-size: 14px !important; font-weight: 600 !important; color: #fff !important; text-transform: capitalize !important; border-radius: 5px !important; border-radius: 8px !important;}
 
 button .loader{width: 25px !important; height: 25px !important;}
 
 .btn-lg{padding: 5px 25px !important;}
 .btn-big{padding: 10px 25px !important; font-size: 16px !important;}
-.btn-big svg{font-size: 25px !important; margin-right: 1px;}
+.btn-big svg{font-size: 25px !important;}
 
 .btn-round{border-radius: 30px !important;}
 
@@ -174,7 +177,7 @@ body.dark .logoutWrapper .logoutBox{background-image: linear-gradient(#183e8c,#1
 .main .content{width: 80%; flex: 0 0 80%; transition: all 0.3s;}
 .main .content.toggle{width: 100%; flex: 0 0 100%;}
 
-.right-content{padding: 90px 30px; padding-bottom: 10px;}
+.right-content{padding: 78px 30px; padding-bottom: 10px;}
 
 
 .dashboardBoxWrapper{gap: 20px; width: 100%; flex-wrap: wrap;}

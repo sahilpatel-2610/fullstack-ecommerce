@@ -8,6 +8,7 @@ import Sidebar from './components/Sidebar';
 import React,{ createContext } from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
+import { useRef } from 'react';
 import Login from './Pages/Login';
 import SignUp from './Pages/SignUp';
 import ProductDetails from './Pages/ProductDetails';
@@ -18,6 +19,9 @@ import CategoryAdd from './Pages/CategoryAdd';
 
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+
+import LoadingBar from "react-top-loading-bar";
+
 
 
 const MyContext = createContext();
@@ -32,6 +36,7 @@ function App() {
   const [isOpenNav, setIsOpenNav] = useState(false);
   const [theme, setTheme] = useState(localStorage.getItem('theme') ? localStorage.getItem('theme') : 'light');
 
+  const [progress, setProgress] = useState(0);
   const [alertBox, setAlertBox] = useState({
     msg: '',
     error: false,
@@ -113,7 +118,8 @@ function App() {
     setIsOpenNav,
     // handleClickVariant
     alertBox,
-    setAlertBox
+    setAlertBox,
+    setProgress
   }
 
  
@@ -121,6 +127,13 @@ function App() {
     <BrowserRouter>
       <MyContext.Provider value={values}>
         {/* <SnackbarProvider maxSnack={3}> */}
+  
+       <LoadingBar
+        color="#f11946"
+        progress={progress}
+        onLoaderFinished={() => setProgress(0)}
+        className='topLoadingBar'
+      />
 
         <Snackbar open={alertBox.open} autoHideDuration={6000} onClose={handleClose}>
           <Alert
