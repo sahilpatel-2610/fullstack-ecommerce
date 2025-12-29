@@ -52,13 +52,14 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 
 const Category = () => {
 
-    const [catData, setCatData] = useState([]);
+    const [catData, setCatData] = useState({
+        categoryList: [],
+        totalPages: 0,
+    });
     const [open, setOpen] = React.useState(false);
 
     const [editFields, setEditFields] = useState({});
     const [editId, setEditId] = useState(null);
-
-    const [page, setPage] = useState(1);
 
     const [isLoading, setIsLoading] = useState(false);
     const [formFields, setFormFields] = useState({
@@ -143,20 +144,30 @@ const Category = () => {
     //     });
     // };
 
-    // const categoryEditFun = (e) => {
-    //     e.preventDefault();
+    const categoryEditFun = (e) => {
+        e.preventDefault();
+        setIsLoading(true);
 
-
-
-    //     editData(`/api/category/${editId}`,formFields).then((res) => {
+        
+        context.setProgress(40);
+        editData(`/api/category/${editId}`, formFields).then((res) => {
             
-    //         fetchDataFromApi('/api/category').then((res) => {
-    //             setCatData(res);
-    //             setOpen(false);
-    //         })
-    //     })
+            fetchDataFromApi('/api/category').then((res) => {
+                setCatData(res);
+                setOpen(false);
+                setIsLoading(false);
+            });
 
-    // }
+            context.setAlertBox({
+                open:true,
+                error:false,
+                msg:'The category updated !'
+            });
+
+            context.setProgress(100);
+        })
+
+    }
 
     // const categoryEditFun = async (e) => {
     //     e.preventDefault();
@@ -174,25 +185,25 @@ const Category = () => {
     //     }
     // };
 
-    const categoryEditFun = async (e) => {
-        e.preventDefault();
-        setIsLoading(true);
+    // const categoryEditFun = async (e) => {
+    //     e.preventDefault();
+    //     setIsLoading(true);
 
-        try {
-            await editData(`/api/category/${editId}`, {
-                name: formFields.name,
-                images: formFields.images,
-                color: formFields.color
-            });
+    //     try {
+    //         await editData(`/api/category/${editId}`, {
+    //             name: formFields.name,
+    //             images: formFields.images,
+    //             color: formFields.color
+    //         });
 
-            await getCategories();
-            setOpen(false);
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    //         await getCategories();
+    //         setOpen(false);
+    //     } catch (error) {
+    //         console.log(error);
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
+    // };
 
 
     const deleteCat = (id) => {
@@ -317,7 +328,8 @@ const Category = () => {
 
                             <tbody>
                                 {
-                                    catData.data?.categoryList?.length !== 0 && catData?.categoryList?.map((item, index) => (
+                                    // catData?.categoryList?.length !== 0 && catData?.categoryList?.map((item, index) => (
+                                    catData?.categoryList?.map((item, index) => (
                                         <tr key={item._id}>
                                             <td>
                                                 <div className="d-flex align-items-center">
@@ -360,6 +372,7 @@ const Category = () => {
                                     ))
                                 }
                             </tbody>
+
                              
                             
                         </table>
@@ -415,7 +428,7 @@ const Category = () => {
                             label="Category Image"
                             type="text"
                             fullWidth
-                            value={formFields.images}
+                            value={formFields.images[0] || ""}
                             onChange={addImgUrl}
                         />
                     </div>
@@ -439,7 +452,7 @@ const Category = () => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} variant="outlined">Cancel</Button>
-                    <Button type="button" onClick={categoryEditFun} variant="contained" disabled={isLoading}>
+                    <Button type="button" onClick={categoryEditFun} variant="contained">
                         {isLoading === true ? <CircularProgress color="inherit" className="loader" /> : 'Submit'}
                     </Button>
                 </DialogActions>

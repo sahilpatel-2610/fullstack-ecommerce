@@ -55,10 +55,10 @@ router.post(`/create`, async (req, res) => {
         images:imgurl,
         brand:req.body.brand,
         price:req.body.price,
+        oldPrice:body.oldPrice,
         category:req.body.category,
         countInStock:req.body.countInStock,
         rating:req.body.rating,
-        numReviews:req.body.numReviews,
         isFeatured:req.body.isFeatured
     });
 

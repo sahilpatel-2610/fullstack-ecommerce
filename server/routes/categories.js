@@ -1,6 +1,7 @@
 const { Category } = require('../models/category');
 const express = require('express');
 const router = express.Router();
+
 const pLimit = require('p-limit');
 const cloudinary = require("../utils/cloudinary.js");
 
@@ -81,56 +82,88 @@ router.delete('/:id', async (req, res) => {
 
 
 
-router.post('/create', async (req, res) => {
+// router.post('/create', async (req, res) => {
 
-    const limit = pLimit(2);
+//     const limit = pLimit(2);
 
-    const imagesToUpload = req.body.images.map((image) => {
-        return limit(async () => {
-            const result = await cloudinary.uploader.upload(image);
-            // console.log(`Successfully uploaded ${image}`);
-            // console.log(`> Result: ${result.secure_url}`);
-            return result;
-        })
-    });
+//     const imagesToUpload = req.body.images.map((image) => {
+//         return limit(async () => {
+//             const result = await cloudinary.uploader.upload(image);
+//             // console.log(`Successfully uploaded ${image}`);
+//             // console.log(`> Result: ${result.secure_url}`);
+//             return result;
+//         })
+//     });
 
-    const uploadStatus = await Promise.all(imagesToUpload);
+//     const uploadStatus = await Promise.all(imagesToUpload);
 
-    const imgurl = uploadStatus.map((item) => {
-        return item.secure_url
-    })
-
-
-
-    if(!uploadStatus) {
-        return res.status(500).json({
-            error:"images cannot upload!",
-            status:false
-        })
-    }
+//     const imgurl = uploadStatus.map((item) => {
+//         return item.secure_url
+//     })
 
 
-    let category = new Category({
-        name:req.body.name,
-        images:imgurl,
-        color:req.body.color
-    });
+
+//     if(!uploadStatus) {
+//         return res.status(500).json({
+//             error:"images cannot upload!",
+//             status:false
+//         })
+//     }
 
 
-    if(!category) {
-        res.status(500).json({
-            error: err,
-            success: false
-        })
-    }
+//     let category = new Category({
+//         name:req.body.name,
+//         images:imgurl,
+//         color:req.body.color
+//     });
 
 
-    category = await category.save();
+//     if(!category) {
+//         res.status(500).json({
+//             error: err,
+//             success: false
+//         })
+//     }
+
+
+//     category = await category.save();
 
     
-    res.status(201).json(category);
+//     res.status(201).json(category);
 
+// });
+
+router.post('/create', async (req, res) => {
+  try {
+    if (!req.body.images || req.body.images.length === 0) {
+      return res.status(400).json({ message: "Image required" });
+    }
+
+    const uploadStatus = await Promise.all(
+      req.body.images.map(img =>
+        cloudinary.uploader.upload(img)
+      )
+    );
+
+    const imgurl = uploadStatus.map(i => i.secure_url);
+
+    const category = new Category({
+      name: req.body.name,
+      images: imgurl,
+      color: req.body.color
+    });
+
+    const saved = await category.save();
+    res.status(201).json(saved);
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
+
+
+
+
 
 
 
