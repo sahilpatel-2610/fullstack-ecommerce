@@ -14,6 +14,7 @@ router.get(`/`, async (req, res) => {
     }
     res.send(productList);
 });
+ 
 
 router.post(`/create`, async (req, res) => {
     
@@ -25,14 +26,21 @@ router.post(`/create`, async (req, res) => {
 
     const limit = pLimit(2);
     
-    const imagesToUpload = req.body.images.map((image) => {
-        return limit(async () => {
-            const result = await cloudinary.uploader.upload(image);
-            // console.log(`Successfully uploaded ${image}`);
-            // console.log(`> Result: ${result.secure_url}`);
-            return result;
-        })
-    });
+    // const imagesToUpload = req.body.images.map((image) => {
+    //     return limit(async () => {
+    //         const result = await cloudinary.uploader.upload(image);
+    //         // console.log(`Successfully uploaded ${image}`);
+    //         // console.log(`> Result: ${result.secure_url}`);
+    //         return result;
+    //     })
+    // });
+
+    if (!req.body.images || req.body.images.length === 0) {
+        return res.status(400).json({
+            success: false,
+            message: "Images are required"
+        });
+    }
     
     const uploadStatus = await Promise.all(imagesToUpload);
     
@@ -55,7 +63,7 @@ router.post(`/create`, async (req, res) => {
         images:imgurl,
         brand:req.body.brand,
         price:req.body.price,
-        oldPrice:body.oldPrice,
+        oldPrice:req.body.oldPrice,
         category:req.body.category,
         countInStock:req.body.countInStock,
         rating:req.body.rating,
