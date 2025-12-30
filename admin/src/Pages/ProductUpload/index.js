@@ -18,7 +18,7 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import { useRef } from "react";
-import { fetchDataFromApi } from "../../utils/api";
+import { fetchDataFromApi, postData } from "../../utils/api";
 import { useEffect } from "react";
 import { MyContext } from "../../App";
 import { useContext } from "react";
@@ -65,13 +65,11 @@ const ProductUpload = () => {
     const [isFeaturedValue, setisFeatredValue] = useState(false);
 
     const [catData, setCatData] = useState([]);
-
-    const [count, setCount] = useState(0);
+    const [productImagesArr, setProductImagesArr] = useState([]);
 
     const [formFields, setFormFields] = useState({
         name:'',
         description:'',
-        images:[],
         brand:'',
         price:0,
         oldPrice:0,
@@ -131,26 +129,32 @@ const ProductUpload = () => {
     }
 
     
+    // const addProductImages = () => {
+
+    //     const arr=[];
+
+    //     const imgGrid = document.querySelector('#imgGrid');
+
+    //     const imgData = ` <div class='img'>
+    //                         <img src="${productImages.current.value}" alt="image"
+    //                         class="w-100" />
+    //                    </div> `;
+
+    //       arr[parseInt(count)] = productImages.current.value
+    //       setCount(count+1);
+
+    //       setFormFields(() => ({
+    //         ...formFields,
+    //         images:arr
+    //       }))
+
+    //     imgGrid.insertAdjacentHTML('beforeend', imgData);
+
+    //     productImages.current.value = "";
+    // }
+
     const addProductImages = () => {
-
-        const arr=[];
-
-        const imgGrid = document.querySelector('#imgGrid');
-
-        const imgData = ` <div class='img'>
-                            <img src="${productImages.current.value}" alt="image"
-                            class="w-100" />
-                       </div> `;
-
-          arr[count] = productImages.current.value
-          setCount(count+1);
-          setFormFields(() => ({
-            ...formFields,
-            images:arr
-          }))
-
-        imgGrid.insertAdjacentHTML('beforeend', imgData);
-
+        setProductImagesArr((prevImages) => [...prevImages, productImages.current.value]);
         productImages.current.value = "";
     }
 
@@ -159,13 +163,22 @@ const ProductUpload = () => {
     const inputChange = (e) => {
         setFormFields(() => ({
             ...formFields,
-            [e.target.name]:e.target.value
+            [e.target.name]: e.target.value
         }))
     }
 
     const addProduct = (e) => {
         e.preventDefault();
-        console.log(formFields);
+
+        formFields.images = productImagesArr;
+
+        postData('/api/products/create', formFields).then((res) => {
+            context.setAlertBox({
+                open:true,
+                msg:'The product is created!',
+                error:false
+            })
+        })
     }
 
 
@@ -345,13 +358,15 @@ const ProductUpload = () => {
                                                 </MenuItem>
                                                 {
                                                     catData?.categoryList?.length !== 0 && catData?.categoryList?.map((cat,index)=>{
+                                                    // catData?.categoryList?.map((cat, index) => {
                                                         return(
-                                                            <MenuItem className="text-capitalize" value={cat.id} key={index} >{cat.name}</MenuItem>
+                                                            <MenuItem className="text-capitalize" value={cat._id} key={index} >{cat.name}</MenuItem>
                                                         )
                                                     })
                                                 }
 
                                             </Select>
+                                          
                                         </div> 
                                     </div>
 
@@ -506,12 +521,20 @@ const ProductUpload = () => {
 
                         <div className="col-sm-3">
                             <div className="stickyBox">
-                             
-                            <h4>Product Images</h4>
-                            
-                                
+                             {
+                                productImagesArr?.length !== 0 && <h4>Product Images</h4>
+                             }
+                         
                                 <div className="imgGrid d-flex" id="imgGrid">
-                             
+                                    {
+                                        productImagesArr?.map((image, index) => {
+                                            return (
+                                                <div className="img" key={index}>
+                                                    <img src={image} alt="image" className="w-100" />
+                                                </div>
+                                            )
+                                        })
+                                    }
                                 </div>
                             </div>
                         </div>

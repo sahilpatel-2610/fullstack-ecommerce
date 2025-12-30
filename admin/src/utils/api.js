@@ -2,24 +2,29 @@ import axios from "axios";
 
 export const fetchDataFromApi = async (url) => {
     try {
-        const {data} = await axios.get("http://localhost:4000" + url)
+        const { data } = await axios.get("http://localhost:4000" + url)
         return data;
     } catch (error) {
         console.log(error);
-        return error;
+        throw error;
     }
 }
 
+// export const fetchDataFromApi = async (url) => {
+//     const { data } = await axios.get("http://localhost:4000" + url);
+//     return data;
+// }
+
 
 export const postData = async (url, formData) => {
-    const { res } = await axios.post("http://localhost:4000" + url, formData)
-    return res;
+    const { data } = await axios.post("http://localhost:4000" + url, formData)
+    return data;
 }
 
 
 export const editData = async (url, updateData) => {
-    const { res } = await axios.put(`http://localhost:4000${url}`,updateData)
-    return res;
+    const { data } = await axios.put(`http://localhost:4000${url}`,updateData)
+    return data;
 }
 
 // export const deleteData = async (url, id) => {
@@ -28,8 +33,8 @@ export const editData = async (url, updateData) => {
 // }
 
 export const deleteData = async (url) => {
-    const { res } = await axios.delete(`http://localhost:4000${url}`);
-    return res;
+    const { data } = await axios.delete(`http://localhost:4000${url}`);
+    return data;
 };
 
 
