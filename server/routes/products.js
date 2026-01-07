@@ -25,15 +25,29 @@ router.post(`/create`, async (req, res) => {
     }
 
     const limit = pLimit(2);
-    
+
+
+    // if (!req.body.images || req.body.images.length === 0) {
+    //     return res.status(400).json({
+    //         success: false,
+    //         message: "Images are required"
+    //     });
+    // }
+
     // const imagesToUpload = req.body.images.map((image) => {
     //     return limit(async () => {
-    //         const result = await cloudinary.uploader.upload(image);
-    //         // console.log(`Successfully uploaded ${image}`);
-    //         // console.log(`> Result: ${result.secure_url}`);
-    //         return result;
-    //     })
+    //         return await cloudinary.uploader.upload(image);
+    //     });
     // });
+    
+    const imagesToUpload = req.body.images.map((image) => {
+        return limit(async () => {
+            const result = await cloudinary.uploader.upload(image);
+            // console.log(`Successfully uploaded ${image}`);
+            // console.log(`> Result: ${result.secure_url}`);
+            return result;
+        })
+    });
 
     if (!req.body.images || req.body.images.length === 0) {
         return res.status(400).json({
@@ -58,16 +72,16 @@ router.post(`/create`, async (req, res) => {
     }
 
     let product = new Product({
-        name:req.body.name,
-        description:req.body.description,
-        images:imgurl,
-        brand:req.body.brand,
-        price:req.body.price,
-        oldPrice:req.body.oldPrice,
-        category:req.body.category,
-        countInStock:req.body.countInStock,
-        rating:req.body.rating,
-        isFeatured:req.body.isFeatured
+        name: req.body.name,
+        description: req.body.description,
+        images: imgurl,
+        brand: req.body.brand,
+        price: req.body.price,
+        oldPrice: req.body.oldPrice,
+        category: req.body.category,
+        countInStock: req.body.countInStock,
+        rating: req.body.rating,
+        isFeatured: req.body.isFeatured
     });
 
     product = await product.save();
@@ -81,6 +95,53 @@ router.post(`/create`, async (req, res) => {
     res.status(201).json(product);
 });
 
+// router.post("/create", async (req, res) => {
+//   try {
+//     const category = await Category.findById(req.body.category);
+//     if (!category) {
+//       return res.status(400).json({ message: "Invalid Category" });
+//     }
+
+//     if (!req.body.images || req.body.images.length === 0) {
+//       return res.status(400).json({ message: "Images are required" });
+//     }
+
+//     const limit = pLimit(2);
+
+//     const imagesToUpload = req.body.images.map((image) =>
+//       limit(async () => {
+//         const result = await cloudinary.uploader.upload(image);
+//         return result.secure_url;
+//       })
+//     );
+
+//     const imgurl = await Promise.all(imagesToUpload);
+
+//     const product = new Product({
+//       name: req.body.name,
+//       description: req.body.description,
+//       images: imgurl,
+//       brand: req.body.brand,
+//       price: req.body.price,
+//       oldPrice: req.body.oldPrice,
+//       category: req.body.category,
+//       countInStock: req.body.countInStock,
+//       rating: req.body.rating,
+//       isFeatured: req.body.isFeatured
+//     });
+
+//     const savedProduct = await product.save();
+
+//     res.status(201).json(savedProduct);
+
+//   } catch (error) {
+//     console.error("CREATE PRODUCT ERROR:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: error.message
+//     });
+//   }
+// });
 
 router.get('/:id', async(req, res) => {
     const product = await Product.findById(req.params.id);
@@ -174,6 +235,65 @@ router.put('/:id', async(req, res) => {
     // res.send(product);
 
 })
+
+// router.put('/:id', async (req, res) => {
+//   try {
+//     // Category check
+//     const category = await Category.findById(req.body.category);
+//     if (!category) {
+//       return res.status(400).json({ success: false, message: "Invalid Category" });
+//     }
+
+//     let imgurl = [];
+
+//     if (req.body.images && req.body.images.length > 0) {
+//       const limit = pLimit(2);
+
+//       const imagesToUpload = req.body.images.map((image) =>
+//         limit(async () => {
+//           const result = await cloudinary.uploader.upload(image);
+//           return result.secure_url;
+//         })
+//       );
+
+//       imgurl = await Promise.all(imagesToUpload);
+//     }
+
+//     const product = await Product.findByIdAndUpdate(
+//       req.params.id,
+//       {
+//         name: req.body.name,
+//         description: req.body.description,
+//         images: imgurl,
+//         brand: req.body.brand,
+//         price: req.body.price,
+//         category: req.body.category,
+//         countInStock: req.body.countInStock,
+//         rating: req.body.rating,
+//         isFeatured: req.body.isFeatured
+//       },
+//       { new: true }
+//     );
+
+//     if (!product) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Product not found"
+//       });
+//     }
+
+//     res.status(200).json({
+//       success: true,
+//       product
+//     });
+
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       error: error.message
+//     });
+//   }
+// });
 
 
 

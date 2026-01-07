@@ -16,7 +16,8 @@
     "express": "^4.21.2",
     "mongodb": "^6.20.0",
     "mongoose": "^8.20.4",
-    "require": "^2.4.20"
+    "require": "^2.4.20",
+    "route": "^0.2.5"
   },
   "devDependencies": {
     "cloudinary": "^2.8.0",
