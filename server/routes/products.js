@@ -3,8 +3,39 @@ const {Product} = require('../models/products.js');
 const express = require('express');
 const router = express.Router();
 const pLimit = require('p-limit');
-const cloudinary = require("../utils/cloudinary.js");
 const { route } = require('./products.js');
+const multer = require('multer');
+
+
+var imagesArr=[];
+
+const storage = multer.diskStorage({
+
+  destination: function (req, file, cb) {
+    cb(null, 'uploads');
+  },
+  filename: function (req, file, cb) {
+    cb(null, `${Date.now()}_${file.originalname}`);
+    // imagesArr.push(`${Date.now()}-${file.originalname}`);
+  },
+})
+
+const upload = multer({ storage: storage });
+
+
+router.post(`/upload`, upload.array("images"), async (req, res) => {
+    imagesArr = [];
+    const files = req.files;
+
+    for(let i=0; i<files.length; i++){
+        imagesArr.push(files[i].filename);
+    }
+
+    console.log(imagesArr);
+
+    res.json(imagesArr);
+});
+
 
 router.get(`/`, async (req, res) => {
     const productList = await Product.find().populate('category');
