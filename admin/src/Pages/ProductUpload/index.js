@@ -23,7 +23,7 @@ import { useEffect } from "react";
 import { MyContext } from "../../App";
 import { useContext } from "react";
 import CircularProgress from '@mui/material/CircularProgress';
-
+import { useNavigate } from "react-router-dom";
 
 //breadcrumb code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
@@ -68,7 +68,12 @@ const ProductUpload = () => {
     const [catData, setCatData] = useState([]);
     const [productImagesArr, setproductImagesArr] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+
     const [files, setFiles] = useState([]);
+    const [imagFiles, setimagFiles] = useState();
+    const [previews, setPreviews] = useState();
+
+    const history = useNavigate();
 
     const [formFields, setFormFields] = useState({
         name: '',
@@ -102,6 +107,25 @@ const ProductUpload = () => {
     },[]);
 
 
+    useEffect(() => {
+        if (!imagFiles) return;
+        let tmp = [];
+        for(let i=0; i<imagFiles.length; i++){
+            tmp.push(URL.createObjectURL(imagFiles[i]));
+        }
+
+        const objectUrls = tmp;
+        setPreviews(objectUrls);
+
+        // free memory 
+        for(let i=0; i<objectUrls.length; i++){
+            return() => {
+                URL.revokeObjectURL(objectUrls[i]);
+            }
+        }
+    }, [imagFiles]);
+
+
     const handleChangeCategory = (event) => {
         setCategoryVal(event.target.value);
         setFormFields(() => ({
@@ -133,37 +157,6 @@ const ProductUpload = () => {
 
     }
 
-    
-    // const addProductImages = () => {
-
-    //     const arr=[];
-
-    //     const imgGrid = document.querySelector('#imgGrid');
-
-    //     const imgData = ` <div class='img'>
-    //                         <img src="${productImages.current.value}" alt="image"
-    //                         class="w-100" />
-    //                    </div> `;
-
-    //       arr[parseInt(count)] = productImages.current.value
-    //       setCount(count+1);
-
-    //       setFormFields(() => ({
-    //         ...formFields,
-    //         images:arr
-    //       }))
-
-    //     imgGrid.insertAdjacentHTML('beforeend', imgData);
-
-    //     productImages.current.value = "";
-    // }
-
-    const addProductImages = () => {
-        setproductImagesArr(prevArray => [...prevArray, productImages.current.value]);
-        productImages.current.value = "";
-    }
-
-
 
     const inputChange = (e) => {
         setFormFields(() => ({
@@ -177,6 +170,7 @@ const ProductUpload = () => {
         try {
             const imgArr = [];
             const files = e.target.files;
+            setimagFiles(e.target.files);
             // const fd = new FormData();
             for (var i = 0; i < files.length; i++) {
                 const file = files[i];
@@ -186,6 +180,7 @@ const ProductUpload = () => {
 
 
             setFiles(imgArr);
+       
 
             postData(apiEndPoint, formdata).then((res) => {
                 console.log(res);
@@ -292,15 +287,6 @@ const ProductUpload = () => {
             return false;
         }
 
-        if(formFields.images.length === 0) {
-            context.setAlertBox({
-                open: true,
-                msg: 'please add product images',
-                error: true
-            });
-            return false;
-        }
-
         setIsLoading(true);
 
         postData('/api/products/create', formFields).then((res) => {
@@ -324,6 +310,8 @@ const ProductUpload = () => {
                 isFeatured: false,
                 images: []
             });
+
+            history('/products');
         })
     }
 
@@ -669,19 +657,6 @@ const ProductUpload = () => {
 
                                 </div>
 
-
-                                <div className="row">
-                                    <div className="col">
-                                        <div className="form-group">
-                                            <h6 className="text-uppercase">PRODUCT IMAGES</h6>
-                                            <div className="position-relative inputBtn">
-                                                <input type="text" required ref={productImages} style={{paddingRight:'100px'}} name="images" onChange={inputChange} />
-                                                <Button className="btn-blue" onClick={addProductImages}>Add</Button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
                             </div>
                         </div>
                     </div>
@@ -693,41 +668,15 @@ const ProductUpload = () => {
 
                             <div className="imgUploadBox d-flex align-items-center">
 
-                                <div className="uploadBox">
-                                    <span className="remove mr-3"><IoCloseSharp /></span>
-                                    <div className="box">
-                                        <LazyLoadImage
-                                            alt={"image"}
-                                            effect="blur"
-                                            className="w-100"
-                                            src={'https://plus.unsplash.com/premium_photo-1712267564480-b3e89550e644?q=80&w=1157&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
-                                        />
-                                        <LazyLoadImage
-                                            alt={"image"}
-                                            effect="blur"
-                                            className="w-100"
-                                            src={'https://plus.unsplash.com/premium_photo-1712267564480-b3e89550e644?q=80&w=1157&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
-                                        />
-                                        <LazyLoadImage
-                                            alt={"image"}
-                                            effect="blur"
-                                            className="w-100"
-                                            src={'https://plus.unsplash.com/premium_photo-1712267564480-b3e89550e644?q=80&w=1157&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
-                                        />
-                                        <LazyLoadImage
-                                            alt={"image"}
-                                            effect="blur"
-                                            className="w-100"
-                                            src={'https://plus.unsplash.com/premium_photo-1712267564480-b3e89550e644?q=80&w=1157&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
-                                        />
-                                        <LazyLoadImage
-                                            alt={"image"}
-                                            effect="blur"
-                                            className="w-100"
-                                            src={'https://plus.unsplash.com/premium_photo-1712267564480-b3e89550e644?q=80&w=1157&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'}
-                                        />
-                                    </div>
-                                </div>
+                               {
+                                  previews?.length !== 0 && previews?.map((img, index) => {
+                                    return (
+                                        <div className="uploadBox" key={index}>
+                                            <img src={img} className="w-100" />
+                                        </div>
+                                    )
+                                  })
+                               }
 
 
 

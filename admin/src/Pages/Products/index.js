@@ -33,6 +33,7 @@ import DashboardBox from "../Dashboard/components/dashboardBox";
 
 import Checkbox from "@mui/material/Checkbox";
 import { FaE } from "react-icons/fa6";
+import { fetchDataFromApi } from "../../utils/api";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
@@ -64,7 +65,19 @@ const Products = () => {
     const [showBysetCatBy, setCatBy] = useState('');
     const open = Boolean(anchorEl);
 
+    const context = useContext(MyContext);
+
+    const [productList, setProductList] = useState([]);
+
     const ITEM_HEIGHT = 48;
+
+    useEffect(()=>{
+        window.scrollTo(0,0);
+
+        fetchDataFromApi("/api/products").then((res)=>{
+            setProductList(res);
+        })
+    },[]);
 
     return (
         <>
@@ -149,254 +162,70 @@ const Products = () => {
                         <table className="table table-bordered table-striped v-align">
                             <thead className="thead-dark">
                                 <tr>
-                                    <th>UID</th>
+                                    {/* <th>UID</th> */}
                                     <th style={{width:'300px'}}>PRODUCT</th>
                                     <th>CATEGORY</th>
                                     <th>BRAND</th>
                                     <th>PRICE</th>
-                                    <th>STOCK</th>
                                     <th>RATING</th>
-                                    <th>ORDER</th>
-                                    <th>SALES</th>
                                     <th>ACTION</th>
                                 </tr>
                             </thead>
 
                             <tbody>
-                                <tr>
-                                    <td>
-                                        <div className="d-flex align-items-center">
-                                            <Checkbox {...label} />  <span>#1</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div className="d-flex align-items-center productBox">
-                                            <div className="imgWrapper">
-                                                <div className="img card shadow m-0">
-                                                    <img src="https://mironcoder-hotash.netlify.app/images/product/01.webp" className="w-100" />
+                            {
+                                productList?.length !== 0 && productList?.map((item,index)=>{
+                                    return (
+                                        <tr>
+                                            {/* <td>
+                                                <div className="d-flex align-items-center">
+                                                    <Checkbox {...label} />  <span>#1</span>
+                                                </div>
+                                            </td> */}
+                                            <td>
+                                            <div className="d-flex align-items-center productBox">
+                                                <div className="imgWrapper">
+                                                    <div className="img card shadow m-0">
+                                                        <img src={`${context.baseUrl}/uploads/${item.images[0]}`} className="w-100" />
+                                                    </div>
+                                                </div>
+                                                <div className="info pl-0">
+                                                    <h6> &nbsp; {item.name}</h6>
+                                                    <p> &nbsp; {item.description}
+                                                    </p>
                                                 </div>
                                             </div>
-                                            <div className="info pl-0">
-                                                <h6>Tops and skirt set for Female...</h6>
-                                                <p>Women's exclusive summer Tops and skirt set for Female 
-                                                Tops and skirt set
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>womans</td>
-                                    <td>richman</td>
-                                    <td>
-                                        <div style={{ width: '70px' }}>
-                                            <del className="old">$21.00</del>
-                                            <span className="new text-danger">$21.00</span>
-                                        </div>
-                                    </td>
-                                    <td><Rating name="read-only" defaultValue={4.5} precision={0.5} size="small" readOnly /></td>
-                                    <td>4.9(16)</td>
-                                    <td>380</td>
-                                    <td>$38k</td>
-                                    <td>
-                                        <div className="actions d-flex align-items-center">
-                                           <Link to="product/details">
-                                                <Button className="secondary"
-                                                color="secondary"><FaEye /></Button>
-                                           </Link>
-                                            <Button className="success"
-                                            color="success"><FaPencilAlt /></Button>
-                                            <Button className="error"
-                                            color="error"><MdDelete /></Button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                            </td>
+                                            <td>{item.category.name}</td>
+                                            <td>{item.brand}</td>
+                                            <td>
+                                                <div style={{ width: '70px' }}>
+                                                    <del className="old">Rs {item.oldPrice}</del>
+                                                    <span className="new text-danger">Rs {item.Price}</span>
+                                                </div>
+                                            </td>
+                                            <td><Rating name="read-only" defaultValue={item.rating} precision={0.5} size="small" readOnly /></td>
+                                            
+                                            <td>
+                                                <div className="actions d-flex align-items-center">
+                                                    <Link to="product/details">
+                                                       <Link to="product/details">
+                                                           <Button className="secondary"
+                                                            color="secondary"><FaEye />
+                                                           </Button>
+                                                       </Link>
+                                                    </Link>
+                                                    <Button className="success"
+                                                    color="success"><FaPencilAlt /></Button>
+                                                    <Button className="error"
+                                                    color="error"><MdDelete /></Button>
+                                                </div>
+                                            </td>
+                                        </tr>
 
-                                <tr>
-                                    <td>
-                                        <div className="d-flex align-items-center">
-                                            <Checkbox {...label} />  <span>#1</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div className="d-flex align-items-center productBox">
-                                            <div className="imgWrapper">
-                                                <div className="img card shadow m-0">
-                                                    <img src="https://mironcoder-hotash.netlify.app/images/product/01.webp" className="w-100" />
-                                                </div>
-                                            </div>
-                                            <div className="info pl-0">
-                                                <h6>Tops and skirt set for Female...</h6>
-                                                <p>Women's exclusive summer Tops and skirt set for Female 
-                                                Tops and skirt set
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>womans</td>
-                                    <td>richman</td>
-                                    <td>
-                                        <div style={{ width: '70px' }}>
-                                            <del className="old">$21.00</del>
-                                            <span className="new text-danger">$21.00</span>
-                                        </div>
-                                    </td>
-                                    <td><Rating name="read-only" defaultValue={4.5} precision={0.5} size="small" readOnly /></td>
-                                    <td>4.9(16)</td>
-                                    <td>380</td>
-                                    <td>$38k</td>
-                                    <td>
-                                        <div className="actions d-flex align-items-center">
-                                            <Link to="product/details">
-                                                <Button className="secondary"
-                                                color="secondary"><FaEye /></Button>
-                                            </Link>
-                                            <Button className="success"
-                                            color="success"><FaPencilAlt /></Button>
-                                            <Button className="error"
-                                            color="error"><MdDelete /></Button>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>
-                                        <div className="d-flex align-items-center">
-                                            <Checkbox {...label} />  <span>#1</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div className="d-flex align-items-center productBox">
-                                            <div className="imgWrapper">
-                                                <div className="img card shadow m-0">
-                                                    <img src="https://mironcoder-hotash.netlify.app/images/product/01.webp" className="w-100" />
-                                                </div>
-                                            </div>
-                                            <div className="info pl-0">
-                                                <h6>Tops and skirt set for Female...</h6>
-                                                <p>Women's exclusive summer Tops and skirt set for Female 
-                                                Tops and skirt set
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>womans</td>
-                                    <td>richman</td>
-                                    <td>
-                                        <div style={{ width: '70px' }}>
-                                            <del className="old">$21.00</del>
-                                            <span className="new text-danger">$21.00</span>
-                                        </div>
-                                    </td>
-                                    <td><Rating name="read-only" defaultValue={4.5} precision={0.5} size="small" readOnly /></td>
-                                    <td>4.9(16)</td>
-                                    <td>380</td>
-                                    <td>$38k</td>
-                                    <td>
-                                        <div className="actions d-flex align-items-center">
-                                            <Link to="product/details">
-                                                <Button className="secondary"
-                                                color="secondary"><FaEye /></Button>
-                                            </Link>
-                                            <Button className="success"
-                                            color="success"><FaPencilAlt /></Button>
-                                            <Button className="error"
-                                            color="error"><MdDelete /></Button>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>
-                                        <div className="d-flex align-items-center">
-                                            <Checkbox {...label} />  <span>#1</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div className="d-flex align-items-center productBox">
-                                            <div className="imgWrapper">
-                                                <div className="img card shadow m-0">
-                                                    <img src="https://mironcoder-hotash.netlify.app/images/product/01.webp" className="w-100" />
-                                                </div>
-                                            </div>
-                                            <div className="info pl-0">
-                                                <h6>Tops and skirt set for Female...</h6>
-                                                <p>Women's exclusive summer Tops and skirt set for Female 
-                                                Tops and skirt set
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>womans</td>
-                                    <td>richman</td>
-                                    <td>
-                                        <div style={{ width: '70px' }}>
-                                            <del className="old">$21.00</del>
-                                            <span className="new text-danger">$21.00</span>
-                                        </div>
-                                    </td>
-                                    <td><Rating name="read-only" defaultValue={4.5} precision={0.5} size="small" readOnly /></td>
-                                    <td>4.9(16)</td>
-                                    <td>380</td>
-                                    <td>$38k</td>
-                                    <td>
-                                        <div className="actions d-flex align-items-center">
-                                            <Link to="product/details">
-                                                <Button className="secondary"
-                                                color="secondary"><FaEye /></Button>
-                                            </Link>
-                                            <Button className="success"
-                                            color="success"><FaPencilAlt /></Button>
-                                            <Button className="error"
-                                            color="error"><MdDelete /></Button>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>
-                                        <div className="d-flex align-items-center">
-                                            <Checkbox {...label} />  <span>#1</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div className="d-flex align-items-center productBox">
-                                            <div className="imgWrapper">
-                                                <div className="img card shadow m-0">
-                                                    <img src="https://mironcoder-hotash.netlify.app/images/product/01.webp" className="w-100" />
-                                                </div>
-                                            </div>
-                                            <div className="info pl-0">
-                                                <h6>Tops and skirt set for Female...</h6>
-                                                <p>Women's exclusive summer Tops and skirt set for Female 
-                                                Tops and skirt set
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>womans</td>
-                                    <td>richman</td>
-                                    <td>
-                                        <div style={{ width: '70px' }}>
-                                            <del className="old">$21.00</del>
-                                            <span className="new text-danger">$21.00</span>
-                                        </div>
-                                    </td>
-                                    <td><Rating name="read-only" defaultValue={4.5} precision={0.5} size="small" readOnly /></td>
-                                    <td>4.9(16)</td>
-                                    <td>380</td>
-                                    <td>$38k</td>
-                                    <td>
-                                        <div className="actions d-flex align-items-center">
-                                            <Link to="product/details">
-                                                <Button className="secondary"
-                                                color="secondary"><FaEye /></Button>
-                                            </Link>
-                                            <Button className="success"
-                                            color="success"><FaPencilAlt /></Button>
-                                            <Button className="error"
-                                            color="error"><MdDelete /></Button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                    )
+                                })
+                            }
                                
                             </tbody>
                         </table>

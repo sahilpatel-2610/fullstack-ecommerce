@@ -31,9 +31,7 @@ router.post(`/upload`, upload.array("images"), async (req, res) => {
         imagesArr.push(files[i].filename);
     }
 
-    console.log(imagesArr);
-
-    res.json(imagesArr);
+    res.json({ images: imagesArr });
 });
 
 
@@ -55,57 +53,12 @@ router.post(`/create`, async (req, res) => {
         return res.status(404).send("Invalid Category!");
     }
 
-    const limit = pLimit(2);
-
-
-    // if (!req.body.images || req.body.images.length === 0) {
-    //     return res.status(400).json({
-    //         success: false,
-    //         message: "Images are required"
-    //     });
-    // }
-
-    // const imagesToUpload = req.body.images.map((image) => {
-    //     return limit(async () => {
-    //         return await cloudinary.uploader.upload(image);
-    //     });
-    // });
-    
-    const imagesToUpload = req.body.images.map((image) => {
-        return limit(async () => {
-            const result = await cloudinary.uploader.upload(image);
-            // console.log(`Successfully uploaded ${image}`);
-            // console.log(`> Result: ${result.secure_url}`);
-            return result;
-        })
-    });
-
-    if (!req.body.images || req.body.images.length === 0) {
-        return res.status(400).json({
-            success: false,
-            message: "Images are required"
-        });
-    }
-    
-    const uploadStatus = await Promise.all(imagesToUpload);
-    
-    const imgurl = uploadStatus.map((item) => {
-        return item.secure_url
-    })
-    
-    
-    
-    if(!uploadStatus) {
-        return res.status(500).json({
-            error:"images cannot upload!",
-            status:false
-        })
-    }
+   
 
     let product = new Product({
         name: req.body.name,
         description: req.body.description,
-        images: imgurl,
+        images: imagesArr,
         brand: req.body.brand,
         price: req.body.price,
         oldPrice: req.body.oldPrice,

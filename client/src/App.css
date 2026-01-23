@@ -120,7 +120,7 @@ nav .navpart1 .catWrapper .sidebarNav ul li:hover .submenu button{border-radius:
 nav .allCatTab{background: #6d4aae !important; padding: 10px 12px !important; border-radius: 30px !important;}
 nav .allCatTab *{color: #fff;}
 nav .allCatTab:hover{background: #2bbef9;}
-nav .allCatTab .text{font-weight: 600;}
+/* nav .allCatTab .text{font-weight: 600;} */
 
 nav .allCatTab .icon1 svg{font: 20px !important;}
 nav .allCatTab .icon2 svg{font: 15px !important;}

@@ -35,6 +35,7 @@ function App() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [isOpenNav, setIsOpenNav] = useState(false);
   const [theme, setTheme] = useState(localStorage.getItem('theme') ? localStorage.getItem('theme') : 'light');
+  const [baseUrl, setBaseUrl] = useState("http://localhost:4000");
 
   const [progress, setProgress] = useState(0);
   const [alertBox, setAlertBox] = useState({
@@ -119,7 +120,8 @@ function App() {
     // handleClickVariant
     alertBox,
     setAlertBox,
-    setProgress
+    setProgress,
+    baseUrl
   }
 
  
