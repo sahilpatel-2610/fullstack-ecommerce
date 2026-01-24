@@ -48,6 +48,17 @@ const peoductSchema = mongoose.Schema({
         type: Date,
         default: Date.now,
     },
-})
+});
+
+
+peoductSchema.virtual('id').get(function () {
+    return this._id.toHexString();
+});
+
+peoductSchema.set('toJSON', {
+    virtual: true,
+});
+
+
 
 exports.Product = mongoose.model('Product', peoductSchema);

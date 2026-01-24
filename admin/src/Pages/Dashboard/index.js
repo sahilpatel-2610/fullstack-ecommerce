@@ -16,14 +16,16 @@ import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-
+import { Link } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
 import { FaPencilAlt } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import Pagination from '@mui/material/Pagination';
 import { useContext } from "react";
 import { MyContext } from "../../App";
-
+import { fetchDataFromApi } from "../../utils/api";
+import { deleteData } from "../../utils/api";
+import { Rating } from "@mui/material";
 
 export const data = [
   ["Year", "Sales", "Expenses"],
@@ -43,6 +45,8 @@ const Dashboard = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [showBy, setShowBy] = useState('');
     const [showBysetCatBy, setCatBy] = useState('');
+    const [productList, setProductList] = useState([]);
+
     const open = Boolean(anchorEl);
     
     const ITEM_HEIGHT = 48;
@@ -53,7 +57,40 @@ const Dashboard = () => {
     useEffect(() => {
         context.setisHideSidebarAndHeader(false);
         window.scrollTo(0,0);
+        context.setProgress(40);
+        fetchDataFromApi("/api/products").then((res)=>{
+            setProductList(res);
+            context.setProgress(100);
+        })
     },[]);
+
+    const deleteProduct = (id) => {
+        context.setProgress(40);
+        deleteData(`/api/products/${id}`).then((res)=>{
+            context.setProgress(100);
+            context.setAlertBox({
+                open: true,
+                error: true,
+                msg: "Product Deleted!",
+            });
+                
+            fetchDataFromApi("/api/products").then((res)=>{
+                setProductList(res);
+            })
+    
+        })
+    }
+    
+    const handleChange = (event, value) => {
+    context.setProgress(40);
+        fetchDataFromApi(`/api/products?page=${value}`).then((res) => {
+            setProductList(res);
+            context.setProgress(100);
+        })
+    }
+            
+
+   
     
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -191,348 +228,82 @@ const Dashboard = () => {
 
 
                     <div className="table-responsive mt-3">
-                        <table className="table table-bordered v-align">
+                        <table className="table table-bordered table-striped v-align">
                             <thead className="thead-dark">
                                 <tr>
-                                    <th>UID</th>
+                                    {/* <th>UID</th> */}
                                     <th style={{width:'300px'}}>PRODUCT</th>
                                     <th>CATEGORY</th>
                                     <th>BRAND</th>
                                     <th>PRICE</th>
-                                    <th>STOCK</th>
                                     <th>RATING</th>
-                                    <th>ORDER</th>
-                                    <th>SALES</th>
                                     <th>ACTION</th>
                                 </tr>
                             </thead>
-
+                    
                             <tbody>
-                                <tr>
-                                    <td>#1</td>
-                                    <td>
-                                        <div className="d-flex align-items-center productBox">
-                                            <div className="imgWrapper">
-                                                <div className="img">
-                                                    {/* <img src="http://mironcoder-hotash.netlify.app/images/product/01.webp" className="w-100" /> */}
-                                                    <img src="https://api.spicezgold.com/download/file_1734529758900_fabflee-party-printed-women-s-top-women-tops-crepe-top-tops-for-women-tops-for-women-product-images-rvwdnv1ypj-0-202311010723.webp" className="w-100" />
+                            {
+                                productList?.products?.length !== 0 && productList?.products?.map((item,index)=>{
+                                    return (
+                                        <tr>
+                                            {/* <td>
+                                                <div className="d-flex align-items-center">
+                                                    <Checkbox {...label} />  <span>#1</span>
                                                 </div>
-                                            </div>
-                                            <div className="info pl-0">
-                                                <h6> &nbsp; Tops and skirt set for Female...</h6>
-                                                <p> &nbsp; Women's exclusive summer Tops and skirt set for Female 
-                                                Tops and skirt set
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>womans</td>
-                                    <td>richman</td>
-                                    <td>
-                                        <div style={{width:'70px'}}>
-                                            <del className="old">$21.00</del>
-                                            <span className="new text-danger">$17.00</span>
-                                        </div>
-                                    </td>
-                                    <td>30</td>
-                                    <td>4.9(16)</td>
-                                    <td>380</td>
-                                    <td>$38k</td>
-                                    <td>
-                                        <div className="actions d-flex align-items-center">
-                                            <Button className="secondary" color="secondary"><FaEye /></Button>
-                                            <Button className="success" color="success"><FaPencilAlt /></Button>
-                                            <Button className="error" color="error"><MdDelete /></Button>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>#1</td>
-                                    <td>
-                                        <div className="d-flex align-items-center productBox">
-                                            <div className="imgWrapper">
-                                                <div className="img">
-                                                    {/* <img src="http://mironcoder-hotash.netlify.app/images/product/01.webp" className="w-100" /> */}
-                                                    <img src="https://api.spicezgold.com/download/file_1734529758900_fabflee-party-printed-women-s-top-women-tops-crepe-top-tops-for-women-tops-for-women-product-images-rvwdnv1ypj-0-202311010723.webp" className="w-100" />
+                                            </td> */}
+                                            <td>
+                                                <div className="d-flex align-items-center productBox">
+                                                    <div className="imgWrapper">
+                                                        <div className="img card shadow m-0">
+                                                            <img src={`${context.baseUrl}/uploads/${item?.images[0]}`} className="w-100" />
+                                                        </div>
+                                                    </div>
+                                                    <div className="info pl-0">
+                                                        <h6> &nbsp; {item.name}</h6>
+                                                        <p> &nbsp; {item.description}
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div className="info pl-0">
-                                                <h6> &nbsp; Tops and skirt set for Female...</h6>
-                                                <p> &nbsp; Women's exclusive summer Tops and skirt set for Female 
-                                                Tops and skirt set
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>womans</td>
-                                    <td>richman</td>
-                                    <td>
-                                        <div style={{width:'70px'}}>
-                                            <del className="old">$21.00</del>
-                                            <span className="new text-danger">$17.00</span>
-                                        </div>
-                                    </td>
-                                    <td>30</td>
-                                    <td>4.9(16)</td>
-                                    <td>380</td>
-                                    <td>$38k</td>
-                                    <td>
-                                        <div className="actions d-flex align-items-center">
-                                            <Button className="secondary" color="secondary"><FaEye /></Button>
-                                            <Button className="success" color="success"><FaPencilAlt /></Button>
-                                            <Button className="error" color="error"><MdDelete /></Button>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>#1</td>
-                                    <td>
-                                        <div className="d-flex align-items-center productBox">
-                                            <div className="imgWrapper">
-                                                <div className="img">
-                                                    {/* <img src="http://mironcoder-hotash.netlify.app/images/product/01.webp" className="w-100" /> */}
-                                                    <img src="https://api.spicezgold.com/download/file_1734529758900_fabflee-party-printed-women-s-top-women-tops-crepe-top-tops-for-women-tops-for-women-product-images-rvwdnv1ypj-0-202311010723.webp" className="w-100" />
+                                            </td>
+                                            <td>{item.category.name}</td>
+                                            <td>{item.brand}</td>
+                                            <td>
+                                                <div style={{ width: '70px' }}>
+                                                    <del className="old">Rs {item.oldPrice}</del>
+                                                        <span className="new text-danger">Rs {item.Price}</span>
                                                 </div>
-                                            </div>
-                                            <div className="info pl-0">
-                                                <h6> &nbsp; Tops and skirt set for Female...</h6>
-                                                <p> &nbsp; Women's exclusive summer Tops and skirt set for Female 
-                                                Tops and skirt set
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>womans</td>
-                                    <td>richman</td>
-                                    <td>
-                                        <div style={{width:'70px'}}>
-                                            <del className="old">$21.00</del>
-                                            <span className="new text-danger">$17.00</span>
-                                        </div>
-                                    </td>
-                                    <td>30</td>
-                                    <td>4.9(16)</td>
-                                    <td>380</td>
-                                    <td>$38k</td>
-                                    <td>
-                                        <div className="actions d-flex align-items-center">
-                                            <Button className="secondary" color="secondary"><FaEye /></Button>
-                                            <Button className="success" color="success"><FaPencilAlt /></Button>
-                                            <Button className="error" color="error"><MdDelete /></Button>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>#1</td>
-                                    <td>
-                                        <div className="d-flex align-items-center productBox">
-                                            <div className="imgWrapper">
-                                                <div className="img">
-                                                    {/* <img src="http://mironcoder-hotash.netlify.app/images/product/01.webp" className="w-100" /> */}
-                                                    <img src="https://api.spicezgold.com/download/file_1734529758900_fabflee-party-printed-women-s-top-women-tops-crepe-top-tops-for-women-tops-for-women-product-images-rvwdnv1ypj-0-202311010723.webp" className="w-100" />
+                                            </td>
+                                            <td><Rating name="read-only" defaultValue={item.rating} precision={0.5} size="small" readOnly /></td>
+                                                                
+                                            <td>
+                                                <div className="actions d-flex align-items-center">
+                                                    <Link to="product/details">
+                                                        <Link to="product/details">
+                                                            <Button className="secondary"
+                                                                color="secondary"><FaEye />
+                                                            </Button>
+                                                        </Link>
+                                                    </Link>
+                                                    <Button className="success"
+                                                        color="success"><FaPencilAlt /></Button>
+                                                    <Button className="error"
+                                                        color="error" onClick={()=>deleteProduct(item.id)}><MdDelete /></Button>
                                                 </div>
-                                            </div>
-                                            <div className="info pl-0">
-                                                <h6> &nbsp; Tops and skirt set for Female...</h6>
-                                                <p> &nbsp; Women's exclusive summer Tops and skirt set for Female 
-                                                Tops and skirt set
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>womans</td>
-                                    <td>richman</td>
-                                    <td>
-                                        <div style={{width:'70px'}}>
-                                            <del className="old">$21.00</del>
-                                            <span className="new text-danger">$17.00</span>
-                                        </div>
-                                    </td>
-                                    <td>30</td>
-                                    <td>4.9(16)</td>
-                                    <td>380</td>
-                                    <td>$38k</td>
-                                    <td>
-                                        <div className="actions d-flex align-items-center">
-                                            <Button className="secondary" color="secondary"><FaEye /></Button>
-                                            <Button className="success" color="success"><FaPencilAlt /></Button>
-                                            <Button className="error" color="error"><MdDelete /></Button>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>#1</td>
-                                    <td>
-                                        <div className="d-flex align-items-center productBox">
-                                            <div className="imgWrapper">
-                                                <div className="img">
-                                                    {/* <img src="http://mironcoder-hotash.netlify.app/images/product/01.webp" className="w-100" /> */}
-                                                    <img src="https://api.spicezgold.com/download/file_1734529758900_fabflee-party-printed-women-s-top-women-tops-crepe-top-tops-for-women-tops-for-women-product-images-rvwdnv1ypj-0-202311010723.webp" className="w-100" />
-                                                </div>
-                                            </div>
-                                            <div className="info pl-0">
-                                                <h6> &nbsp; Tops and skirt set for Female...</h6>
-                                                <p> &nbsp; Women's exclusive summer Tops and skirt set for Female 
-                                                Tops and skirt set
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>womans</td>
-                                    <td>richman</td>
-                                    <td>
-                                        <div style={{width:'70px'}}>
-                                            <del className="old">$21.00</del>
-                                            <span className="new text-danger">$17.00</span>
-                                        </div>
-                                    </td>
-                                    <td>30</td>
-                                    <td>4.9(16)</td>
-                                    <td>380</td>
-                                    <td>$38k</td>
-                                    <td>
-                                        <div className="actions d-flex align-items-center">
-                                            <Button className="secondary" color="secondary"><FaEye /></Button>
-                                            <Button className="success" color="success"><FaPencilAlt /></Button>
-                                            <Button className="error" color="error"><MdDelete /></Button>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>#1</td>
-                                    <td>
-                                        <div className="d-flex align-items-center productBox">
-                                            <div className="imgWrapper">
-                                                <div className="img">
-                                                    {/* <img src="http://mironcoder-hotash.netlify.app/images/product/01.webp" className="w-100" /> */}
-                                                    <img src="https://api.spicezgold.com/download/file_1734529758900_fabflee-party-printed-women-s-top-women-tops-crepe-top-tops-for-women-tops-for-women-product-images-rvwdnv1ypj-0-202311010723.webp" className="w-100" />
-                                                </div>
-                                            </div>
-                                            <div className="info pl-0">
-                                                <h6> &nbsp; Tops and skirt set for Female...</h6>
-                                                <p> &nbsp; Women's exclusive summer Tops and skirt set for Female 
-                                                Tops and skirt set
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>womans</td>
-                                    <td>richman</td>
-                                    <td>
-                                        <div style={{width:'70px'}}>
-                                            <del className="old">$21.00</del>
-                                            <span className="new text-danger">$17.00</span>
-                                        </div>
-                                    </td>
-                                    <td>30</td>
-                                    <td>4.9(16)</td>
-                                    <td>380</td>
-                                    <td>$38k</td>
-                                    <td>
-                                        <div className="actions d-flex align-items-center">
-                                            <Button className="secondary" color="secondary"><FaEye /></Button>
-                                            <Button className="success" color="success"><FaPencilAlt /></Button>
-                                            <Button className="error" color="error"><MdDelete /></Button>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>#1</td>
-                                    <td>
-                                        <div className="d-flex align-items-center productBox">
-                                            <div className="imgWrapper">
-                                                <div className="img">
-                                                    {/* <img src="http://mironcoder-hotash.netlify.app/images/product/01.webp" className="w-100" /> */}
-                                                    <img src="https://api.spicezgold.com/download/file_1734529758900_fabflee-party-printed-women-s-top-women-tops-crepe-top-tops-for-women-tops-for-women-product-images-rvwdnv1ypj-0-202311010723.webp" className="w-100" />
-                                                </div>
-                                            </div>
-                                            <div className="info pl-0">
-                                                <h6> &nbsp; Tops and skirt set for Female...</h6>
-                                                <p> &nbsp; Women's exclusive summer Tops and skirt set for Female 
-                                                Tops and skirt set
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>womans</td>
-                                    <td>richman</td>
-                                    <td>
-                                        <div style={{width:'70px'}}>
-                                            <del className="old">$21.00</del>
-                                            <span className="new text-danger">$17.00</span>
-                                        </div>
-                                    </td>
-                                    <td>30</td>
-                                    <td>4.9(16)</td>
-                                    <td>380</td>
-                                    <td>$38k</td>
-                                    <td>
-                                        <div className="actions d-flex align-items-center">
-                                            <Button className="secondary" color="secondary"><FaEye /></Button>
-                                            <Button className="success" color="success"><FaPencilAlt /></Button>
-                                            <Button className="error" color="error"><MdDelete /></Button>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>#1</td>
-                                    <td>
-                                        <div className="d-flex align-items-center productBox">
-                                            <div className="imgWrapper">
-                                                <div className="img">
-                                                    {/* <img src="http://mironcoder-hotash.netlify.app/images/product/01.webp" className="w-100" /> */}
-                                                    <img src="https://api.spicezgold.com/download/file_1734529758900_fabflee-party-printed-women-s-top-women-tops-crepe-top-tops-for-women-tops-for-women-product-images-rvwdnv1ypj-0-202311010723.webp" className="w-100" />
-                                                </div>
-                                            </div>
-                                            <div className="info pl-0">
-                                                <h6>&nbsp; Tops and skirt set for Female...</h6>
-                                                <p> &nbsp; Women's exclusive summer Tops and skirt set for Female 
-                                                Tops and skirt set
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>womans</td>
-                                    <td>richman</td>
-                                    <td>
-                                        <div style={{width:'70px'}}>
-                                            <del className="old">$21.00</del>
-                                            <span className="new text-danger">$17.00</span>
-                                        </div>
-                                    </td>
-                                    <td>30</td>
-                                    <td>4.9(16)</td>
-                                    <td>380</td>
-                                    <td>$38k</td>
-                                    <td>
-                                        <div className="actions d-flex align-items-center">
-                                            <Button className="secondary" color="secondary"><FaEye /></Button>
-                                            <Button className="success" color="success"><FaPencilAlt /></Button>
-                                            <Button className="error" color="error"><MdDelete /></Button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-
-
-                        </table>
-
-
-
-                       <div className="d-flex tableFooter">
-                            <p>showing <b>12</b> of <b>60</b> results</p>
-                            <Pagination count={10} color="primary" className="pagination" showFirstButton showLastButton />
-                       </div>
-
-
+                                            </td>
+                                        </tr>
+                    
+                                    )
+                                })
+                            }
+                                                   
+                        </tbody>
+                    </table>
+                    
+                    <div className="d-flex tableFooter">
+                        <Pagination count={productList?.totalPages} color="primary" className="pagination" showFirstButton showLastButton onChange={handleChange} />
                     </div>
+                    
+                </div>
 
                 </div>
 

@@ -64,27 +64,25 @@ const ProductDetails = () => {
     return (
         <>
              <div className="right-content w-100">
-                <div className='card shadow border-0 w-100 flex-row p-4 res-col'>
-                    <h5 className='mb-0'>Product View</h5>
-                    <Breadcrumbs aria-label='breadcrumb' className='ml-auto breadcrumbs_'>
-                        <StyledBreadcrumb
-                            component="a"
-                            href="#"
-                            label="Dashboard"
-                            icon={<HomeIcon fontSize='small' />}
-                        />
-
-                        <StyledBreadcrumb 
-                            component="a"
-                            label="Products"
-                            href="#" 
-                            deleteIcon={<ExpandMoreIcon />}
-                        />
-                         <StyledBreadcrumb 
-                            label="Product View"
-                            deleteIcon={<ExpandMoreIcon />}
-                        />
-                    </Breadcrumbs>
+                <div className="card shadow border-0 w-100 flex-row p-4 res-col">
+                  <h5 className="mb-0">Product View</h5>
+                  <Breadcrumbs aria-label="breadcrumb" className="ms-auto breadcrumbs_">
+                      <StyledBreadcrumb
+                        component="a"
+                        href="#"
+                        label="Dashboard"
+                        icon={<HomeIcon fontSize="small" />}
+                      />
+                      <StyledBreadcrumb
+                        label="Products"
+                        href="#"
+                        deleteIcon={<ExpandMoreIcon />}
+                      />
+                      <StyledBreadcrumb
+                        label="Product View"
+                        deleteIcon={<ExpandMoreIcon />}
+                      />
+                  </Breadcrumbs>
                 </div>
     
 {/* 

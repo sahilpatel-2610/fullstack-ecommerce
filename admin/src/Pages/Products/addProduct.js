@@ -70,8 +70,9 @@ const ProductUpload = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     const [files, setFiles] = useState([]);
-    const [imagFiles, setimagFiles] = useState();
+    const [imgFiles, setimgFiles] = useState();
     const [previews, setPreviews] = useState();
+    const [isSelectedFiles, setIsSelectedFiles] = useState(false);
 
     const history = useNavigate();
 
@@ -108,10 +109,10 @@ const ProductUpload = () => {
 
 
     useEffect(() => {
-        if (!imagFiles) return;
+        if (!imgFiles) return;
         let tmp = [];
-        for(let i=0; i<imagFiles.length; i++){
-            tmp.push(URL.createObjectURL(imagFiles[i]));
+        for(let i=0; i<imgFiles.length; i++){
+            tmp.push(URL.createObjectURL(imgFiles[i]));
         }
 
         const objectUrls = tmp;
@@ -123,7 +124,7 @@ const ProductUpload = () => {
                 URL.revokeObjectURL(objectUrls[i]);
             }
         }
-    }, [imagFiles]);
+    }, [imgFiles]);
 
 
     const handleChangeCategory = (event) => {
@@ -166,29 +167,41 @@ const ProductUpload = () => {
     }
 
 
+    
     const onChangeFile = async(e, apiEndPoint) => {
         try {
             const imgArr = [];
             const files = e.target.files;
-            setimagFiles(e.target.files);
+         
             // const fd = new FormData();
             for (var i = 0; i < files.length; i++) {
-                const file = files[i];
-                imgArr.push(file);
-                formdata.append(`images`, file);
+                if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png')) {
+                    setimgFiles(files);
+                    const file = files[i];
+                    imgArr.push(file);
+                    formdata.append(`images`, file);
+                } else {
+                    context.setAlertBox({
+                        open: true,
+                        error: true,
+                        msg: "Please select a valid JPG or PNG image file."
+                    });
+                }    
             }
+             
+            
+            setIsSelectedFiles(true);
 
-
-            setFiles(imgArr);
-       
-
+            console.log(imgArr) 
             postData(apiEndPoint, formdata).then((res) => {
-                console.log(res);
+                       
             });
+           
         } catch (error) {
             console.log(error);
         }
     }
+
 
     const addProduct = (e) => {
         e.preventDefault();

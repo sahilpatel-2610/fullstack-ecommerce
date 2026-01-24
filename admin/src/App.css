@@ -181,13 +181,23 @@ body.dark .logoutWrapper .logoutBox{background-image: linear-gradient(#183e8c,#1
 
 
 
-.dashboardBoxWrapper{white-space: nowrap !important; overflow-x: scroll; overflow-y: hidden; display: block !important; margin-bottom: 20px !important;}
+/* .dashboardBoxWrapper{white-space: nowrap !important; overflow-x: scroll; overflow-y: hidden; display: block !important; margin-bottom: 20px !important;}
 .dashboardBoxWrapper::-webkit-scrollbar{display: none !important;}
-.dashboardBoxWrapper .dashboardBox{display: inline-block !important; width: 270px !important; height: 160px !important; margin-right: 10px !important;}
+.dashboardBoxWrapper .dashboardBox{display: inline-block !important; width: 270px !important; height: 160px !important; margin-right: 10px !important;} */
 
+.dashboardBoxWrapperRowV2 .dashboardBox {
+    height: 120px !important;
+    width: 31.5%;
+}
+.dashboardBoxWrapper {
+    flex-wrap: wrap;
+    gap: 25px;
+    width: 100%;
+}
 
 
 .dashboardBoxWrapper{gap: 20px; width: 100%; flex-wrap: wrap;}
+.dashboardBoxWrapper::-webkit-scrollbar{display: none !important;}
 .dashboardBoxWrapper .dashboardBox{width: 48%; height: 170px;border-radius: 10px; overflow: hidden; padding: 20px; display: flex; flex-direction: column; justify-content: space-around; text-align: left !important; position: relative; color: #fff; text-transform: capitalize !important;}
 
 

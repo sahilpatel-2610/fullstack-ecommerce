@@ -33,7 +33,7 @@ import DashboardBox from "../Dashboard/components/dashboardBox";
 
 import Checkbox from "@mui/material/Checkbox";
 import { FaE } from "react-icons/fa6";
-import { fetchDataFromApi } from "../../utils/api";
+import { deleteData, fetchDataFromApi } from "../../utils/api";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
@@ -73,30 +73,62 @@ const Products = () => {
 
     useEffect(()=>{
         window.scrollTo(0,0);
-
+        context.setProgress(40);
         fetchDataFromApi("/api/products").then((res)=>{
             setProductList(res);
+            context.setProgress(100);
         })
     },[]);
+
+    const deleteProduct = (id) => {
+        context.setProgress(40);
+        deleteData(`/api/products/${id}`).then((res)=>{
+            context.setProgress(100);
+            context.setAlertBox({
+                open: true,
+                error: true,
+                msg: "Product Deleted!",
+            });
+            
+            fetchDataFromApi("/api/products").then((res)=>{
+                setProductList(res);
+            })
+
+        })
+    }
+
+    const handleChange = (event, value) => {
+    context.setProgress(40);
+        fetchDataFromApi(`/api/products?page=${value}`).then((res) => {
+            setProductList(res);
+            context.setProgress(100);
+        })
+    }
+        
 
     return (
         <>
             <div className="right-content w-100">
-                <div className='card shadow border-0 w-100 flex-row p-4'>   
-                    <h5 className='mb-0'>Product List</h5>
-                    <Breadcrumbs aria-label='breadcrumb' className='ml-auto breadcrumbs_'>
+                <div className="card shadow border-0 w-100 flex-row p-4 res-col">
+                    <h5 className="mb-0">Product List</h5>
+                    <Breadcrumbs aria-label="breadcrumb" className="ms-auto breadcrumbs_">
                         <StyledBreadcrumb
                             component="a"
                             href="#"
                             label="Dashboard"
-                            icon={<HomeIcon fontSize='small' />}
+                            icon={<HomeIcon fontSize="small" />}
                         />
                         <StyledBreadcrumb
                             label="Products"
+                            href="#"
                             deleteIcon={<ExpandMoreIcon />}
                         />
                     </Breadcrumbs>
+
+                    <Link to="/product/upload"><Button className="btn-blue ml-3 pl-3 pr-3">Add Product</Button></Link>
+
                 </div>
+                
 
 
                 <div className="row dashboardBoxWrapperRow dashboardBoxWrapperRowV2">
@@ -174,7 +206,7 @@ const Products = () => {
 
                             <tbody>
                             {
-                                productList?.length !== 0 && productList?.map((item,index)=>{
+                                productList?.products?.length !== 0 && productList?.products?.map((item,index)=>{
                                     return (
                                         <tr>
                                             {/* <td>
@@ -186,7 +218,7 @@ const Products = () => {
                                             <div className="d-flex align-items-center productBox">
                                                 <div className="imgWrapper">
                                                     <div className="img card shadow m-0">
-                                                        <img src={`${context.baseUrl}/uploads/${item.images[0]}`} className="w-100" />
+                                                        <img src={`${context.baseUrl}/uploads/${item?.images[0]}`} className="w-100" />
                                                     </div>
                                                 </div>
                                                 <div className="info pl-0">
@@ -218,7 +250,7 @@ const Products = () => {
                                                     <Button className="success"
                                                     color="success"><FaPencilAlt /></Button>
                                                     <Button className="error"
-                                                    color="error"><MdDelete /></Button>
+                                                    color="error" onClick={()=>deleteProduct(item.id)}><MdDelete /></Button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -229,6 +261,15 @@ const Products = () => {
                                
                             </tbody>
                         </table>
+
+                        {
+                            productList?.totalPages > 1 && <div className="d-flex tableFooter">
+                            <Pagination count={productList?.totalPages} color="primary" className="pagination" showFirstButton showLastButton onChange={handleChange} />
+                            </div>
+                        }
+
+                       
+
                     </div>
 
                 </div>

@@ -5,9 +5,11 @@ const router = express.Router();
 const pLimit = require('p-limit');
 const { route } = require('./products.js');
 const multer = require('multer');
+const fs = require("fs");
 
 
 var imagesArr=[];
+var productEditId;
 
 const storage = multer.diskStorage({
 
@@ -24,23 +26,63 @@ const upload = multer({ storage: storage });
 
 
 router.post(`/upload`, upload.array("images"), async (req, res) => {
-    imagesArr = [];
-    const files = req.files;
+    let images;
+    if (productEditId !== undefined) {
+        const product = await Product.findById(productEditId);
 
-    for(let i=0; i<files.length; i++){
-        imagesArr.push(files[i].filename);
+        if (product) {
+            images = product.images;
+        }
+
+        if (images.length !== 0) {
+            for (image of images) {
+                fs.unlinkSync(`uploads/${image}`);
+            }
+        }
+        
+        imagesArr = [];
+        const files = req.files;
+
+        
+        for(let i=0; i<files.length; i++){
+            imagesArr.push(files[i].filename);
+        }
+
+        res.send(imagesArr);
+
     }
 
-    res.json({ images: imagesArr });
 });
 
 
 router.get(`/`, async (req, res) => {
-    const productList = await Product.find().populate('category');
+
+    const page = parseInt(req.query.page) || 1;
+    const perPage = 10;
+    const totalPosts = await Product.countDocuments();
+    const totalPages = Math.ceil(totalPosts / perPage);
+
+    if (page > totalPages) {
+        return res.status(404).json({ message: "Page not found" })
+    }
+
+    const productList = await Product.find().populate('category')
+    .skip((page - 1) * perPage)
+    .limit(perPage)
+    .exec();
+
 
     if (!productList) {
         res.status(500).json({ success: false })
     }
+
+    return res.status(200).json({
+        "products": productList,
+        "totalPages":   totalPages,
+        "page": page
+    });
+        
+
     res.send(productList);
 });
  
@@ -79,55 +121,10 @@ router.post(`/create`, async (req, res) => {
     res.status(201).json(product);
 });
 
-// router.post("/create", async (req, res) => {
-//   try {
-//     const category = await Category.findById(req.body.category);
-//     if (!category) {
-//       return res.status(400).json({ message: "Invalid Category" });
-//     }
-
-//     if (!req.body.images || req.body.images.length === 0) {
-//       return res.status(400).json({ message: "Images are required" });
-//     }
-
-//     const limit = pLimit(2);
-
-//     const imagesToUpload = req.body.images.map((image) =>
-//       limit(async () => {
-//         const result = await cloudinary.uploader.upload(image);
-//         return result.secure_url;
-//       })
-//     );
-
-//     const imgurl = await Promise.all(imagesToUpload);
-
-//     const product = new Product({
-//       name: req.body.name,
-//       description: req.body.description,
-//       images: imgurl,
-//       brand: req.body.brand,
-//       price: req.body.price,
-//       oldPrice: req.body.oldPrice,
-//       category: req.body.category,
-//       countInStock: req.body.countInStock,
-//       rating: req.body.rating,
-//       isFeatured: req.body.isFeatured
-//     });
-
-//     const savedProduct = await product.save();
-
-//     res.status(201).json(savedProduct);
-
-//   } catch (error) {
-//     console.error("CREATE PRODUCT ERROR:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: error.message
-//     });
-//   }
-// });
-
 router.get('/:id', async(req, res) => {
+
+    productEditId = req.params.id;
+
     const product = await Product.findById(req.params.id);
 
     if (!product) {
@@ -139,6 +136,16 @@ router.get('/:id', async(req, res) => {
 
 
 router.delete('/:id', async(req, res) => {
+
+    const product = await Product.findById(req.params.id);
+    const images = product.images;
+
+    if(images.length!==0){
+        for(image of images){
+            fs.unlinkSync(`uploads/${image}`);
+        }
+    }
+
     const deletedProduct = await Product.findByIdAndDelete(req.params.id);
     if(!deletedProduct) {
         return res.status(404).json({
@@ -220,120 +227,8 @@ router.put('/:id', async(req, res) => {
 
 })
 
-// router.put('/:id', async (req, res) => {
-//   try {
-//     // Category check
-//     const category = await Category.findById(req.body.category);
-//     if (!category) {
-//       return res.status(400).json({ success: false, message: "Invalid Category" });
-//     }
-
-//     let imgurl = [];
-
-//     if (req.body.images && req.body.images.length > 0) {
-//       const limit = pLimit(2);
-
-//       const imagesToUpload = req.body.images.map((image) =>
-//         limit(async () => {
-//           const result = await cloudinary.uploader.upload(image);
-//           return result.secure_url;
-//         })
-//       );
-
-//       imgurl = await Promise.all(imagesToUpload);
-//     }
-
-//     const product = await Product.findByIdAndUpdate(
-//       req.params.id,
-//       {
-//         name: req.body.name,
-//         description: req.body.description,
-//         images: imgurl,
-//         brand: req.body.brand,
-//         price: req.body.price,
-//         category: req.body.category,
-//         countInStock: req.body.countInStock,
-//         rating: req.body.rating,
-//         isFeatured: req.body.isFeatured
-//       },
-//       { new: true }
-//     );
-
-//     if (!product) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Product not found"
-//       });
-//     }
-
-//     res.status(200).json({
-//       success: true,
-//       product
-//     });
-
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       error: error.message
-//     });
-//   }
-// });
 
 
 
 module.exports = router;
 
-// const { Category } = require('../models/category');
-// const { Product } = require('../models/products');
-// const express = require('express');
-// const router = express.Router();
-// const pLimit = require('p-limit');
-// const cloudinary = require("../utils/cloudinary.js");
-
-// // Get all products
-// router.get(`/`, async (req, res) => {
-//     try {
-//         const productList = await Product.find().populate('category');
-//         res.send(productList);
-//     } catch (err) {
-//         res.status(500).json({ success: false, error: err.message });
-//     }
-// });
-
-// // Create product
-// router.post(`/create`, async (req, res) => {
-//     try {
-//         const category = await Category.findById(req.body.category);
-//         if (!category) return res.status(404).send("Invalid Category!");
-
-//         const limit = pLimit(2);
-
-//         const imagesToUpload = req.body.images.map(image =>
-//             limit(async () => await cloudinary.uploader.upload(image))
-//         );
-
-//         const uploadStatus = await Promise.all(imagesToUpload);
-//         const imgurl = uploadStatus.map(item => item.secure_url);
-
-//         let product = new Product({
-//             name: req.body.name,
-//             description: req.body.description,
-//             images: imgurl,
-//             brand: req.body.brand,
-//             price: req.body.price,
-//             category: req.body.category,
-//             countInStock: req.body.countInStock,
-//             rating: req.body.rating,
-//             numReviews: req.body.numReviews,
-//             isFeatured: req.body.isFeatured
-//         });
-
-//         product = await product.save();
-//         res.status(201).json(product);
-
-//     } catch (err) {
-//         res.status(500).json({ error: err.message, success: false });
-//     }
-// });
-
-// module.exports = router;
