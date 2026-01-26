@@ -46,21 +46,11 @@ const Category = () => {
         categoryList: [],
         totalPages: 0,
     });
-    const [open, setOpen] = React.useState(false);
-
-    const [editFields, setEditFields] = useState({});
-    const [editId, setEditId] = useState(null);
-
-    const [formFields, setFormFields] = useState({
-        name: '',
-        images: [],
-        color:''
-    });
 
     const context = useContext(MyContext);
     
     useEffect(() => {
-        window.scrollTo(0,0);
+        window.scrollTo(0, 0);
         context.setProgress(20)
         fetchDataFromApi('/api/category').then((res) => {
             setCatData(res);
@@ -70,23 +60,6 @@ const Category = () => {
 
 
     },[]);
-
-    const editCategory = (id) => {
-        setOpen(true);
-        setEditId(id);
-
-        fetchDataFromApi(`/api/category/${id}`).then((res) => {
-
-            setFormFields({
-                name: res.name,
-                images: res.images,
-                color: res.color
-            })
-            console.log(res);
-
-        })
-
-    }
 
     const deleteCat = (id) => {
         deleteData(`/api/category/${id}`).then(res => {
@@ -137,6 +110,7 @@ const Category = () => {
                                     {/* <th>UID</th> */}
                                     <th style={{width:'100px'}}>IMAGE</th>
                                     <th>CATEGORY</th>
+                                    <th>SUB CATEGORY</th>
                                     <th>COLOR</th>
                                     <th>ACTION</th>
                                 </tr>
@@ -164,6 +138,7 @@ const Category = () => {
                                             </td>
 
                                             <td>{item.name}</td>
+                                            <td>{item.subCat}</td>
                                             <td>{item.color}</td>
 
                                             <td>

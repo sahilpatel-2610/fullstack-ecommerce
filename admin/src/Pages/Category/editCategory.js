@@ -43,6 +43,7 @@ const EditCategory = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [formFields, setFormFields] = useState({
         name: '',
+        subCat: '',
         images: [],
         color: ''
     });
@@ -51,7 +52,6 @@ const EditCategory = () => {
     const [files, setFiles] = useState([]);
     const [imgFiles, setimgFiles] = useState();
     const [previews, setPreviews] = useState();
-    const [isSelectedImages, setIsSelectedImages] = useState(false);
     const [isSelectedFiles, setIsSelectedFiles] = useState(false);
   
     let { id } = useParams();
@@ -67,7 +67,7 @@ const EditCategory = () => {
         if (!imgFiles) return;
 
         let tmp = [];
-        for(let i=0; i<imgFiles.length; i++){
+        for (let i = 0; i < imgFiles.length; i++) {
             tmp.push(URL.createObjectURL(imgFiles[i]));
         }
     
@@ -75,8 +75,8 @@ const EditCategory = () => {
         setPreviews(objectUrls);
     
         // free memory 
-        for(let i=0; i<objectUrls.length; i++){
-            return() => {
+        for (let i = 0; i < objectUrls.length; i++) {
+            return () => {
                 URL.revokeObjectURL(objectUrls[i]);
             }
         }
@@ -88,6 +88,7 @@ const EditCategory = () => {
             setcategory(res);
             setFormFields({
                 name: res.name,
+                subCat: res.subCat,
                 color: res.color
             });
             setPreviews(res.images);
@@ -100,12 +101,12 @@ const EditCategory = () => {
         setFormFields(() => (
             {
                 ...formFields,
-                [e.target.name]:e.target.value
+                [e.target.name]: e.target.value
             }
         ))
     }
 
-   const onChangeFile = async(e, apiEndPoint) => {
+   const onChangeFile = async (e, apiEndPoint) => {
         try {
             const imgArr = [];
             const files = e.target.files;
@@ -130,14 +131,6 @@ const EditCategory = () => {
 
                     setIsSelectedFiles(true);
 
-                    console.log(imgArr);
-                    postData(apiEndPoint, formdata).then((res) => {
-                        context.setAlertBox({
-                            open: true,
-                            error: false,
-                            msg: "images uploaded!"
-                        });
-                    });
                 } else {
                     context.setAlertBox({
                         open: true,
@@ -151,6 +144,15 @@ const EditCategory = () => {
         } catch (error) {
             console.log(error);
         }
+
+        postData(apiEndPoint, formdata).then((res) => {
+            context.setAlertBox({
+                open: true,
+                error: false,
+                msg: "images uploaded!"
+            });
+        });
+
     }
 
 
@@ -159,9 +161,10 @@ const EditCategory = () => {
         e.preventDefault();
 
         formdata.append('name', formFields.name);
+        formdata.append('subCat', formFields.subCat);
         formdata.append('color', formFields.color);
 
-        if(formFields.name !== "" && formFields.color !== ""){
+        if (formFields.name !== "" && formFields.color !== "" && formFields.subCat !== "") {
             setIsLoading(true);
 
             editData(`/api/category/${id}`, formFields).then(res => {
@@ -197,6 +200,7 @@ const EditCategory = () => {
                             icon={<HomeIcon fontSize="small" />}
                         />
                         <StyledBreadcrumb
+                            component="a"
                             label="Category"
                             href="#"
                             deleteIcon={<ExpandMoreIcon />}
@@ -216,6 +220,11 @@ const EditCategory = () => {
                                 <div className="form-group">
                                     <h6>Category Name</h6>
                                     <input type='text' name="name" value={formFields.name} onChange={changeInput} />
+                                </div>
+
+                                <div className="form-group">
+                                    <h6>Sub Category</h6>
+                                    <input type='text' name="subCat" value={formFields.subCat} onChange={changeInput} />
                                 </div>
 
                                 <div className="form-group">
@@ -256,11 +265,10 @@ const EditCategory = () => {
                         
                                         <div className="uploadBox">
                                             <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/category/upload')} name="images" />
-                                                <div className="info">
-                                                    <FaRegImages />
-                                                    <h5>image upload</h5>
-                                                </div>
-                        
+                                            <div className="info">
+                                                <FaRegImages />
+                                                <h5>image upload</h5>
+                                            </div>
                                         </div>
                         
                         

@@ -1,9 +1,7 @@
 const  { Category } = require('../models/category.js');
 const {Product} = require('../models/products.js');
 const express = require('express');
-const router = express.Router();
-const pLimit = require('p-limit');
-const { route } = require('./products.js');
+const router = express.Router(); 
 const multer = require('multer');
 const fs = require("fs");
 
@@ -36,21 +34,24 @@ router.post(`/upload`, upload.array("images"), async (req, res) => {
 
         if (images.length !== 0) {
             for (image of images) {
+                console.log(image);
                 fs.unlinkSync(`uploads/${image}`);
             }
+            productEditId="";
         }
-        
-        imagesArr = [];
-        const files = req.files;
-
-        
-        for(let i=0; i<files.length; i++){
-            imagesArr.push(files[i].filename);
-        }
-
-        res.send(imagesArr);
-
     }
+
+
+
+    imagesArr = [];
+    const files = req.files;
+
+        
+    for(let i = 0; i < files.length; i++) {
+        imagesArr.push(files[i].filename);
+    }
+
+    res.send(imagesArr);
 
 });
 
@@ -99,6 +100,7 @@ router.post(`/create`, async (req, res) => {
 
     let product = new Product({
         name: req.body.name,
+        subCat: req.body.subCat,
         description: req.body.description,
         images: imagesArr,
         brand: req.body.brand,
@@ -164,46 +166,19 @@ router.delete('/:id', async(req, res) => {
 
 router.put('/:id', async(req, res) => {
 
-     const limit = pLimit(2);
-    
-    const imagesToUpload = req.body.images.map((image) => {
-        return limit(async () => {
-            const result = await cloudinary.uploader.upload(image);
-            // console.log(`Successfully uploaded ${image}`);
-            // console.log(`> Result: ${result.secure_url}`);
-            return result;
-        })
-    });
-    
-    const uploadStatus = await Promise.all(imagesToUpload);
-    
-    const imgurl = uploadStatus.map((item) => {
-        return item.secure_url
-    })
-    
-    
-    
-    if(!uploadStatus) {
-        return res.status(500).json({
-            error:"images cannot upload!",
-            status:false
-        })
-    }
-
-
     const product = await Product.findByIdAndUpdate(
         req.params.id,
         {
-            name:req.body.name,
-            description:req.body.description,
-            images:imgurl,
-            brand:req.body.brand,
-            price:req.body.price,
-            category:req.body.category,
-            countInStock:req.body.countInStock,
-            rating:req.body.rating,
-            numReviews:req.body.numReviews,
-            isFeatured:req.body.isFeatured
+            name: req.body.name,
+            description: req.body.description,
+            images: imagesArr,
+            brand: req.body.brand,
+            price: req.body.price,
+            category: req.body.category,
+            countInStock: req.body.countInStock,
+            rating: req.body.rating,
+            numReviews: req.body.numReviews,
+            isFeatured: req.body.isFeatured
         },
         { new: true }
     );

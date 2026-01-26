@@ -55,7 +55,7 @@ router.get('/', async (req, res) => {
         const totalPages = Math.ceil(totalPosts / perPage);
 
         if (page > totalPages) {
-            return res.status(404).json({ message: "Page not found" })
+            return res.status(404).json({ message: "No data found!" })
         }
 
         const categoryList = await Category.find()
@@ -131,6 +131,7 @@ router.post('/create', async (req, res) => {
 
     let category = new Category({
         name: req.body.name,
+        subCat: req.body.subCat,
         images: imagesArr,
         color: req.body.color
     });
@@ -158,6 +159,7 @@ router.put('/:id', async (req, res) => {
             req.params.id,
             {
                 name: req.body.name,
+                subCat: req.body.subCat,
                 images: imagesArr,
                 color: req.body.color
             },

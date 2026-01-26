@@ -70,7 +70,7 @@ const Dashboard = () => {
             context.setProgress(100);
             context.setAlertBox({
                 open: true,
-                error: true,
+                error: false,
                 msg: "Product Deleted!",
             });
                 

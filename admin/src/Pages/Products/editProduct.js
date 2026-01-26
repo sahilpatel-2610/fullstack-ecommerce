@@ -18,12 +18,14 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import { useRef } from "react";
-import { fetchDataFromApi, postData } from "../../utils/api";
+import { editData, fetchDataFromApi, postData } from "../../utils/api";
 import { useEffect } from "react";
 import { MyContext } from "../../App";
 import { useContext } from "react";
 import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+
 
 //breadcrumb code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
@@ -57,7 +59,7 @@ const MenuProps = {
     },
 };          
 
-const ProductUpload = () => {
+const EditProduct = () => {
 
     const [categoryVal, setCategoryVal] = useState('');
     const [subCatVal, setSubCatVal] = useState('');
@@ -68,17 +70,20 @@ const ProductUpload = () => {
     const [catData, setCatData] = useState([]);
     const [productImagesArr, setproductImagesArr] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [products, setProducts] = useState([]);
 
     const [files, setFiles] = useState([]);
     const [imgFiles, setimgFiles] = useState();
     const [previews, setPreviews] = useState();
     const [isSelectedFiles, setIsSelectedFiles] = useState(false);
+    const [isSelectedImages, setIsSelectedImages] = useState(false);
+
+    let { id } = useParams();
 
     const history = useNavigate();
 
     const [formFields, setFormFields] = useState({
         name: '',
-        subCat: '',
         description: '',
         brand: '',
         price: null,
@@ -102,18 +107,36 @@ const ProductUpload = () => {
         fetchDataFromApi('/api/category').then((res) => {
             setCatData(res);
             context.setProgress(100);
-        })
+        });
 
-        
+        fetchDataFromApi(`/api/products/${id}`).then((res) => {
+            setProducts(res);
+            setFormFields({
+                name: res.name,
+                description: res.description,
+                brand: res.brand,
+                price: res.price,
+                oldPrice: res.oldPrice,
+                category: res.category,
+                countInStock: res.countInStock,
+                rating: res.rating,
+                isFeatured: res.isFeatured,
+            });
+
+            setRatingValue(res.rating);
+            setCategoryVal(res.category);
+            setisFeaturedValue(res.isFeatured);
+            setPreviews(res.images);
+            context.setProgress(100);
+        });
 
     },[]);
 
 
     useEffect(() => {
         if (!imgFiles) return;
-
         let tmp = [];
-        for (let i = 0; i < imgFiles.length; i++) {
+        for(let i=0; i<imgFiles.length; i++){
             tmp.push(URL.createObjectURL(imgFiles[i]));
         }
 
@@ -133,23 +156,19 @@ const ProductUpload = () => {
         setCategoryVal(event.target.value);
         setFormFields(() => ({
             ...formFields,
-            category: event.target.value
+            category:event.target.value
         }))
     };
 
     const handleChangeSubCategory = (event) => {
         setSubCatVal(event.target.value);
-        setFormFields(() => ({
-            ...formFields,
-            subCat: event.target.value
-        }))
     };
 
     const handleChangeisFeaturedValue = (event) => {
         setisFeaturedValue(event.target.value);
         setFormFields(() => ({
             ...formFields,
-            isFeatured: event.target.value
+            isFeatured:event.target.value
         }))
     };
 
@@ -178,6 +197,7 @@ const ProductUpload = () => {
         try {
             const imgArr = [];
             const files = e.target.files;
+
             // const fd = new FormData();
             for (var i = 0; i < files.length; i++) {
                 if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png')) {
@@ -185,6 +205,19 @@ const ProductUpload = () => {
                     const file = files[i];
                     imgArr.push(file);
                     formdata.append(`images`, file);
+
+                    setFiles(imgArr);
+
+                    console.log(imgArr);
+                    setIsSelectedImages(true);
+                    postData(apiEndPoint, formdata, id).then((res) => {
+                        context.setAlertBox({
+                            open: true,
+                            error: false,
+                            msg: "Image uploaded!"
+                        })
+                    });
+
                 } else {
                     context.setAlertBox({
                         open: true,
@@ -197,8 +230,6 @@ const ProductUpload = () => {
             
             setIsSelectedFiles(true);
 
-            setFiles(imgArr);
-
             console.log(imgArr); 
             postData(apiEndPoint, formdata).then((res) => {
                        
@@ -210,12 +241,11 @@ const ProductUpload = () => {
     }
 
 
-    const addProduct = (e) => {
+    const editProduct = (e) => {
         e.preventDefault();
     
 
         formdata.append('name', formFields.name);
-        formdata.append('subCat', formFields.subCat);
         formdata.append('description', formFields.description);
         formdata.append('brand', formFields.brand);
         formdata.append('price', formFields.price);
@@ -281,15 +311,6 @@ const ProductUpload = () => {
             })
         }
 
-        if(formFields.subCat === "") {
-            context.setAlertBox({
-                open: true,
-                msg: 'please select sub category',
-                error: true
-            });
-            return false;
-        }
-
         if(formFields.countInStock === null) {
             context.setAlertBox({
                 open: true,
@@ -319,24 +340,38 @@ const ProductUpload = () => {
 
         setIsLoading(true);
 
-        postData('/api/products/create', formFields).then((res) => {
+        editData(`/api/products/${id}`, formFields).then((res) => {
             context.setAlertBox({
                 open: true,
-                msg: 'The product is created!',
+                msg: 'The product is updated!',
                 error: false
             });
 
             setIsLoading(false);
 
+            setFormFields({
+                name: '',
+                description: '',
+                brand: '',
+                price: 0,
+                oldPrice: 0,
+                category: '',
+                countInStock: 0,
+                rating: 0,
+                isFeatured: false,
+                images: []
+            });
+
             history('/products');
         })
     }
 
+   
     return (
         <>
             <div className="right-content w-100">
                 <div className="card shadow border-0 w-100 flex-row p-4 res-col">
-                    <h5 className="mb-0">Product Upload</h5>
+                    <h5 className="mb-0">Edit Upload</h5>
                     <Breadcrumbs aria-label="breadcrumb" className="ms-auto breadcrumbs_">
                         <StyledBreadcrumb
                             component="a"
@@ -345,7 +380,6 @@ const ProductUpload = () => {
                             icon={<HomeIcon fontSize="small" />}
                         />
                         <StyledBreadcrumb
-                            component="a"
                             label="Products"
                             href="#"
                             deleteIcon={<ExpandMoreIcon />}
@@ -357,7 +391,123 @@ const ProductUpload = () => {
                     </Breadcrumbs>
                 </div>
 
-                <form className="form" onSubmit={addProduct}>
+
+                {/* <form className="form">
+                    <div className='row'>
+                        <div className="col-sm-9">
+                            <div className="card p-4">
+                                <h5 className="mb-4">Basic Information</h5>
+                                
+                                <div className="form-group">
+                                    <h6>TITLE</h6>
+                                    <input type='text' />
+                                </div>
+
+                                <div className="form-group">
+                                    <h6>DESCRIPTION</h6>
+                                    <textarea rows={5} cols={10} />
+                                </div>
+
+
+
+
+
+                                <div className='row'>
+                                    <div className='col'>
+                                        <div className='form-group'>   
+                                            <h6>CATEGORY</h6>  
+                                            <Select
+                                                value={categoryVal}
+                                                onChange={handleChangeCategory}
+                                                displayEmpty
+                                                inputProps={{ 'aria-label': 'Without label' }}
+                                                className="w-100"
+                                            >
+                                                <MenuItem value="">
+                                                    <em>None</em>
+                                                </MenuItem>
+                                                <MenuItem value={10}>Ten</MenuItem>
+                                                <MenuItem value={20}>Twenty</MenuItem>
+                                                <MenuItem value={30}>Thirty</MenuItem>
+                                            </Select>
+                                        </div> 
+                                    </div>
+
+                                    <div className='col'>
+                                        <div className='form-group'>   
+                                            <h6>BRAND</h6>  
+                                            <Select
+                                                value={categoryVal}
+                                                onChange={handleChangeCategory}
+                                                displayEmpty
+                                                inputProps={{ 'aria-label': 'Without label' }}
+                                                className="w-100"
+                                            >
+                                                <MenuItem value="">
+                                                    <em>None</em>
+                                                </MenuItem>
+                                                <MenuItem value={10}>Ten</MenuItem>
+                                                <MenuItem value={20}>Twenty</MenuItem>
+                                                <MenuItem value={30}>Thirty</MenuItem>
+                                            </Select>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                               <div className="row">
+                                    <div className='col'>
+                                        <div className='form-group'>   
+                                            <h6>REGULAR PRICE</h6> 
+                                                <input type='text' />
+                                        </div>
+                                    </div>     
+
+                                    <div className='col'>
+                                        <div className='form-group'>   
+                                            <h6>DISCOUNT PRICE</h6>
+                                               <input type='text' /> 
+                                        </div>
+                                    </div>        
+                                </div>
+
+
+
+                                <div className="row">
+                                    <div className='col'>
+                                        <div className='form-group'>   
+                                            <h6>RATINGS</h6> 
+                                                <Rating
+                                                    name="simple-uncontrolled"
+                                                    value={ratingValue}
+                                                    onChange={(event, newValue) => {
+                                                        setRatingValue(newValue);
+                                                    }}
+                                                />
+                                        </div>
+                                    </div>     
+
+                                    <div className='col'>
+                                        <div className='form-group'>   
+                                            <h6>PRODUCT STOCK</h6>
+                                               <input type='text' /> 
+                                        </div>
+                                    </div>        
+                                </div>
+
+                                <br/>
+
+                                <Button className="btn-blue btn-lg btn-big"><FaCloudUploadAlt /> &nbsp;PUBLISH AND VIEW</Button>
+
+
+                            </div>
+                        </div>
+
+                        
+                    </div>
+                </form> */}
+
+                <form className="form" onSubmit={editProduct}>
                     <div className='row'>
                         <div className="col-md-12">
                             <div className="card p-4 mt-0">
@@ -418,18 +568,11 @@ const ProductUpload = () => {
                                                 <MenuItem value="">
                                                     <em value={null}>None</em>
                                                 </MenuItem>
-                                                {
-                                                    catData?.categoryList?.length !== 0 && catData?.categoryList?.map((cat,index)=>{
-                                                    // catData?.categoryList?.map((cat, index) => {
-                                                        return(
-                                                            <MenuItem className="text-capitalize" value={cat._id} key={index} >{cat.subCat}</MenuItem>
-                                                        )
-                                                    })
-                                                }
+                                                <MenuItem className="text-capitalize" value="Jeans">Jeans</MenuItem>
 
+                                                <MenuItem className="text-capitalize" value="Shirts">Shirts</MenuItem>
                                             </Select>
-                                          
-                                        </div> 
+                                        </div>
                                     </div>
 
 
@@ -559,7 +702,10 @@ const ProductUpload = () => {
                                   previews?.length !== 0 && previews?.map((img, index) => {
                                     return (
                                         <div className="uploadBox" key={index}>
-                                            <img src={img} className="w-100" />
+                                            {
+                                                isSelectedImages === true ? <img src={`${img}`} className="w-100" /> : <img src={`${context.baseUrl}/uploads/${img}`} className="w-100" />
+                                            }
+                                            
                                         </div>
                                     )
                                   })
@@ -593,4 +739,4 @@ const ProductUpload = () => {
     )
 }
 
-export default ProductUpload;
+export default EditProduct;

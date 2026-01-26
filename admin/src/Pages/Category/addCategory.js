@@ -43,6 +43,7 @@ const AddCategory = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [formFields, setFormFields] = useState({
         name: '',
+        subCat: '',
         images: [],
         color: ''
     });
@@ -63,7 +64,7 @@ const AddCategory = () => {
         if (!imgFiles) return;
 
         let tmp = [];
-        for(let i=0; i<imgFiles.length; i++){
+        for (let i = 0; i < imgFiles.length; i++) {
             tmp.push(URL.createObjectURL(imgFiles[i]));
         }
     
@@ -71,8 +72,8 @@ const AddCategory = () => {
         setPreviews(objectUrls);
     
         // free memory 
-        for(let i=0; i<objectUrls.length; i++){
-            return() => {
+        for (let i = 0; i < objectUrls.length; i++) {
+            return () => {
                 URL.revokeObjectURL(objectUrls[i]);
             }
         }
@@ -83,7 +84,7 @@ const AddCategory = () => {
         setFormFields(() => (
             {
                 ...formFields,
-                [e.target.name]:e.target.value
+                [e.target.name]: e.target.value
             }
         ))
     }
@@ -113,14 +114,6 @@ const AddCategory = () => {
 
                     setIsSelectedFiles(true);
 
-                    console.log(imgArr);
-                    postData(apiEndPoint, formdata).then((res) => {
-                        context.setAlertBox({
-                            open: true,
-                            error: false,
-                            msg: "images uploaded!"
-                        });
-                    });
                 } else {
                     context.setAlertBox({
                         open: true,
@@ -134,6 +127,15 @@ const AddCategory = () => {
         } catch (error) {
             console.log(error);
         }
+
+        postData(apiEndPoint, formdata).then(res => {
+            context.setAlertBox({
+                open: true,
+                error: false,
+                msg: "images uploaded!"
+            });
+        });
+
     }
 
 
@@ -141,9 +143,10 @@ const AddCategory = () => {
         e.preventDefault();
 
         formdata.append('name', formFields.name);
+        formdata.append('subCat', formFields.subCat);
         formdata.append('color', formFields.color);
 
-        if(formFields.name !== "" && formFields.color !== "" && isSelectedFiles !== false){
+        if (formFields.name !== "" && formFields.color !== "" && formFields.subCat !== "" && isSelectedFiles !== false) {
             setIsLoading(true);
 
             postData('/api/category/create', formFields).then(res => {
@@ -179,6 +182,7 @@ const AddCategory = () => {
                             icon={<HomeIcon fontSize="small" />}
                         />
                         <StyledBreadcrumb
+                            component="a"
                             label="Category"
                             href="#"
                             deleteIcon={<ExpandMoreIcon />}
@@ -197,12 +201,17 @@ const AddCategory = () => {
 
                                 <div className="form-group">
                                     <h6>Category Name</h6>
-                                    <input type='text' name="name" onChange={changeInput} />
+                                    <input type='text' name="name" value={formFields.name} onChange={changeInput} />
+                                </div>
+
+                                <div className="form-group">
+                                    <h6>Sub Category</h6>
+                                    <input type='text' name="subCat" value={formFields.subCat} onChange={changeInput} />
                                 </div>
 
                                 <div className="form-group">
                                     <h6>Color</h6>
-                                    <input type='text' name="color" onChange={changeInput} />
+                                    <input type='text' name="color" value={formFields.color} onChange={changeInput} />
                                 </div>
 
                                 {/* <div className='card p-4 mt-0'> */}

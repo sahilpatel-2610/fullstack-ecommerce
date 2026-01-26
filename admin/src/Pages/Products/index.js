@@ -72,7 +72,7 @@ const Products = () => {
     const ITEM_HEIGHT = 48;
 
     useEffect(()=>{
-        window.scrollTo(0,0);
+        window.scrollTo(0, 0);
         context.setProgress(40);
         fetchDataFromApi("/api/products").then((res)=>{
             setProductList(res);
@@ -86,7 +86,7 @@ const Products = () => {
             context.setProgress(100);
             context.setAlertBox({
                 open: true,
-                error: true,
+                error: false,
                 msg: "Product Deleted!",
             });
             
@@ -120,7 +120,6 @@ const Products = () => {
                         />
                         <StyledBreadcrumb
                             label="Products"
-                            href="#"
                             deleteIcon={<ExpandMoreIcon />}
                         />
                     </Breadcrumbs>
@@ -174,6 +173,10 @@ const Products = () => {
                                 <Select
                                     value={showBysetCatBy}
                                     onChange={(e) => setCatBy(e.target.value)}
+                                    displayEmpty
+                                    inputProps={{ 'aria-label': 'Without label' }}
+                                    labelId="demo-select-small-label"
+                                    className="w-100"
                                 >
                                     <MenuItem value="">
                                         <em>None</em>
@@ -197,6 +200,7 @@ const Products = () => {
                                     {/* <th>UID</th> */}
                                     <th style={{width:'300px'}}>PRODUCT</th>
                                     <th>CATEGORY</th>
+                                    <th>SUB CATEGORY</th>
                                     <th>BRAND</th>
                                     <th>PRICE</th>
                                     <th>RATING</th>
@@ -222,35 +226,38 @@ const Products = () => {
                                                     </div>
                                                 </div>
                                                 <div className="info pl-0">
-                                                    <h6> &nbsp; {item.name}</h6>
-                                                    <p> &nbsp; {item.description}
+                                                    <h6> &nbsp; {item?.name}</h6>
+                                                    <p> &nbsp; {item?.description}
                                                     </p>
                                                 </div>
                                             </div>
                                             </td>
-                                            <td>{item.category.name}</td>
-                                            <td>{item.brand}</td>
+                                            <td>{item?.category?.name}</td>
+                                            <td>{item?.category?.subCat}</td>
+                                            <td>{item?.brand}</td>
                                             <td>
                                                 <div style={{ width: '70px' }}>
-                                                    <del className="old">Rs {item.oldPrice}</del>
-                                                    <span className="new text-danger">Rs {item.Price}</span>
+                                                    <del className="old">Rs {item?.oldPrice}</del>
+                                                    <span className="new text-danger">Rs {item?.Price}</span>
                                                 </div>
                                             </td>
-                                            <td><Rating name="read-only" defaultValue={item.rating} precision={0.5} size="small" readOnly /></td>
+                                            <td><Rating name="read-only" defaultValue={item?.rating} precision={0.5} size="small" readOnly /></td>
                                             
                                             <td>
                                                 <div className="actions d-flex align-items-center">
                                                     <Link to="product/details">
-                                                       <Link to="product/details">
-                                                           <Button className="secondary"
+                                                        <Button className="secondary"
                                                             color="secondary"><FaEye />
-                                                           </Button>
-                                                       </Link>
+                                                        </Button>
                                                     </Link>
-                                                    <Button className="success"
-                                                    color="success"><FaPencilAlt /></Button>
+
+                                                    <Link to={`/product/edit/${item._id}`}>
+                                                        <Button className="success"
+                                                        color="success"><FaPencilAlt /></Button>
+                                                    </Link>
+
                                                     <Button className="error"
-                                                    color="error" onClick={()=>deleteProduct(item.id)}><MdDelete /></Button>
+                                                    color="error" onClick={() => deleteProduct(item.id)}><MdDelete /></Button>
                                                 </div>
                                             </td>
                                         </tr>

@@ -14,6 +14,7 @@ import SignUp from './Pages/SignUp';
 import ProductDetails from './Pages/ProductDetails';
 import Products from './Pages/Products';
 import ProductUpload from './Pages/Products/addProduct';
+import EditProduct from './Pages/Products/editProduct';
 import Category from './Pages/Category';
 import CategoryAdd from './Pages/Category/addCategory';
 import EditCategory from './Pages/Category/editCategory';
@@ -180,6 +181,7 @@ function App() {
                   <Route path="/products" exact={true} element={<Products />} />
                   <Route path="/product/details" exact={true} element={<ProductDetails />} />
                   <Route path="/product/upload" exact={true} element={<ProductUpload />} />
+                  <Route path="/product/edit/:id" exact={true} element={<EditProduct />} />
                   <Route path="/category" exact={true} element={<Category />} />
                   <Route path="/category/add" exact={true} element={<CategoryAdd />} />
                   <Route path="/category/edit/:id" exact={true} element={<EditCategory />} />
