@@ -179,26 +179,24 @@ body.dark .logoutWrapper .logoutBox{background-image: linear-gradient(#183e8c,#1
 
 .right-content{padding: 78px 30px; padding-bottom: 10px;}
 
+/* 
 
-
-/* .dashboardBoxWrapper{white-space: nowrap !important; overflow-x: scroll; overflow-y: hidden; display: block !important; margin-bottom: 20px !important;}
+.dashboardBoxWrapper{white-space: nowrap !important; overflow-x: scroll; overflow-y: hidden; display: block !important; margin-bottom: 20px !important;}
 .dashboardBoxWrapper::-webkit-scrollbar{display: none !important;}
-.dashboardBoxWrapper .dashboardBox{display: inline-block !important; width: 270px !important; height: 160px !important; margin-right: 10px !important;} */
+.dashboardBoxWrapper .dashboardBox{display: inline-block !important; width: 270px !important; height: 160px !important; margin-right: 10px !important;}  */
 
 .dashboardBoxWrapperRowV2 .dashboardBox {
     height: 120px !important;
-    width: 31.5%;
+    width: 32% !important;
 }
-.dashboardBoxWrapper {
-    flex-wrap: wrap;
-    gap: 25px;
-    width: 100%;
+.dashboardBoxWrapperRowV2 {
+   gap: 25px; width: 100%; flex-wrap: wrap; white-space: nowrap !important; overflow-x: scroll; overflow-y: hidden; margin-right: 10px !important;
 }
 
 
-.dashboardBoxWrapper{gap: 20px; width: 100%; flex-wrap: wrap;}
+.dashboardBoxWrapper{gap: 20px; width: 100%; flex-wrap: wrap; white-space: nowrap !important; overflow-x: scroll; overflow-y: hidden; margin-right: 5px !important;}
 .dashboardBoxWrapper::-webkit-scrollbar{display: none !important;}
-.dashboardBoxWrapper .dashboardBox{width: 48%; height: 170px;border-radius: 10px; overflow: hidden; padding: 20px; display: flex; flex-direction: column; justify-content: space-around; text-align: left !important; position: relative; color: #fff; text-transform: capitalize !important;}
+.dashboardBoxWrapper .dashboardBox{width: 48%; height: 170px;border-radius: 10px; overflow: hidden; padding: 20px; display: flex; flex-direction: column; justify-content: space-around; text-align: left !important; position: relative; color: #fff; text-transform: capitalize !important; display: inline-block !important;}
 
 
 .dashboardBoxWrapper .dashboardBox .col1 h4{font-size: 16px; font-weight: 600;}

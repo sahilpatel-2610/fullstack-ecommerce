@@ -33,7 +33,7 @@ const peoductSchema = mongoose.Schema({
         required: true
     }, 
     subCat: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         ref: 'Category',    
         required: true
     },     

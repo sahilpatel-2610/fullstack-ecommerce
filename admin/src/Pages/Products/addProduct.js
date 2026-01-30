@@ -97,15 +97,7 @@ const ProductUpload = () => {
 
     useEffect(() => {
         window.scrollTo(0, 0);
-        context.setProgress(20);
-
-        fetchDataFromApi('/api/category').then((res) => {
-            setCatData(res);
-            context.setProgress(100);
-        })
-
-        
-
+        setCatData(context.catData);
     },[]);
 
 

@@ -170,10 +170,12 @@ router.put('/:id', async(req, res) => {
         req.params.id,
         {
             name: req.body.name,
+            subCat: req.body.subCat,
             description: req.body.description,
             images: imagesArr,
             brand: req.body.brand,
             price: req.body.price,
+            oldPrice: req.body.oldPrice,
             category: req.body.category,
             countInStock: req.body.countInStock,
             rating: req.body.rating,

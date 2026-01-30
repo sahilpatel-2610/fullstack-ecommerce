@@ -59,7 +59,7 @@ const MenuProps = {
     },
 };          
 
-const EditProduct = () => {
+const ProductEdit = () => {
 
     const [categoryVal, setCategoryVal] = useState('');
     const [subCatVal, setSubCatVal] = useState('');
@@ -84,6 +84,7 @@ const EditProduct = () => {
 
     const [formFields, setFormFields] = useState({
         name: '',
+        subCat: '',
         description: '',
         brand: '',
         price: null,
@@ -102,17 +103,14 @@ const EditProduct = () => {
 
     useEffect(() => {
         window.scrollTo(0, 0);
-        context.setProgress(20);
+        setCatData(context.catData);
 
-        fetchDataFromApi('/api/category').then((res) => {
-            setCatData(res);
-            context.setProgress(100);
-        });
 
         fetchDataFromApi(`/api/products/${id}`).then((res) => {
             setProducts(res);
             setFormFields({
                 name: res.name,
+                subCat: res.subCat,
                 description: res.description,
                 brand: res.brand,
                 price: res.price,
@@ -125,6 +123,7 @@ const EditProduct = () => {
 
             setRatingValue(res.rating);
             setCategoryVal(res.category);
+            setSubCatVal(res.subCat);
             setisFeaturedValue(res.isFeatured);
             setPreviews(res.images);
             context.setProgress(100);
@@ -156,12 +155,16 @@ const EditProduct = () => {
         setCategoryVal(event.target.value);
         setFormFields(() => ({
             ...formFields,
-            category:event.target.value
+            category: event.target.value
         }))
     };
 
     const handleChangeSubCategory = (event) => {
         setSubCatVal(event.target.value);
+        setFormFields(() => ({
+            ...formFields,
+            subCat: event.target.value
+        }))
     };
 
     const handleChangeisFeaturedValue = (event) => {
@@ -246,6 +249,7 @@ const EditProduct = () => {
     
 
         formdata.append('name', formFields.name);
+        formdata.append('subCat', formFields.subCat);
         formdata.append('description', formFields.description);
         formdata.append('brand', formFields.brand);
         formdata.append('price', formFields.price);
@@ -311,6 +315,15 @@ const EditProduct = () => {
             })
         }
 
+        if(formFields.subCat === "") {
+            context.setAlertBox({
+                open: true,
+                msg: 'please select a sub category',
+                error: true
+            })
+        }
+
+
         if(formFields.countInStock === null) {
             context.setAlertBox({
                 open: true,
@@ -349,19 +362,6 @@ const EditProduct = () => {
 
             setIsLoading(false);
 
-            setFormFields({
-                name: '',
-                description: '',
-                brand: '',
-                price: 0,
-                oldPrice: 0,
-                category: '',
-                countInStock: 0,
-                rating: 0,
-                isFeatured: false,
-                images: []
-            });
-
             history('/products');
         })
     }
@@ -390,122 +390,6 @@ const EditProduct = () => {
                         />
                     </Breadcrumbs>
                 </div>
-
-
-                {/* <form className="form">
-                    <div className='row'>
-                        <div className="col-sm-9">
-                            <div className="card p-4">
-                                <h5 className="mb-4">Basic Information</h5>
-                                
-                                <div className="form-group">
-                                    <h6>TITLE</h6>
-                                    <input type='text' />
-                                </div>
-
-                                <div className="form-group">
-                                    <h6>DESCRIPTION</h6>
-                                    <textarea rows={5} cols={10} />
-                                </div>
-
-
-
-
-
-                                <div className='row'>
-                                    <div className='col'>
-                                        <div className='form-group'>   
-                                            <h6>CATEGORY</h6>  
-                                            <Select
-                                                value={categoryVal}
-                                                onChange={handleChangeCategory}
-                                                displayEmpty
-                                                inputProps={{ 'aria-label': 'Without label' }}
-                                                className="w-100"
-                                            >
-                                                <MenuItem value="">
-                                                    <em>None</em>
-                                                </MenuItem>
-                                                <MenuItem value={10}>Ten</MenuItem>
-                                                <MenuItem value={20}>Twenty</MenuItem>
-                                                <MenuItem value={30}>Thirty</MenuItem>
-                                            </Select>
-                                        </div> 
-                                    </div>
-
-                                    <div className='col'>
-                                        <div className='form-group'>   
-                                            <h6>BRAND</h6>  
-                                            <Select
-                                                value={categoryVal}
-                                                onChange={handleChangeCategory}
-                                                displayEmpty
-                                                inputProps={{ 'aria-label': 'Without label' }}
-                                                className="w-100"
-                                            >
-                                                <MenuItem value="">
-                                                    <em>None</em>
-                                                </MenuItem>
-                                                <MenuItem value={10}>Ten</MenuItem>
-                                                <MenuItem value={20}>Twenty</MenuItem>
-                                                <MenuItem value={30}>Thirty</MenuItem>
-                                            </Select>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                               <div className="row">
-                                    <div className='col'>
-                                        <div className='form-group'>   
-                                            <h6>REGULAR PRICE</h6> 
-                                                <input type='text' />
-                                        </div>
-                                    </div>     
-
-                                    <div className='col'>
-                                        <div className='form-group'>   
-                                            <h6>DISCOUNT PRICE</h6>
-                                               <input type='text' /> 
-                                        </div>
-                                    </div>        
-                                </div>
-
-
-
-                                <div className="row">
-                                    <div className='col'>
-                                        <div className='form-group'>   
-                                            <h6>RATINGS</h6> 
-                                                <Rating
-                                                    name="simple-uncontrolled"
-                                                    value={ratingValue}
-                                                    onChange={(event, newValue) => {
-                                                        setRatingValue(newValue);
-                                                    }}
-                                                />
-                                        </div>
-                                    </div>     
-
-                                    <div className='col'>
-                                        <div className='form-group'>   
-                                            <h6>PRODUCT STOCK</h6>
-                                               <input type='text' /> 
-                                        </div>
-                                    </div>        
-                                </div>
-
-                                <br/>
-
-                                <Button className="btn-blue btn-lg btn-big"><FaCloudUploadAlt /> &nbsp;PUBLISH AND VIEW</Button>
-
-
-                            </div>
-                        </div>
-
-                        
-                    </div>
-                </form> */}
 
                 <form className="form" onSubmit={editProduct}>
                     <div className='row'>
@@ -555,7 +439,7 @@ const EditProduct = () => {
                                         </div> 
                                     </div>
 
-                                    <div className='col'>
+                                   <div className='col'>
                                         <div className='form-group'>   
                                             <h6>SUB CATEGORY</h6>  
                                             <Select
@@ -568,11 +452,18 @@ const EditProduct = () => {
                                                 <MenuItem value="">
                                                     <em value={null}>None</em>
                                                 </MenuItem>
-                                                <MenuItem className="text-capitalize" value="Jeans">Jeans</MenuItem>
+                                                {
+                                                    catData?.categoryList?.length !== 0 && catData?.categoryList?.map((cat,index)=>{
+                                                    // catData?.categoryList?.map((cat, index) => {
+                                                        return(
+                                                            <MenuItem className="text-capitalize" value={cat.subCat} key={index} >{cat.subCat}</MenuItem>
+                                                        )
+                                                    })
+                                                }
 
-                                                <MenuItem className="text-capitalize" value="Shirts">Shirts</MenuItem>
                                             </Select>
-                                        </div>
+                                          
+                                        </div> 
                                     </div>
 
 
@@ -739,4 +630,4 @@ const EditProduct = () => {
     )
 }
 
-export default EditProduct;
+export default ProductEdit;

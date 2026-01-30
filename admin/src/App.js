@@ -1,11 +1,11 @@
-import { BrowserRouter, Route, Routes,} from 'react-router-dom';
+import { BrowserRouter, Route, Routes, } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import './responsive.css';
 import Dashboard from './Pages/Dashboard';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
-import React,{ createContext } from 'react';
+import React, { createContext } from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useRef } from 'react';
@@ -18,12 +18,14 @@ import EditProduct from './Pages/Products/editProduct';
 import Category from './Pages/Category';
 import CategoryAdd from './Pages/Category/addCategory';
 import EditCategory from './Pages/Category/editCategory';
-
+import SubCatAdd from './Pages/Category/addSubCat';
 
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
 import LoadingBar from "react-top-loading-bar";
+import { fetchDataFromApi } from './utils/api';
+
 
 
 
@@ -38,6 +40,7 @@ function App() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [isOpenNav, setIsOpenNav] = useState(false);
   const [theme, setTheme] = useState(localStorage.getItem('theme') ? localStorage.getItem('theme') : 'light');
+  const [catData, setCatData] = useState([]);
   const [baseUrl, setBaseUrl] = useState("http://localhost:4000");
 
   const [progress, setProgress] = useState(0);
@@ -46,7 +49,7 @@ function App() {
     error: false,
     open: false
   });
-  
+
   // const { enqueueSnackbar } = useSnackbar();
 
 
@@ -55,18 +58,18 @@ function App() {
     // const theme = localStorage.getItem('theme');
 
 
-    if(theme === true){
+    if (theme === true) {
       document.body.classList.remove('dark');
       document.body.classList.add('light');
-      localStorage.setItem('theme','dark');
+      localStorage.setItem('theme', 'dark');
     }
-    else{
+    else {
       document.body.classList.remove('light');
       document.body.classList.add('dark');
-      localStorage.setItem('theme','light');
+      localStorage.setItem('theme', 'light');
     }
-    
-  },[theme]);
+
+  }, [theme]);
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -78,15 +81,19 @@ function App() {
     });
   };
 
-  
-    
-  // const handleClickVariant = (variant) => () => {
-  //       // variant could be success, error, warning, info, or default
-  //       enqueueSnackbar('This is a success message!', { variant });
-  // };
+  useEffect(() => {
+    setProgress(20);
+    fetchCategory();
 
+  }, []);
 
- 
+  const fetchCategory = () => {
+    fetchDataFromApi('/api/category').then((res) => {
+      setCatData(res);
+      setProgress(100);
+    })
+  }
+
 
   useEffect(() => {
 
@@ -94,21 +101,21 @@ function App() {
       setWindowWidth(window.innerWidth);
     };
 
-    
+
     window.addEventListener('resize', handleResize);
 
     return () => {
       window.removeEventListener('resize', handleResize);
     }
 
-  },[]);
+  }, []);
 
   const openNav = () => {
     setIsOpenNav(true);
   }
 
   const values = {
-    isToggleSidebar, 
+    isToggleSidebar,
     setISToggleSidebar,
     isLogin,
     setIsLogin,
@@ -124,21 +131,23 @@ function App() {
     alertBox,
     setAlertBox,
     setProgress,
-    baseUrl
+    baseUrl,
+    catData,
+    fetchCategory
   }
 
- 
+
   return (
     <BrowserRouter>
       <MyContext.Provider value={values}>
         {/* <SnackbarProvider maxSnack={3}> */}
-  
-       <LoadingBar
-        color="#f11946"
-        progress={progress}
-        onLoaderFinished={() => setProgress(0)}
-        className='topLoadingBar'
-      />
+
+        <LoadingBar
+          color="#f11946"
+          progress={progress}
+          onLoaderFinished={() => setProgress(0)}
+          className='topLoadingBar'
+        />
 
         <Snackbar open={alertBox.open} autoHideDuration={6000} onClose={handleClose}>
           <Alert
@@ -150,49 +159,49 @@ function App() {
             {alertBox.msg}
           </Alert>
         </Snackbar>
+        {
+          isHideSidebarAndHeader !== true &&
+          <Header />
+        }
+
+        <div className='main d-flex'>
           {
-            isHideSidebarAndHeader !== true && 
-            <Header />
-          }
+            isHideSidebarAndHeader !== true &&
+            <>
+              <div className={`sidebarOverlay d-none ${isOpenNav === true && 'show'}`} onClick={() => setIsOpenNav(false)}>
 
-          <div className='main d-flex'>
-            {
-              isHideSidebarAndHeader !== true && 
-              <>
-                <div className={`sidebarOverlay d-none ${isOpenNav === true && 'show'}`} onClick={() => setIsOpenNav(false)}>
-
-                </div>
-                <div className={`sidebarWrapper ${
-                  isToggleSidebar === true ? 'toggle' : ''
+              </div>
+              <div className={`sidebarWrapper ${isToggleSidebar === true ? 'toggle' : ''
                 } ${isOpenNav === true ? 'open' : ''}`}
               >
-                  <Sidebar />
-                </div>
-              </>
+                <Sidebar />
+              </div>
+            </>
 
-            }
+          }
 
-            <div className={`content ${isHideSidebarAndHeader === true && 'full'} ${isToggleSidebar === true ? 'toggle' : ''}`}>
-              <Routes>
-                  <Route path="/" exact={true} element={<Dashboard />} />
-                  <Route path="/dashboard" exact={true} element={<Dashboard />} />
-                  <Route path="/login" exact={true} element={<Login />} />
-                  <Route path="/signUp" exact={true} element={<SignUp />} />
-                  <Route path="/products" exact={true} element={<Products />} />
-                  <Route path="/product/details" exact={true} element={<ProductDetails />} />
-                  <Route path="/product/upload" exact={true} element={<ProductUpload />} />
-                  <Route path="/product/edit/:id" exact={true} element={<EditProduct />} />
-                  <Route path="/category" exact={true} element={<Category />} />
-                  <Route path="/category/add" exact={true} element={<CategoryAdd />} />
-                  <Route path="/category/edit/:id" exact={true} element={<EditCategory />} />
-              </Routes>
-            </div>
+          <div className={`content ${isHideSidebarAndHeader === true && 'full'} ${isToggleSidebar === true ? 'toggle' : ''}`}>
+            <Routes>
+              <Route path="/" exact={true} element={<Dashboard />} />
+              <Route path="/dashboard" exact={true} element={<Dashboard />} />
+              <Route path="/login" exact={true} element={<Login />} />
+              <Route path="/signUp" exact={true} element={<SignUp />} />
+              <Route path="/products" exact={true} element={<Products />} />
+              <Route path="/product/details" exact={true} element={<ProductDetails />} />
+              <Route path="/product/upload" exact={true} element={<ProductUpload />} />
+              <Route path="/product/edit/:id" exact={true} element={<EditProduct />} />
+              <Route path="/category" exact={true} element={<Category />} />
+              <Route path="/category/add" exact={true} element={<CategoryAdd />} />
+              <Route path="/category/edit/:id" exact={true} element={<EditCategory />} />
+              <Route path="/subCategory/add" exact={true} element={<SubCatAdd />} />
+            </Routes>
           </div>
+        </div>
 
         {/* </SnackbarProvider>   */}
       </MyContext.Provider>
     </BrowserRouter>
-    
+
   );
 }
 
