@@ -10,6 +10,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Button from '@mui/material/Button';
 import { FaCloudUploadAlt } from "react-icons/fa";
+import { postData } from "../../utils/api";
+import { useNavigate } from "react-router-dom";
 
 //breadcrumb code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
@@ -36,12 +38,13 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 const AddSubCat = () => {
 
     const [categoryVal, setCategoryVal] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const [formFields, setFormFields] = useState({
         category: '',
         subCat: '',
     });
-    const [isLoading, setIsLoading] = useState(false);
 
+    const history = useNavigate();
     const context = useContext(MyContext);
 
     
@@ -60,6 +63,38 @@ const AddSubCat = () => {
             category: event.target.value
         }))
     };
+
+
+    const addSubCat = (e) => {
+        e.preventDefault();
+        const formdata = new FormData();
+        formdata.append('category', formFields.category);
+        formdata.append('subCat', formFields.subCat);
+
+        
+        if (formFields.category === "") {
+            context.setAlertBox({
+                open: true,
+                error: true,
+                msg: 'Please select a category',
+            });
+            return false;
+        }
+
+        if (formFields.subCat === "") {
+            context.setAlertBox({
+                open: true,
+                error: true,
+                msg: 'Please enter sub category',
+            });
+            return false;
+        }
+
+        postData('/api/subCat/create', formFields).then(res => {
+            setIsLoading(false);
+            history('/category');
+        });
+    }
 
 
     return (
@@ -86,7 +121,7 @@ const AddSubCat = () => {
                 </Breadcrumbs>
             </div>
 
-            <form className="form">
+            <form className="form" onSubmit={addSubCat}>
                 <div className='row'>
                     <div className="col-sm-9">
                         <div className="card p-4 mt-0">
@@ -100,6 +135,7 @@ const AddSubCat = () => {
                                             displayEmpty
                                             inputProps={{ 'aria-label': 'Without label' }}
                                             className="w-100"
+                                            name="category"
                                         >
                                             <MenuItem value="">
                                                 <em value={null}>None</em>

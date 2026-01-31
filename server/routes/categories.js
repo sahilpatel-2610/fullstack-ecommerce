@@ -47,7 +47,7 @@ router.post(`/upload`, upload.array("images"), async (req, res) => {
 });
 
 
-router.get('/', async (req, res) => {
+router.get(`/`, async (req, res) => {
    try {
         const page = parseInt(req.query.page) || 1;
         const perPage = 6;
