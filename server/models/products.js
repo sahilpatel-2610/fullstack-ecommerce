@@ -33,8 +33,8 @@ const peoductSchema = mongoose.Schema({
         required: true
     }, 
     subCat: {
-        type: String,
-        ref: 'Category',    
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'SubCategory',    
         required: true
     },     
     countInStock: {

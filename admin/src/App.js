@@ -15,10 +15,12 @@ import ProductDetails from './Pages/ProductDetails';
 import Products from './Pages/Products';
 import ProductUpload from './Pages/Products/addProduct';
 import EditProduct from './Pages/Products/editProduct';
-import Category from './Pages/Category';
+import CategoryList from './Pages/Category/categoryList';
 import CategoryAdd from './Pages/Category/addCategory';
 import EditCategory from './Pages/Category/editCategory';
 import SubCatAdd from './Pages/Category/addSubCat';
+import SubCatList from './Pages/Category/subCategoryList';
+import EditSubCategory from './Pages/Category/editSubCat';
 
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
@@ -41,6 +43,7 @@ function App() {
   const [isOpenNav, setIsOpenNav] = useState(false);
   const [theme, setTheme] = useState(localStorage.getItem('theme') ? localStorage.getItem('theme') : 'light');
   const [catData, setCatData] = useState([]);
+  const [subCatData, setSubCatData] = useState([]);
   const [baseUrl, setBaseUrl] = useState("http://localhost:4000");
 
   const [progress, setProgress] = useState(0);
@@ -84,7 +87,7 @@ function App() {
   useEffect(() => {
     setProgress(20);
     fetchCategory();
-
+    fetchSubCategory();
   }, []);
 
   const fetchCategory = () => {
@@ -93,6 +96,14 @@ function App() {
       setProgress(100);
     })
   }
+
+  const fetchSubCategory = () => {
+    fetchDataFromApi('/api/subCat').then((res) => {
+      setSubCatData(res);
+      setProgress(100);
+    })
+  }
+
 
 
   useEffect(() => {
@@ -133,7 +144,9 @@ function App() {
     setProgress,
     baseUrl,
     catData,
-    fetchCategory
+    fetchCategory,
+    subCatData,
+    fetchSubCategory
   }
 
 
@@ -190,10 +203,12 @@ function App() {
               <Route path="/product/details" exact={true} element={<ProductDetails />} />
               <Route path="/product/upload" exact={true} element={<ProductUpload />} />
               <Route path="/product/edit/:id" exact={true} element={<EditProduct />} />
-              <Route path="/category" exact={true} element={<Category />} />
+              <Route path="/category" exact={true} element={<CategoryList />} />
               <Route path="/category/add" exact={true} element={<CategoryAdd />} />
               <Route path="/category/edit/:id" exact={true} element={<EditCategory />} />
+              <Route path="/subCategory/" exact={true} element={<SubCatList />} />
               <Route path="/subCategory/add" exact={true} element={<SubCatAdd />} />
+              <Route path="/subCategory/edit/:id" exact={true} element={<EditSubCategory />} />
             </Routes>
           </div>
         </div>

@@ -1,12 +1,22 @@
 const { Category } = require('../models/category');
+const { ImageUpload } = require('../models/imageUpload');
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const fs = require("fs");
 
+const cloudinary = require('cloudinary').v2;
 
-var imagesArr=[];
-var categoryEditId;
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CONFIG_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_CONFIG_API_KEY,
+    api_secret: process.env.CLOUDINARY_CONFIG_API_SECRET,
+    secure: true
+});
+
+
+var imagesArr = [];
+
 
 const storage = multer.diskStorage({
 
@@ -23,27 +33,36 @@ const upload = multer({ storage: storage });
 
 
 router.post(`/upload`, upload.array("images"), async (req, res) => {
-    
-    if(categoryEditId!==undefined){
-        const category = await Category.findById(categoryEditId);
-
-        const images = category.images;
-
-        if(images.length !== 0) {
-            for (image of images) {
-                fs.unlinkSync(`uploads/${image}`);
-            }
-        }
-    }
 
     imagesArr = [];
-    const files = req.files;
+    try {
 
-    for(let i=0; i<files.length; i++){
-        imagesArr.push(files[i].filename);
+        for (let i = 0; i < req.files.length; i++) {
+
+            const options = {
+                use_filename: true,
+                unique_filename: false,
+                overwrite: false,
+            };
+
+            const img = await cloudinary.uploader.upload(req.files[i].path, options,
+                function (error, result) {
+                    imagesArr.push(result.secure_url);
+                    fs.unlinkSync(`uploads/${req.files[i].filename}`);
+                });
+        } 
+
+        let imagesUploaded = new ImageUpload({
+            images: imagesArr,
+        });
+
+        imagesUploaded = await imagesUploaded.save();
+        return res.status(200).json(imagesArr);
+
+    } catch (error) {
+        console.log(error);
     }
-
-    res.send(imagesArr);
+    
 });
 
 
@@ -68,9 +87,9 @@ router.get(`/`, async (req, res) => {
         }
         
         return res.status(200).json({
-            "categoryList":categoryList,
-            "totalPages":totalPages,
-            "page":page
+            "categoryList": categoryList,
+            "totalPages": totalPages,
+            "page": page
         });
         
     }catch(error){
@@ -128,10 +147,8 @@ router.delete('/:id', async (req, res) => {
 
 router.post('/create', async (req, res) => {
 
-
     let category = new Category({
         name: req.body.name,
-        subCat: req.body.subCat,
         images: imagesArr,
         color: req.body.color
     });
@@ -147,7 +164,8 @@ router.post('/create', async (req, res) => {
 
     category = await category.save();
 
-    
+    imagesArr = [];
+
     res.status(201).json(category);
 
 });
@@ -159,7 +177,6 @@ router.put('/:id', async (req, res) => {
             req.params.id,
             {
                 name: req.body.name,
-                subCat: req.body.subCat,
                 images: imagesArr,
                 color: req.body.color
             },

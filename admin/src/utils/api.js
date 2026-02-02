@@ -25,4 +25,9 @@ export const deleteData = async (url) => {
     return res;
 };
 
+export const deleteImages = async (url, image) => {
+    const { res } = await axios.delete(`http://localhost:4000${url}`,image);
+    return res;
+};
+
 

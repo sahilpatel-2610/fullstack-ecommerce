@@ -67,7 +67,7 @@ router.get(`/`, async (req, res) => {
         return res.status(404).json({ message: "Page not found" })
     }
 
-    const productList = await Product.find().populate('category')
+    const productList = await Product.find().populate('category subCat')
     .skip((page - 1) * perPage)
     .limit(perPage)
     .exec();

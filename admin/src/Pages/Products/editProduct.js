@@ -110,12 +110,12 @@ const ProductEdit = () => {
             setProducts(res);
             setFormFields({
                 name: res.name,
-                subCat: res.subCat,
                 description: res.description,
                 brand: res.brand,
                 price: res.price,
                 oldPrice: res.oldPrice,
                 category: res.category,
+                subCat: res.subCat,
                 countInStock: res.countInStock,
                 rating: res.rating,
                 isFeatured: res.isFeatured,
@@ -249,12 +249,12 @@ const ProductEdit = () => {
     
 
         formdata.append('name', formFields.name);
-        formdata.append('subCat', formFields.subCat);
         formdata.append('description', formFields.description);
         formdata.append('brand', formFields.brand);
         formdata.append('price', formFields.price);
         formdata.append('oldPrice', formFields.oldPrice);
         formdata.append('category', formFields.category);
+        formdata.append('subCat', formFields.subCat);
         formdata.append('countInStock', formFields.countInStock);
         formdata.append('rating', formFields.rating);
         formdata.append('isFeatured', formFields.isFeatured);
@@ -426,7 +426,7 @@ const ProductEdit = () => {
                                                     <em value={null}>None</em>
                                                 </MenuItem>
                                                 {
-                                                    catData?.categoryList?.length !== 0 && catData?.categoryList?.map((cat,index)=>{
+                                                    context.catData?.categoryList?.length !== 0 && context.catData?.categoryList?.map((cat,index)=>{
                                                     // catData?.categoryList?.map((cat, index) => {
                                                         return(
                                                             <MenuItem className="text-capitalize" value={cat._id} key={index} >{cat.name}</MenuItem>
@@ -453,10 +453,10 @@ const ProductEdit = () => {
                                                     <em value={null}>None</em>
                                                 </MenuItem>
                                                 {
-                                                    catData?.categoryList?.length !== 0 && catData?.categoryList?.map((cat,index)=>{
+                                                    context.subCatData?.subCategoryList?.length !== 0 && context.subCatData?.subCategoryList?.map((subCat,index)=>{
                                                     // catData?.categoryList?.map((cat, index) => {
                                                         return(
-                                                            <MenuItem className="text-capitalize" value={cat.subCat} key={index} >{cat.subCat}</MenuItem>
+                                                            <MenuItem className="text-capitalize" value={subCat._id} key={index} >{subCat.subCat}</MenuItem>
                                                         )
                                                     })
                                                 }

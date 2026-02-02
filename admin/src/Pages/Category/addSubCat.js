@@ -92,7 +92,7 @@ const AddSubCat = () => {
 
         postData('/api/subCat/create', formFields).then(res => {
             setIsLoading(false);
-            history('/category');
+            history('/subCategory');
         });
     }
 

@@ -7,13 +7,14 @@ import { useState } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import Button from '@mui/material/Button';
 import 'react-lazy-load-image-component/src/effects/blur.css';
-import { postData } from "../../utils/api";
+import { deleteData, fetchDataFromApi, postData } from "../../utils/api";
 import { useNavigate } from "react-router-dom";
 import CircularProgress from '@mui/material/CircularProgress';
 import { FaRegImages } from "react-icons/fa6";
 import { MyContext } from "../../App";
 import { useContext } from "react";
 import { useEffect } from "react";
+import { IoCloseSharp } from "react-icons/io5";
 
 
 //breadcrumb code
@@ -41,17 +42,18 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 const AddCategory = () => {
 
     const [isLoading, setIsLoading] = useState(false);
+    const [uploading, setUploading] = useState(false);
     const [formFields, setFormFields] = useState({
         name: '',
-        subCat: '',
         images: [],
         color: ''
     });
 
     const [files, setFiles] = useState([]);
     const [imgFiles, setimgFiles] = useState();
-    const [previews, setPreviews] = useState();
+    const [previews, setPreviews] = useState([]);
     const [isSelectedFiles, setIsSelectedFiles] = useState(false);
+
 
     const formdata = new FormData();
 
@@ -89,30 +91,25 @@ const AddCategory = () => {
         ))
     }
 
+    let img_arr = [];
+    let uniqueArray = [];
+
     const onChangeFile = async(e, apiEndPoint) => {
         try {
-            const imgArr = [];
+            
             const files = e.target.files;
+
+            setUploading(true);
          
             // const fd = new FormData();
             for (var i = 0; i < files.length; i++) {
 
                 // Validate file type
-                if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png')) {
-                    setimgFiles(e.target.files);
+                if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png' || files[i].type === 'image/webp')) {
 
                     const file = files[i];
-                    imgArr.push(file);
+
                     formdata.append(`images`, file);
-
-                    setFiles(imgArr);
-                    context.setAlertBox({
-                        open: true,
-                        error: false,
-                        msg: "images uploaded!"
-                    });
-
-                    setIsSelectedFiles(true);
 
                 } else {
                     context.setAlertBox({
@@ -129,32 +126,65 @@ const AddCategory = () => {
         }
 
         postData(apiEndPoint, formdata).then(res => {
-            context.setAlertBox({
-                open: true,
-                error: false,
-                msg: "images uploaded!"
+
+            fetchDataFromApi("/api/imageUpload").then((response) => {
+                if (response !== undefined && response !== null && response !== "" && response.length !== 0) {
+
+                    response.length !== 0 && response.map((item) => {
+                        item?.images.length !== 0 && item?.images?.map((img) => {
+                            img_arr.push(img);
+                        })
+                    })
+
+                    uniqueArray = img_arr.filter((item, index) => img_arr.indexOf(item) === index);
+
+                    const appendedArray = [...previews, ...uniqueArray];
+
+                    setPreviews(appendedArray);
+                    setTimeout(() => {
+                        setUploading(false);
+                        img_arr = [];
+                        context.setAlertBox({
+                            open: true,
+                            error: false,
+                            msg: "Images Uploaded!"
+                        })
+                    }, 200);
+                }
             });
         });
 
     }
 
 
-    const addCategory = (e) => {
+    const addCat = (e) => {
         e.preventDefault();
 
+        const appendedArray = [...previews, ...uniqueArray];
+
+        img_arr = [];
         formdata.append('name', formFields.name);
-        formdata.append('subCat', formFields.subCat);
         formdata.append('color', formFields.color);
 
-        if (formFields.name !== "" && formFields.color !== "" && formFields.subCat !== "" && isSelectedFiles !== false) {
+        formdata.append('images',appendedArray);
+
+        formFields.images = appendedArray
+
+        console.log(formdata);
+        if (formFields.name !== "" && formFields.color !== "" && previews.length !== 0) {
             setIsLoading(true);
 
-            postData('/api/category/create', formFields).then(res => {
+            postData(`/api/category/create`, formFields).then(res => {
                 setIsLoading(false);
+                context.fetchCategory();
+                context.fetchSubCategory();
+
+                deleteData("/api/imageUpload/deleteAllImages");
+
                 history('/category');
             });
 
-            context.fetchCategory();
+           
         }
 
         else {
@@ -196,7 +226,7 @@ const AddCategory = () => {
                     </Breadcrumbs>
                 </div>
 
-                <form className="form" onSubmit={addCategory}>
+                <form className="form" onSubmit={addCat}>
                     <div className='row'>
                         <div className="col-sm-9">
                             <div className="card p-4 mt-0">
@@ -204,11 +234,6 @@ const AddCategory = () => {
                                 <div className="form-group">
                                     <h6>Category Name</h6>
                                     <input type='text' name="name" value={formFields.name} onChange={changeInput} />
-                                </div>
-
-                                <div className="form-group">
-                                    <h6>Sub Category</h6>
-                                    <input type='text' name="subCat" value={formFields.subCat} onChange={changeInput} />
                                 </div>
 
                                 <div className="form-group">
@@ -226,7 +251,10 @@ const AddCategory = () => {
                                             previews?.length !== 0 && previews?.map((img, index) => {
                                                 return (
                                                     <div className="uploadBox" key={index}>
-                                                        <img src={img} className="w-100" />
+                                                        <span className="remove" onClick={() => removeImg(index, img)}><IoCloseSharp /></span>
+                                                        <div className="box">
+                                                            <img src={img} className="w-100" />
+                                                        </div>
                                                     </div>
                                                 )
                                             })
@@ -236,11 +264,23 @@ const AddCategory = () => {
                         
                         
                                         <div className="uploadBox">
-                                            <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/category/upload')} name="images" />
-                                                <div className="info">
-                                                    <FaRegImages />
-                                                    <h5>image upload</h5>
+                                           {
+                                                uploading === true ? 
+                                                <div className="progressBar text-center d-flex align-items-center justify-content-center flex-column">
+                                                    <CircularProgress />
+                                                    <span>Uploading...</span>
                                                 </div>
+                                                :
+
+                                                <>
+                                                    <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/category/upload')} name="images" />
+                                                    <div className="info">
+                                                        <FaRegImages />
+                                                        <h5>image upload</h5>
+                                                    </div>
+                                                </>
+
+                                           }
                         
                                         </div>
                         

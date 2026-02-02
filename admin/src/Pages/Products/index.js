@@ -238,12 +238,12 @@ const Products = () => {
                                             </div>
                                             </td>
                                             <td>{item?.category?.name}</td>
-                                            <td>{item?.category?.subCat}</td>
+                                            <td>{item?.subCat.subCat}</td>
                                             <td>{item?.brand}</td>
                                             <td>
                                                 <div style={{ width: '70px' }}>
                                                     <del className="old">Rs {item?.oldPrice}</del>
-                                                    <span className="new text-danger">Rs {item?.Price}</span>
+                                                    <span className="new text-danger">Rs {item?.price}</span>
                                                 </div>
                                             </td>
                                             <td><Rating name="read-only" defaultValue={item?.rating} precision={0.5} size="small" readOnly /></td>

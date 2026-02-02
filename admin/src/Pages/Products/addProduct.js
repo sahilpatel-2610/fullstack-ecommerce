@@ -66,6 +66,7 @@ const ProductUpload = () => {
     const [isFeaturedValue, setisFeaturedValue] = useState('');
 
     const [catData, setCatData] = useState([]);
+    const [subCatData, setSubCatData] = useState([]);
     const [productImagesArr, setproductImagesArr] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -98,6 +99,7 @@ const ProductUpload = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
         setCatData(context.catData);
+        setSubCatData(context.subCatData);
     },[]);
 
 
@@ -207,12 +209,12 @@ const ProductUpload = () => {
     
 
         formdata.append('name', formFields.name);
-        formdata.append('subCat', formFields.subCat);
         formdata.append('description', formFields.description);
         formdata.append('brand', formFields.brand);
         formdata.append('price', formFields.price);
         formdata.append('oldPrice', formFields.oldPrice);
         formdata.append('category', formFields.category);
+        formdata.append('subCat', formFields.subCat);
         formdata.append('countInStock', formFields.countInStock);
         formdata.append('rating', formFields.rating);
         formdata.append('isFeatured', formFields.isFeatured);
@@ -384,7 +386,7 @@ const ProductUpload = () => {
                                                     <em value={null}>None</em>
                                                 </MenuItem>
                                                 {
-                                                    catData?.categoryList?.length !== 0 && catData?.categoryList?.map((cat,index)=>{
+                                                    context.catData?.categoryList?.length !== 0 && context.catData?.categoryList?.map((cat,index)=>{
                                                     // catData?.categoryList?.map((cat, index) => {
                                                         return(
                                                             <MenuItem className="text-capitalize" value={cat._id} key={index} >{cat.name}</MenuItem>
@@ -411,13 +413,14 @@ const ProductUpload = () => {
                                                     <em value={null}>None</em>
                                                 </MenuItem>
                                                 {
-                                                    catData?.categoryList?.length !== 0 && catData?.categoryList?.map((cat,index)=>{
+                                                    context.subCatData?.subCategoryList?.length !== 0 && context.subCatData?.subCategoryList?.map((subCat,index)=>{
                                                     // catData?.categoryList?.map((cat, index) => {
                                                         return(
-                                                            <MenuItem className="text-capitalize" value={cat._id} key={index} >{cat.subCat}</MenuItem>
+                                                            <MenuItem className="text-capitalize" value={subCat._id} key={index} >{subCat.subCat}</MenuItem>
                                                         )
                                                     })
                                                 }
+                                                
 
                                             </Select>
                                           

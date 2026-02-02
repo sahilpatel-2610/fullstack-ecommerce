@@ -110,7 +110,6 @@ const Category = () => {
                                     {/* <th>UID</th> */}
                                     <th style={{width:'100px'}}>IMAGE</th>
                                     <th>CATEGORY</th>
-                                    <th>SUB CATEGORY</th>
                                     <th>COLOR</th>
                                     <th>ACTION</th>
                                 </tr>
@@ -138,7 +137,6 @@ const Category = () => {
                                             </td>
 
                                             <td>{item.name}</td>
-                                            <td>{item.subCat}</td>
                                             <td>{item.color}</td>
 
                                             <td>
