@@ -452,14 +452,28 @@ const ProductEdit = () => {
                                                 <MenuItem value="">
                                                     <em value={null}>None</em>
                                                 </MenuItem>
-                                                {
+                                                {/* {
                                                     context.subCatData?.subCategoryList?.length !== 0 && context.subCatData?.subCategoryList?.map((subCat,index)=>{
                                                     // catData?.categoryList?.map((cat, index) => {
                                                         return(
                                                             <MenuItem className="text-capitalize" value={subCat._id} key={index} >{subCat.subCat}</MenuItem>
                                                         )
                                                     })
+                                                } */}
+
+                                                {
+                                                    context.subCatData?.subCategoryList?.length !== 0 &&
+                                                    context.subCatData?.subCategoryList?.map((subCat,index)=>{
+                                                        return (
+                                                            <MenuItem value={subCat._id} key={index}>
+                                                            {subCat.subCat}
+                                                        </MenuItem>
+                                                        )
+                                                    })
+
                                                 }
+
+                                                
 
                                             </Select>
                                           
