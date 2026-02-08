@@ -46,7 +46,7 @@ const Dashboard = () => {
     const [showBy, setShowBy] = useState('');
     const [showBysetCatBy, setCatBy] = useState('');
     const [productList, setProductList] = useState([]);
-
+    const [categoryVal, setCategoryVal] = useState('');
     const open = Boolean(anchorEl);
     
     const ITEM_HEIGHT = 48;
@@ -97,6 +97,10 @@ const Dashboard = () => {
     };
     const handleClose = () => {
         setAnchorEl(null);
+    };
+
+    const handleChangeCategory = (event) => {
+        setCategoryVal(event.target.value);
     };
 
     return (
@@ -207,19 +211,24 @@ const Dashboard = () => {
                             <h4>CATEGORY BY</h4>
                             <FormControl size="small" className="w-100">
                             <Select
-                                value={showBysetCatBy}
-                                onChange={(e) => setCatBy(e.target.value)}
+                                value={categoryVal}
+                                onChange={handleChangeCategory}
                                 displayEmpty
                                 inputProps={{ 'aria-label': 'Without label' }}
-                                labelId="demo-select-small-label"
                                 className="w-100"
                             >
                                 <MenuItem value="">
-                                    <em>None</em>
+                                    <em value={null}>None</em>
                                 </MenuItem>
-                                <MenuItem value={10}>Ten</MenuItem>
-                                <MenuItem value={20}>Twenty</MenuItem>
-                                <MenuItem value={30}>Thirty</MenuItem>
+                                {
+                                    context.catData?.categoryList?.length !== 0 && context.catData?.categoryList?.map((cat,index)=>{
+                                    // catData?.categoryList?.map((cat, index) => {
+                                        return(
+                                            <MenuItem className="text-capitalize" value={cat._id} key={index} >{cat.name}</MenuItem>
+                                        )
+                                    })
+                                }
+
                             </Select>
                             </FormControl>
                         </div>
@@ -227,21 +236,22 @@ const Dashboard = () => {
                     
 
 
-                    <div className="table-responsive mt-3">
-                        <table className="table table-bordered table-striped v-align">
-                            <thead className="thead-dark">
-                                <tr>
-                                    {/* <th>UID</th> */}
-                                    <th style={{width:'300px'}}>PRODUCT</th>
-                                    <th>CATEGORY</th>
-                                    <th>BRAND</th>
-                                    <th>PRICE</th>
-                                    <th>RATING</th>
-                                    <th>ACTION</th>
-                                </tr>
-                            </thead>
-                    
-                            <tbody>
+                <div className="table-responsive mt-3">
+                    <table className="table table-bordered table-striped v-align">
+                        <thead className="thead-dark">
+                            <tr>
+                                {/* <th>UID</th> */}
+                                <th style={{width:'300px'}}>PRODUCT</th>
+                                <th>CATEGORY</th>
+                                <th>SUB CATEGORY</th>
+                                <th>BRAND</th>
+                                <th>PRICE</th>
+                                <th>RATING</th>
+                                <th>ACTION</th>
+                            </tr>
+                        </thead>
+                
+                        <tbody>
                             {
                                 productList?.products?.length !== 0 && productList?.products?.map((item,index)=>{
                                     return (
@@ -259,50 +269,57 @@ const Dashboard = () => {
                                                         </div>
                                                     </div>
                                                     <div className="info pl-0">
-                                                        <h6> &nbsp; {item.name}</h6>
-                                                        <p> &nbsp; {item.description}
+                                                        <h6> &nbsp; {item?.name}</h6>
+                                                        <p> &nbsp; {item?.description}
                                                         </p>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td>{item.category.name}</td>
-                                            <td>{item.brand}</td>
+                                            <td>{item?.category?.name}</td>
+                                            <td>{item?.subCat?.subCat}</td>
+                                            <td>{item?.brand}</td>
                                             <td>
                                                 <div style={{ width: '70px' }}>
-                                                    <del className="old">Rs {item.oldPrice}</del>
-                                                        <span className="new text-danger">Rs {item.Price}</span>
+                                                    <del className="old">Rs {item?.oldPrice}</del>
+                                                    <span className="new text-danger">Rs {item?.price}</span>
                                                 </div>
                                             </td>
-                                            <td><Rating name="read-only" defaultValue={item.rating} precision={0.5} size="small" readOnly /></td>
-                                                                
+                                            <td><Rating name="read-only" defaultValue={item?.rating} precision={0.5} size="small" readOnly /></td>
+                                                            
                                             <td>
                                                 <div className="actions d-flex align-items-center">
                                                     <Link to="product/details">
-                                                        <Link to="product/details">
-                                                            <Button className="secondary"
-                                                                color="secondary"><FaEye />
-                                                            </Button>
-                                                        </Link>
+                                                        <Button className="secondary"
+                                                            color="secondary"><FaEye />
+                                                        </Button>
                                                     </Link>
-                                                    <Button className="success"
-                                                        color="success"><FaPencilAlt /></Button>
+                
+                                                    <Link to={`/product/edit/${item._id}`}>
+                                                        <Button className="success"
+                                                            color="success"><FaPencilAlt /></Button>
+                                                    </Link>
+                
                                                     <Button className="error"
-                                                        color="error" onClick={()=>deleteProduct(item.id)}><MdDelete /></Button>
+                                                        color="error" onClick={() => deleteProduct(item.id)}><MdDelete /></Button>
                                                 </div>
                                             </td>
                                         </tr>
-                    
+                
                                     )
                                 })
                             }
-                                                   
+                                               
                         </tbody>
                     </table>
-                    
-                    <div className="d-flex tableFooter">
-                        <Pagination count={productList?.totalPages} color="primary" className="pagination" showFirstButton showLastButton onChange={handleChange} />
-                    </div>
-                    
+                
+                    {
+                        productList?.totalPages > 1 && <div className="d-flex tableFooter">
+                            <Pagination count={productList?.totalPages} color="primary" className="pagination" showFirstButton showLastButton onChange={handleChange} />
+                        </div>
+                    }
+                
+                                       
+                
                 </div>
 
                 </div>

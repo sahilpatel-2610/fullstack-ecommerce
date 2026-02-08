@@ -1,302 +1,3 @@
-// import HomeBanner from "../../Components/HomeBanner";
-// import banner1 from "../../assets/images/banner1.jpg";
-// import Button from '@mui/material/Button';
-// import { IoIosArrowRoundForward } from "react-icons/io";
-// import React from "react";
-// import Slider from "react-slick";
-
-// const Home = () => {
-
-//   var productSliderOptions = {
-//     dots: true,
-//     infinite: true,
-//     speed: 500,
-//     slidesToShow: 4,
-//     slidesToScroll: 1
-//   };
- 
-
-//   return (
-//     <div>
-//       <HomeBanner />
-
-//       <section className="homeProducts">
-//         <div className="container">
-//           <div className="row">
-//             <div className="col-md-3">
-//                <div className="banner">
-//                 <img src={banner1} className="cursor" />
-//               </div>
-//             </div>
-//             <div className="col-md-3">
-              
-//             </div>
-            
-//             <div className="col-md-9 productRow">
-//               <div className="d-flex align-items-center">
-//                 <div className="info w-75">
-//                   <h3 className="mb-0 hd">BEST SELLERS</h3>
-//                   <p className="text-light text-sml mb-0">Do not miss the current offers until the end of March.</p>
-//                 </div>
-
-//                 <Button className="viewAllBtn ml-auto">View All
-//                 <IoIosArrowRoundForward /></Button>
-//               </div>
-
-
-
-//               <div className="product_row">
-//                  <Slider {...productSliderOptions}>
-//                   <div className="item productItem">
-//                       <div className="imgWrapper">
-//                         <img src="https://klbtheme.com/bacola/wp-content/uploads/2021/04/product-image-3-346x310.jpg" className="w-100"/>
-//                       </div>
-//                   </div>
-//                  </Slider>
-//               </div>
-
-
-//             </div>
-              
-//           </div>
-//         </div>
-//       </section>
-//     </div>
-//   );
-// };
-
-// export default Home;
-
-
-
-
-// import HomeBanner from "../../Components/HomeBanner";
-// import banner1 from "../../assets/images/banner1.jpg";
-// import Button from '@mui/material/Button';
-// import { IoIosArrowRoundForward } from "react-icons/io";
-// import React from "react";
-// import Slider from "react-slick";
-
-// const Home = () => {
-
-//   var productSliderOptions = {
-//     dots: true,
-//     infinite: false,
-//     speed: 500,
-//     slidesToShow: 4,
-//     slidesToScroll: 1
-//   };
-
-//   return (
-//     <div>
-//       <HomeBanner />
-
-//       <section className="homeProducts py-5">
-//         <div className="container">
-//           <div className="row">
-            
-//             {/* -------- LEFT SIDE BANNER -------- */}
-//             <div className="col-md-3">
-//               <div className="banner">
-//                 <img src={banner1} className="w-100 cursor" alt="Banner" />
-//               </div>
-//             </div>
-
-//             {/* -------- RIGHT SIDE PRODUCTS -------- */}
-//             <div className="col-md-9">
-              
-//               {/* -------- TOP HEADING (BEST SELLERS + VIEW ALL) -------- */}
-//               <div className="d-flex align-items-center mb-4">
-//                 <div className="w-100 text-center">
-//                   <h3 className="mb-1 hd">BEST SELLERS</h3>
-//                   <p className="text-muted text-sml mb-0">
-//                     Do not miss the current offers until the end of March.
-//                   </p>
-//                 </div>
-
-//                 <div className="ml-auto">
-//                   <Button className="viewAllBtn" variant="outlined">
-//                     View All <IoIosArrowRoundForward />
-//                   </Button>
-//                 </div>
-//               </div>
-
-//               {/* -------- PRODUCT SLIDER -------- */}
-//               <div className="product_row w-100">
-//                 <Slider {...productSliderOptions}>
-//                   <div className="item productItem">
-//                     <div className="imgWrapper">
-//                       <img
-//                         src="https://klbtheme.com/bacola/wp-content/uploads/2021/04/product-image-3-346x310.jpg"
-//                         className="w-100"
-//                         alt="product"
-//                       />
-//                     </div>
-//                   </div>
-
-//                   <div className="item productItem">
-//                     <div className="imgWrapper">
-//                       <img
-//                         src="https://klbtheme.com/bacola/wp-content/uploads/2021/04/product-image-2-346x310.jpg"
-//                         className="w-100"
-//                         alt="product"
-//                       />
-//                     </div>
-//                   </div>
-//                 </Slider>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </section>
-//     </div>
-//   );
-// };
-
-// export default Home;
-
-
-
-
-
-// import HomeBanner from "../../Components/HomeBanner";
-// import banner1 from "../../assets/images/banner1.jpg";
-// import banner2 from "../../assets/images/banner2.jpg";
-// import Button from '@mui/material/Button';
-// import { IoIosArrowRoundForward } from "react-icons/io";
-// import React from "react";
-// import { Swiper, SwiperSlide } from 'swiper/react';
-// import 'swiper/css';
-// import 'swiper/css/navigation';
-// import { Navigation } from 'swiper/modules';
-// import ProductItem from "../../Components/ProductItem";
-// import HomeCat from "../../Components/HomeCat";
-
-// const Home = () => {
-
-//   var productSliderOptions = {
-//     dots: true,
-//     infinite: false,
-//     speed: 500, 
-//     slidesToShow: 4,
-//     slidesToScroll: 1
-//   };
-
-//   return (
-//     <div>
-//       <HomeBanner />
-//       <HomeCat />
-
-
-//       <section className="homeProducts py-5">
-//         <div className="container">
-//           <div className="row">
-            
-//             {/* -------- LEFT SIDE BANNER -------- */}
-//             <div className="col-md-3">
-//               <div className="banner">
-//                 <img src={banner1} className="w-100 cursor" alt="Banner" />
-//               </div>
-
-//               <div className="banner mt-4">
-//                 <img src={banner2} className="w-100 cursor" alt="Banner" />
-//               </div>
-//             </div>
-
-//             {/* -------- RIGHT SIDE PRODUCTS -------- */}
-//             <div className="col-md-9">
-              
-//               {/* -------- HEADING ROW -------- */}
-//               <div className="d-flex align-items-center mb-3">
-//                 <div>
-//                   <h3 className="mb-1 hd">BEST SELLERS</h3>
-//                   <p className="text-muted text-sml mb-0">
-//                     Do not miss the current offers until the end of March.
-//                   </p>
-//                 </div>
-
-//                 <Button className="viewAllBtn ml-auto" variant="outlined">
-//                   View All <IoIosArrowRoundForward />
-//                 </Button>
-//               </div>
-
-//               {/* -------- PRODUCT SLIDER -------- */}
-//               <div className="product_row w-100 mt-4">
-//                 <Swiper
-//                     slidesPerView={4}
-//                     spaceBetween={0}
-//                     pagination={{
-//                       clickable: true,
-//                     }}
-//                     modules={[Navigation]}
-//                     className="mySwiper"
-//                 >
-//                  <SwiperSlide>
-//                     <ProductItem />
-//                  </SwiperSlide>
-
-//                   <SwiperSlide>
-//                     <ProductItem />
-//                   </SwiperSlide>
-
-//                   <SwiperSlide>
-//                     <ProductItem />
-//                   </SwiperSlide>
-
-//                   <SwiperSlide>
-//                     <ProductItem />
-//                   </SwiperSlide>
-
-//                   <SwiperSlide>
-//                     <ProductItem />
-//                   </SwiperSlide>
-
-//                   <SwiperSlide>
-//                     <ProductItem />
-//                   </SwiperSlide>
-
-//                 </Swiper>
-                
-              
-//                 <div className="d-flex align-items-center mt-5">
-//                   <div>
-//                     <h3 className="mb-1 hd">NEW PRODUCTS</h3>
-//                     <p className="text-muted text-sml mb-0">
-//                       New products with updated stocks.
-//                     </p>
-//                   </div>
-
-//                   <Button className="viewAllBtn ml-auto" variant="outlined">
-//                     View All <IoIosArrowRoundForward />
-//                   </Button>
-//                 </div>
-
-//                 <div className="product_row productRow2 w-100 mt-4 d-flex">
-//                   <ProductItem />
-//                   <ProductItem />
-//                   <ProductItem />
-//                   <ProductItem />
-//                   <ProductItem />
-//                   <ProductItem />
-//                   <ProductItem />
-//                   <ProductItem />
-//                   <ProductItem />
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </section>
-//     </div>
-//   );
-// };
-
-// export default Home;
-
-
-
-
-
 import HomeBanner from "../../Components/HomeBanner";
 import banner1 from "../../assets/images/banner1.jpg";
 import banner2 from "../../assets/images/banner2.jpg";
@@ -314,14 +15,32 @@ import banner3 from "../../assets/images/banner3.jpg";
 import banner4 from "../../assets/images/banner4.jpg";
 import newsLetterImg from "../../assets/images/coupon.png";
 import { IoMailOutline } from "react-icons/io5";
+import { fetchDataFromApi } from "../../utils/api";
+import { useState } from "react";
+import { useEffect } from "react";
 
 
 
 const Home = () => {
+
+  const [catData, setCatData] = useState([]);
+
+  useEffect(() => {
+    fetchDataFromApi("/api/category/").then((res) => {
+      setCatData(res);
+    })
+
+    fetchDataFromApi("/api/products/","featured").then((res) => {})
+
+  },[])
+
   return (
-    <div>
+    <>
       <HomeBanner />
-      <HomeCat />
+      {
+        catData?.length!==0 && <HomeCat catData={catData} />
+      }
+      
 
       <section className="homeProducts py-5">
         <div className="container">
@@ -344,7 +63,7 @@ const Home = () => {
               {/* -------- HEADING -------- */}
               <div className="d-flex align-items-center mb-3">
                 <div>
-                  <h3 className="mb-1 hd">BEST SELLERS</h3>
+                  <h3 className="mb-1 hd">FEATURED PRODUCTS</h3>
                   <p className="text-muted text-sml mb-0">
                     Do not miss the current offers until the end of March.
                   </p>
@@ -436,7 +155,7 @@ const Home = () => {
 
     
 
-    </div>
+    </>
   );
 };
 

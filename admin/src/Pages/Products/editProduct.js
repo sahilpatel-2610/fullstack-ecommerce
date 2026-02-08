@@ -371,7 +371,7 @@ const ProductEdit = () => {
         <>
             <div className="right-content w-100">
                 <div className="card shadow border-0 w-100 flex-row p-4 res-col">
-                    <h5 className="mb-0">Edit Upload</h5>
+                    <h5 className="mb-0">Product Edit</h5>
                     <Breadcrumbs aria-label="breadcrumb" className="ms-auto breadcrumbs_">
                         <StyledBreadcrumb
                             component="a"
@@ -385,7 +385,7 @@ const ProductEdit = () => {
                             deleteIcon={<ExpandMoreIcon />}
                         />
                         <StyledBreadcrumb
-                            label="Product Upload"
+                            label="Product Edit"
                             deleteIcon={<ExpandMoreIcon />}
                         />
                     </Breadcrumbs>
