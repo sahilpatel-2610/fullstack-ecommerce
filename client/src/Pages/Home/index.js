@@ -30,7 +30,10 @@ const Home = () => {
       setCatData(res);
     })
 
-    fetchDataFromApi("/api/products/","featured").then((res) => {})
+    const filterKey = "isFeatured";
+    fetchDataFromApi(`/api/products/?product=${filterKey}`).then((item) => {
+      console.log(item);
+    })
 
   },[])
 

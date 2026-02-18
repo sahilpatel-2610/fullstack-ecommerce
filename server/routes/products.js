@@ -1,9 +1,28 @@
 const  { Category } = require('../models/category.js');
 const {Product} = require('../models/products.js');
+const { ImageUpload } = require('../models/imageUpload.js');
 const express = require('express');
 const router = express.Router(); 
 const multer = require('multer');
 const fs = require("fs");
+
+// const cloudinary = require('cloudinary').v2;
+
+// cloudinary.config({
+//     cloud_name: process.env.cloudinary_Config_Cloud_Name,
+//     api_key: process.env.cloudinary_Config_api_Key,
+//     api_secret: process.env.cloudinary_Config_api_Secret,
+//     secure: true
+// });
+
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true
+});
 
 
 var imagesArr=[];
@@ -24,39 +43,70 @@ const upload = multer({ storage: storage });
 
 
 router.post(`/upload`, upload.array("images"), async (req, res) => {
-    let images;
-    if (productEditId !== undefined) {
-        const product = await Product.findById(productEditId);
-
-        if (product) {
-            images = product.images;
-        }
-
-        if (images.length !== 0) {
-            for (image of images) {
-                console.log(image);
-                fs.unlinkSync(`uploads/${image}`);
-            }
-            productEditId="";
-        }
-    }
-
-
-
     imagesArr = [];
-    const files = req.files;
+    
+    // if (productEditId !== undefined) {
+
+    //     const product = await Product.findById(productEditId);
+
+    //     if (product) {
+    //         images = product.images;
+    //     }
+
+    //     if (images.length !== 0) {
+    //         for (image of images) {
+    //             console.log(image);
+    //             fs.unlinkSync(`uploads/${image}`);
+    //         }
+    //         productEditId="";
+    //     }
+    // }
+
+
+
+    // imagesArr = [];
+    // const files = req.files;
 
         
-    for(let i = 0; i < files.length; i++) {
-        imagesArr.push(files[i].filename);
+    // for(let i = 0; i < files.length; i++) {
+    //     imagesArr.push(files[i].filename);
+    // }
+
+    // res.send(imagesArr);
+
+    try {
+        for (let i = 0; i < req.files.length; i++) {
+
+            const options = {
+                use_filename: true,
+                unique_filename: false,
+                overwrite: false,
+            };
+
+            const img = await cloudinary.uploader.upload(req.files[i].path, options,
+                function (error, result) {
+                    imagesArr.push(result.secure_url);
+                    fs.unlinkSync(`uploads/${req.files[i].filename}`);
+                });
+        }
+
+        let imagesUploaded = new ImageUpload({
+            images: imagesArr,
+        });
+
+        imagesUploaded = await imagesUploaded.save();
+
+        return res.status(200).json(imagesArr);
+
+    }catch (error) {
+        console.log(error);
     }
-
-    res.send(imagesArr);
-
 });
 
 
 router.get(`/`, async (req, res) => {
+
+    const filterKey = req.query.isFeatured;
 
     const page = parseInt(req.query.page) || 1;
     const perPage = 10;
