@@ -212,10 +212,10 @@ nav .navpart2 ul li:hover .submenu{opacity: 1; visibility: inherit; top: 100%;}
 .productItem .actions button:hover{background: #7a55c1 !important;}
 .productItem .actions button:hover svg{color: #fff !important;}
 
-.productItem .imgWrapper{overflow: hidden;}
-.productItem .imgWrapper img{transition: all 0.3s ease-in-out;}
-.productItem .imgWrapper:hover .actions{opacity: 1; right: 10px;}
-.productItem .imgWrapper:hover img{transform: scale(1.1);}
+.productItem .img_rapper{overflow: hidden;}
+.productItem .img_rapper img{transition: all 0.3s ease-in-out;}
+.productItem .img_rapper:hover .actions{opacity: 1; right: 10px;}
+.productItem .img_rapper:hover img{transform: scale(1.1);}
 
 .product_row{margin-left: -10px !important; margin-right: -10px !important;}
 .product_row .swiper{padding-right: 80px !important;}

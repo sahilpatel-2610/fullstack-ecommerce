@@ -7,32 +7,74 @@ import { IoMdHeartEmpty } from "react-icons/io";
 import { useState } from 'react';
 import { MyContext } from '../../App';
 import { useContext } from 'react';
+import { Link } from 'react-router-dom';
 
-
+import Slider from 'react-slick';
 
 const ProductItem = (props) => {
 
+    const [isHovered, setIsHovered] = useState(false);
+
     const context = useContext(MyContext);
+
+    var setrings = {
+      dots: true,
+      infinite: true,
+      loop: true,
+      speed: 300,
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      autoplay: true
+    };
 
     const viewProductDetails = (id) => {
       context.setisOpenProductModal(true);
     }
 
+    const handleMouseEnter = () => {
+      setIsHovered(true);
+      setTimeout(() => {
+        if (sliderRef.current) {
+          sliderRef.current.slickPlay();
+        }
+      }, 20);
+    }
+
+    const handleMouseLeave = () => {
+      setIsHovered(false);
+      setTimeout(() => {
+        if (sliderRef.current) {
+          sliderRef.current.slickPause();
+        }
+      }, 20);
+    }
+
     
     return(
        <>
-          <SwiperSlide>
-            <div className={`productItem ${props.itemView}`}>
-                <div className="imgWrapper">
-                    <img
-                    src="https://api.spicezgold.com/download/file_1734690981297_23990e6b-d01e-40fd-bb6b-98198db544c01714702040162RARERABBITMenComfortOpaqueCasualShirt2.jpg"
-                    //  src="https://klbtheme.com/bacola/wp-content/uploads/2021/04/product-image-3-346x310.jpg"
-                    //  scr="https://klbtheme.com/bacola/wp-content/uploads/2021/04/product-image-62.jpg"
-                    // src="https://images.pexels.com/photos/31000073/pexels-photo-31000073.jpeg"
-                    // src="https://images.pexels.com/photos/1682699/pexels-photo-1682699.jpeg"
-                     className="w-100"
-                     alt="product"
-                    />
+            <div className={`productItem ${props.itemView}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+
+                <div className="img_rapper">
+                    <Link to={'/product/1'}>
+                      {
+                        isHovered === true ? <Slider {...settings} ref={sliderRef}>
+                          {
+                            props.item?.images?.map((img, index) => {
+                              return (
+                                <div className='slick-slide' key={index}><img src={img}       className='w-100' />
+                                </div>
+                              )
+                            })
+                          }
+                        </Slider>
+
+                        :
+
+                        <img
+                        src={props.item?.images[0]} className='w-100' />
+                      }
+
+                    </Link>
 
                     <span className="badge badge-primary">28%</span>
 
@@ -44,19 +86,19 @@ const ProductItem = (props) => {
                     </div>
 
                     <div className="info ">
-                      <h4>Men Alias-N Regular Fit Spread Collar Shirt</h4>
+                      <Link to={'/product/1'}><h4>{props?.item?.name?.substr(0,30)+'...'}</h4></Link>
                       <span className="text-success d-block">In Stock</span>
-                      <Rating className="mt-2 mb-2" name="read-only" value={5} readOnly size="small" precision={0.5} />
+                      <Rating className="mt-2 mb-2" name="read-only" value={props?.item?.rating} readOnly size="small" precision={0.5} />
 
                       <div className="d-flex">
-                        <span className="oldPrice">$20.00</span>
-                        <span className="netPrice text-danger ml-2">$14.00</span>
+                        <span className="oldPrice">Rs {props?.item?.oldPrice}</span> 
+                        <span className="netPrice text-danger ml-2">Rs {props?.item?.Price}</span>
                       </div>
 
                     </div>
 
                 </div>
-          </SwiperSlide>
+        
 
            {/* <ProductModal />  */}
        </>

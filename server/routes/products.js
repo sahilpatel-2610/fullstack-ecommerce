@@ -106,10 +106,8 @@ router.post(`/upload`, upload.array("images"), async (req, res) => {
 
 router.get(`/`, async (req, res) => {
 
-    const filterKey = req.query.isFeatured;
-
     const page = parseInt(req.query.page) || 1;
-    const perPage = 10;
+    const perPage = 12;
     const totalPosts = await Product.countDocuments();
     const totalPages = Math.ceil(totalPosts / perPage);
 
@@ -133,8 +131,15 @@ router.get(`/`, async (req, res) => {
         "page": page
     });
         
+});
 
-    res.send(productList);
+router.get(`/featured`, async (req, res) => {
+    const productList = await Product.find({ isFeatured: true });
+    if (!productList) {
+        res.status(500).json({ success: false })
+    }
+
+    return res.status(200).json(productList);
 });
  
 
@@ -146,13 +151,23 @@ router.post(`/create`, async (req, res) => {
         return res.status(404).send("Invalid Category!");
     }
 
+    const images_Array=[];
+    const uploadedImages = await ImageUpload.find();
+
+    const images_Arr = uploadedImages?.map((item) => {
+        item.images?.map((image)=> {
+            images_Array.push(image);
+            console.log(image);
+        })
+    })
+
    
 
     let product = new Product({
         name: req.body.name,
         subCat: req.body.subCat,
         description: req.body.description,
-        images: imagesArr,
+        images: images_Array,
         brand: req.body.brand,
         price: req.body.price,
         oldPrice: req.body.oldPrice,

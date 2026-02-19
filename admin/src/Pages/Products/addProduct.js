@@ -69,6 +69,7 @@ const ProductUpload = () => {
     const [subCatData, setSubCatData] = useState([]);
     const [productImagesArr, setproductImagesArr] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [uploading, setUploading] = useState(false);
 
     const [files, setFiles] = useState([]);
     const [imgFiles, setimgFiles] = useState();
@@ -166,41 +167,73 @@ const ProductUpload = () => {
         }))
     }
 
+    let img_arr = [];
+    let uniqueArray = [];
 
     
     const onChangeFile = async(e, apiEndPoint) => {
         try {
-            const imgArr = [];
+            
             const files = e.target.files;
+            setUploading(true);
+    
             // const fd = new FormData();
             for (var i = 0; i < files.length; i++) {
-                if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png')) {
-                    setimgFiles(files);
+
+                //validate file type
+                if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png' || files[i].type === 'image/webp')) {
+                    
                     const file = files[i];
-                    imgArr.push(file);
+               
                     formdata.append(`images`, file);
+
+
                 } else {
                     context.setAlertBox({
                         open: true,
                         error: true,
                         msg: "Please select a valid JPG or PNG image file."
                     });
+
+                    return false;
                 }    
             }
              
-            
-            setIsSelectedFiles(true);
-
-            setFiles(imgArr);
-
-            console.log(imgArr); 
-            postData(apiEndPoint, formdata).then((res) => {
-                       
-            });
            
         } catch (error) {
             console.log(error);
         }
+
+        
+        postData(apiEndPoint, formdata).then((res) => {
+            fetchDataFromApi("/api/imageUpload").then((res) => {
+                if (response !== undefined && response !== null && response !== "" && response.length !== 0) {
+
+                    response.length !== 0 && response.map((item) => {
+                        item?.images.length !== 0 && item?.images?.map((img) => {
+                            img_arr.push(img);
+                        })
+                    })
+
+
+                    uniqueArray = img_arr.filter((item, index) => img_arr.indexOf(item) === index);
+
+                    const appendedArray = [...previews, ...uniqueArray];
+
+                    setPreviews(appendedArray);
+                    setTimeout(() => {
+                        setUploading(false);
+                        img_arr = [];
+                        context.setAlertBox({
+                            open: true,
+                            error: false,
+                            msg: "Images Uploaded!"
+                        })
+                    }, 200);
+                }
+            })
+        })
+
     }
 
 
@@ -554,7 +587,15 @@ const ProductUpload = () => {
                                   previews?.length !== 0 && previews?.map((img, index) => {
                                     return (
                                         <div className="uploadBox" key={index}>
-                                            <img src={img} className="w-100" />
+                                            <span className="remove" onClick={() => removeImg(index, img)}><IoCloseSharp /></span>
+                                            <div className="box">
+                                                <LazyLoadImage 
+                                                    alt={"imag"}
+                                                    effect="blur"
+                                                    className="w-100"
+                                                    src={img}
+                                                />
+                                            </div>
                                         </div>
                                     )
                                   })
