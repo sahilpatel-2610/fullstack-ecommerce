@@ -49,6 +49,22 @@ const peoductSchema = mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    discount: {
+        type: Number,
+        required: true,
+    },
+    productRAMS:{
+        type: String,
+        default: null,
+    },
+    productSIZE:{
+        type: String,
+        default: null,
+    },
+    productWEIGHT:{
+        type: String,
+        default: null,
+    },
     dateCreated: {
         type: Date,
         default: Date.now,

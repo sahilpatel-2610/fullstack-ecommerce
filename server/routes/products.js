@@ -145,7 +145,6 @@ router.get(`/featured`, async (req, res) => {
 
 router.post(`/create`, async (req, res) => {
     
-    
     const category = await Category.findById(req.body.category);
     if (!category) {
         return res.status(404).send("Invalid Category!");
@@ -163,7 +162,7 @@ router.post(`/create`, async (req, res) => {
 
    
 
-    let product = new Product({
+    product = new Product({
         name: req.body.name,
         subCat: req.body.subCat,
         description: req.body.description,
@@ -174,16 +173,23 @@ router.post(`/create`, async (req, res) => {
         category: req.body.category,
         countInStock: req.body.countInStock,
         rating: req.body.rating,
-        isFeatured: req.body.isFeatured
+        isFeatured: req.body.isFeatured,
+        discount: req.body.discount,
+        productRAMS: req.body.productRAMS,
+        productSIZE: req.body.productSIZE,
+        productWEIGHT: req.body.productWEIGHT,
     });
 
     product = await product.save();
+
     if (!product) {
         res.status(500).json({
             error: err,
             success: false
         })
     }
+
+    imagesArr = [];
 
     res.status(201).json(product);
 });
@@ -201,28 +207,59 @@ router.get('/:id', async(req, res) => {
 })
 
 
+router.delete('/deleteImage', async(req, res) => {
+    const imgUrl = req.query.img;
+
+    const urlArr = imgUrl.split('/');
+    const image = urlArr[urlArr.length - 1];
+
+    const imageName = image.split('.')[0];
+
+    const response = await cloudinary.uploader.destroy(imageName,  (error, result) => {
+
+    })
+
+    if(response) {
+        res.status(200).send(response);
+    }
+
+});
+
+
 
 router.delete('/:id', async(req, res) => {
 
     const product = await Product.findById(req.params.id);
     const images = product.images;
 
-    if(images.length!==0){
-        for(image of images){
-            fs.unlinkSync(`uploads/${image}`);
+    for(img of images){
+        const imgUrl = img;
+        const urlArr = imgUrl.split('/');
+        const image = urlArr[urlArr.length - 1];
+
+        const imageName = image.split('.')[0];
+
+        if(imageName) {
+            cloudinary.uploader.destroy(imageName,  (error, result) => {
+                // console.log(result, error);
+            })
         }
+
+        // console.log(imageName);
     }
 
     const deletedProduct = await Product.findByIdAndDelete(req.params.id);
+
     if(!deletedProduct) {
-        return res.status(404).json({
-            message:"product not found!",
+        res.status(404).json({
+            message:"Category not found!",
             status:false
         })
     }
     res.status(200).json({
-        message:"the product is deleted!",
-        status:true
+        status: true,
+        message: "Category Deleted!"
+       
     })
 })
 
@@ -237,7 +274,7 @@ router.put('/:id', async(req, res) => {
             name: req.body.name,
             subCat: req.body.subCat,
             description: req.body.description,
-            images: imagesArr,
+            images: req.body.images,
             brand: req.body.brand,
             price: req.body.price,
             oldPrice: req.body.oldPrice,

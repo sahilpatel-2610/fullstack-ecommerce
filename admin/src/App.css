@@ -271,6 +271,8 @@ body.dark .table-responsive::-webkit-scrollbar-thumb{background: rgba(255, 255, 
 
 body.dark .table-striped tbody tr:nth-of-type(odd){background: rgba(255, 255, 255, 0.02) !important;}
 
+.table th{white-space: nowrap !important;}
+
 .table .thead-dark th{color: #fff; background-color: #1866ee !important; border-color: rgba(255,255,255,0.1); font-size: 13px !important;} 
 
 .table tbody td{font-size: 14px !important; color: #2f2d3e; font-weight: 500;}
@@ -493,3 +495,6 @@ body.dark .css-1jy569b-MuiFormLabel-root-MuiTextField-root, body.dark .css-1t812
 
 .inputBtn button{position: absolute; top: 7px; right: 10px; z-index: 100;}
 
+
+button.notAllow{cursor: no-drop !important;}
+from .btn-blue{position: relative; z-index: 100;}

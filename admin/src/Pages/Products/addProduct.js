@@ -18,12 +18,13 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import { useRef } from "react";
-import { fetchDataFromApi, postData } from "../../utils/api";
+import { deleteImages, fetchDataFromApi, postData } from "../../utils/api";
 import { useEffect } from "react";
 import { MyContext } from "../../App";
 import { useContext } from "react";
 import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from "react-router-dom";
+
 
 //breadcrumb code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
@@ -62,7 +63,9 @@ const ProductUpload = () => {
     const [categoryVal, setCategoryVal] = useState('');
     const [subCatVal, setSubCatVal] = useState('');
     const [ratingValue, setRatingValue] = useState(1);
-    const [productRams, setProductRAMS] = useState([]);
+    const [productRams, setProductRams] = useState('');
+    const [productWeight, setProductWeight] = useState('');
+    const [productSize, setProductSize] = useState('');
     const [isFeaturedValue, setisFeaturedValue] = useState('');
 
     const [catData, setCatData] = useState([]);
@@ -74,7 +77,6 @@ const ProductUpload = () => {
     const [files, setFiles] = useState([]);
     const [imgFiles, setimgFiles] = useState();
     const [previews, setPreviews] = useState();
-    const [isSelectedFiles, setIsSelectedFiles] = useState(false);
 
     const history = useNavigate();
 
@@ -89,6 +91,10 @@ const ProductUpload = () => {
         countInStock: null,
         rating: 0,
         isFeatured: null,
+        discount: null,
+        productRAMS: '',
+        productSIZE: '',
+        productWEIGHT: ''
     });
 
     const productImages = useRef();
@@ -149,15 +155,29 @@ const ProductUpload = () => {
     };
 
     const handleChangeProductRams = (event) => {
-        const {
-            target: { value },
-        } = event;
-        setProductRAMS(
-            typeof value === 'string' ? value.split(',') : value,
-        );
+       setProductRams(event.target.value);
+         setFormFields(() => ({
+            ...formFields,
+            productRAMS: event.target.value
+         }))
+    };
 
+    const handleChangeProductWeight = (event) => {
+        setProductWeight(event.target.value);
+        setFormFields(() => ({
+            ...formFields,
+            productWEIGHT: event.target.value
+        }))
+    };
 
-    }
+    const handleChangeProductSize = (event) => {
+        setProductSize(event.target.value);
+        setFormFields(() => ({
+            ...formFields,
+            productSIZE: event.target.value
+        }))
+    };
+
 
 
     const inputChange = (e) => {
@@ -221,6 +241,7 @@ const ProductUpload = () => {
                     const appendedArray = [...previews, ...uniqueArray];
 
                     setPreviews(appendedArray);
+
                     setTimeout(() => {
                         setUploading(false);
                         img_arr = [];
@@ -229,17 +250,38 @@ const ProductUpload = () => {
                             error: false,
                             msg: "Images Uploaded!"
                         })
-                    }, 200);
+                    }, 500);
                 }
+            });
+        });
+
+    }
+
+
+    const removeImg = async (index, imgUrl) => {
+
+        const imgIndex = previews.indexOf(imgUrl);
+
+        deleteImages(`/api/category/deleteImage?img=${imgUrl}`).then((res) => {
+            context.setAlertBox({
+                open: true,
+                error: false,
+                msg: "Image Deleted!"
             })
         })
 
+        if (imgIndex > -1) { //only splice array when item is found
+            previews.splice(imgIndex, 1); //2nd parameter means remove one item only
+        }
     }
 
 
     const addProduct = (e) => {
         e.preventDefault();
-    
+
+        const appendedArray = [...previews, ...uniqueArray];
+
+        img_arr = [];
 
         formdata.append('name', formFields.name);
         formdata.append('description', formFields.description);
@@ -251,9 +293,15 @@ const ProductUpload = () => {
         formdata.append('countInStock', formFields.countInStock);
         formdata.append('rating', formFields.rating);
         formdata.append('isFeatured', formFields.isFeatured);
-        // formdata.append('images', productImagesArr);
+        formdata.append('discount', formFields.discount);
+        formdata.append('productRAMS', formFields.productRAMS);
+        formdata.append('productSIZE', formFields.productSIZE);
+        formdata.append('productWEIGHT', formFields.productWEIGHT);
 
 
+        formFields.images = appendedArray;
+
+        console.log(appendedArray);
 
         if(formFields.name === "") {
             context.setAlertBox({
@@ -339,6 +387,24 @@ const ProductUpload = () => {
             context.setAlertBox({
                 open: true,
                 msg: 'please select the product is a featured or not',
+                error: true
+            });
+            return false;
+        }
+
+        if(formFields.discount === null) {
+            context.setAlertBox({
+                open: true,
+                msg: 'please select the product discount',
+                error: true
+            });
+            return false;
+        }
+
+        if(formFields.length === 0) {
+            context.setAlertBox({
+                open: true,
+                msg: 'please select images',
                 error: true
             });
             return false;
@@ -483,13 +549,13 @@ const ProductUpload = () => {
                                     <div className='col'>
                                        <div className='form-group'>   
                                                 <h6 className="text-uppercase">is Featured</h6> 
-                                                    <Select
-                                                        value={isFeaturedValue}
-                                                        onChange={handleChangeisFeaturedValue}
-                                                        displayEmpty
-                                                        inputProps={{ 'aria-label': 'Without label' }}
-                                                        className="w-100"
-                                                    >
+                                                <Select
+                                                    value={isFeaturedValue}
+                                                    onChange={handleChangeisFeaturedValue}
+                                                    displayEmpty
+                                                    inputProps={{ 'aria-label': 'Without label' }}
+                                                    className="w-100"
+                                                >
                                                     <MenuItem value="">
                                                         <em value={null}>None</em>
                                                     </MenuItem>
@@ -515,7 +581,7 @@ const ProductUpload = () => {
                                             <h6>BRAND</h6> 
                                                 <input type='text' name="brand" value={formFields.brand} onChange={inputChange} />
                                         </div>
-                                    </div>     
+                                    </div>   
 
                                     <div className='col-md-4'>
                                         <div className='form-group'>   
@@ -529,27 +595,69 @@ const ProductUpload = () => {
                                         <div className='form-group'>   
                                             <h6>PRODUCT RAMS</h6> 
                                                 <Select
-                                                    multiple
                                                     value={productRams}
                                                     onChange={handleChangeProductRams}
                                                     displayEmpty
+                                                    inputProps={{ 'aria-label': 'Without label' }}
                                                     className="w-100"
 
                                                     MenuProps={MenuProps}
                                                 >
-                                                    <MenuItem value="4GB">4GB</MenuItem>
-                                                    <MenuItem value="8GB">8GB</MenuItem>
-                                                    <MenuItem value="16GB">16GB</MenuItem>
-                                                    <MenuItem value="32GB">32GB</MenuItem>
+                                                    <MenuItem  value="">
+                                                        <em value={null}>None</em>
+                                                    </MenuItem>
+                                                    <MenuItem value={'4GB'}>4GB</MenuItem>
+                                                    <MenuItem value={'8GB'}>8GB</MenuItem>
+                                                    <MenuItem value={'16GB'}>16GB</MenuItem>
+                                                    <MenuItem value={'32GB'}>32GB</MenuItem>
                                                 </Select>
                                         </div>
                                     </div> 
-                                </div>
 
+                                    <div className='col-md-4'>
+                                        <div className='form-group'>   
+                                            <h6>PRODUCT WEIGHT</h6> 
+                                                <Select
+                                                    value={productWeight}
+                                                    onChange={handleChangeProductWeight}
+                                                    displayEmpty
+                                                    inputProps={{ 'aria-label': 'Without label' }}
+                                                    className="w-100"
+                                                >
+                                                    <MenuItem  value="">
+                                                        <em value={null}>None</em>
+                                                    </MenuItem>
+                                                    <MenuItem value={'500GM'}>500GM</MenuItem>
+                                                    <MenuItem value={'1KG'}>1KG</MenuItem>
+                                                    <MenuItem value={'2KG'}>2KG</MenuItem>
+                                                    <MenuItem value={'3KG'}>3KG</MenuItem>
+                                                    <MenuItem value={'4KG'}>4KG</MenuItem>
+                                                </Select>
+                                        </div>
+                                    </div> 
 
-                                <div className="row">
-                                    
-                                    
+                                    <div className='col-md-4'>
+                                        <div className='form-group'>   
+                                            <h6>PRODUCT SIZE</h6> 
+                                                <Select
+                                                    value={productSize}
+                                                    onChange={handleChangeProductSize}
+                                                    displayEmpty
+                                                    inputProps={{ 'aria-label': 'Without label' }}
+                                                    className="w-100"
+                                                >
+                                                    <MenuItem  value="">
+                                                        <em value={null}>None</em>
+                                                    </MenuItem>
+                                                    <MenuItem value={'S'}>S</MenuItem>
+                                                    <MenuItem value={'M'}>M</MenuItem>
+                                                    <MenuItem value={'L'}>L</MenuItem>
+                                                    <MenuItem value={'XL'}>XL</MenuItem>
+                                                    <MenuItem value={'XXL'}>XXL</MenuItem>
+                                                </Select>
+                                        </div>
+                                    </div>   
+
                                     <div className='col-md-4'>
                                         <div className='col'>
                                             <div className='form-group'>   
@@ -567,11 +675,8 @@ const ProductUpload = () => {
                                                     />
                                             </div>
                                         </div> 
-                                    </div>
-
-
+                                    </div>  
                                 </div>
-
                             </div>
                         </div>
                     </div>

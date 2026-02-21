@@ -10,6 +10,8 @@ import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 
 import Slider from 'react-slick';
+import sliderRef from 'react-slick';
+
 
 const ProductItem = (props) => {
 
@@ -76,7 +78,7 @@ const ProductItem = (props) => {
 
                     </Link>
 
-                    <span className="badge badge-primary">28%</span>
+                    <span className="badge badge-primary">{props?.item?.discount}%</span>
 
                     <div className="actions">
                      <Button onClick={() => viewProductDetails(1)}><TfiFullscreen /></Button>

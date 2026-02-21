@@ -93,7 +93,7 @@ const Products = () => {
             fetchDataFromApi("/api/products").then((res)=>{
                 setProductList(res);
             })
-
+            context.fetchCategory();
         })
     }
 
@@ -103,7 +103,7 @@ const Products = () => {
             setProductList(res);
             context.setProgress(100);
         })
-    }
+    };
         
 
     return (
@@ -209,6 +209,10 @@ const Products = () => {
                                     <th>BRAND</th>
                                     <th>PRICE</th>
                                     <th>RATING</th>
+                                    <th>DISCOUNT</th>
+                                    <th>PRODUCT RAMS</th>
+                                    <th>PRODUCT WEIGHT</th>
+                                    <th>PRODUCT SIZE</th>
                                     <th>ACTION</th>
                                 </tr>
                             </thead>
@@ -247,6 +251,11 @@ const Products = () => {
                                                 </div>
                                             </td>
                                             <td><Rating name="read-only" defaultValue={item?.rating} precision={0.5} size="small" readOnly /></td>
+
+                                            <td>{item?.discount}</td>
+                                            <td>{item?.productRAMS}</td>
+                                            <td>{item?.productSIZE}</td>
+                                            <td>{item?.productWEIGHT}</td>
                                             
                                             <td>
                                                 <div className="actions d-flex align-items-center">

@@ -59,17 +59,22 @@ const MenuProps = {
     },
 };          
 
-const ProductEdit = () => {
+const EditUpload = () => {
 
     const [categoryVal, setCategoryVal] = useState('');
     const [subCatVal, setSubCatVal] = useState('');
-    const [ratingValue, setRatingValue] = useState(1);
-    const [productRams, setProductRAMS] = useState([]);
-    const [isFeaturedValue, setisFeaturedValue] = useState('');
+    const [productRams, setProductRams] = useState('');
+    const [productWeight, setProductWeight] = useState('');
+    const [productSize, setProductSize] = useState('');
 
+    const [ratingValue, setRatingValue] = useState(1);
+    const [isFeaturedValue, setisFeaturedValue] = useState('');
+   
     const [catData, setCatData] = useState([]);
+    const [subCatData, setSubCatData] = useState([]);
     const [productImagesArr, setproductImagesArr] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [uploading, setUploading] = useState(false);
     const [products, setProducts] = useState([]);
 
     const [files, setFiles] = useState([]);
@@ -93,6 +98,10 @@ const ProductEdit = () => {
         countInStock: null,
         rating: 0,
         isFeatured: null,
+        discount: null,
+        productRAMS: '',
+        productSIZE: '',
+        productWEIGHT: ''
     });
 
     const productImages = useRef();
@@ -104,6 +113,7 @@ const ProductEdit = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
         setCatData(context.catData);
+        setSubCatData(context.subCatData);
 
 
         fetchDataFromApi(`/api/products/${id}`).then((res) => {
@@ -119,12 +129,19 @@ const ProductEdit = () => {
                 countInStock: res.countInStock,
                 rating: res.rating,
                 isFeatured: res.isFeatured,
+                discount: res.discount,
+                productRAMS: res.productRAMS,
+                productSIZE: res.productSIZE,
+                productWEIGHT: res.productWEIGHT
             });
 
             setRatingValue(res.rating);
             setCategoryVal(res.category);
             setSubCatVal(res.subCat);
             setisFeaturedValue(res.isFeatured);
+            setProductRams(res.productRAMS);
+            setProductSize(res.productSIZE);
+            setProductWeight(res.productWEIGHT);
             setPreviews(res.images);
             context.setProgress(100);
         });
@@ -176,15 +193,28 @@ const ProductEdit = () => {
     };
 
     const handleChangeProductRams = (event) => {
-        const {
-            target: { value },
-        } = event;
-        setProductRAMS(
-            typeof value === 'string' ? value.split(',') : value,
-        );
+       setProductRams(event.target.value);
+         setFormFields(() => ({
+            ...formFields,
+            productRAMS: event.target.value
+         }))
+    };
 
+    const handleChangeProductWeight = (event) => {
+        setProductWeight(event.target.value);
+        setFormFields(() => ({
+            ...formFields,
+            productWEIGHT: event.target.value
+        }))
+    };
 
-    }
+    const handleChangeProductSize = (event) => {
+        setProductSize(event.target.value);
+        setFormFields(() => ({
+            ...formFields,
+            productSIZE: event.target.value
+        }))
+    };
 
 
     const inputChange = (e) => {
@@ -195,31 +225,23 @@ const ProductEdit = () => {
     }
 
 
-    
+  
     const onChangeFile = async(e, apiEndPoint) => {
         try {
-            const imgArr = [];
+            
             const files = e.target.files;
-
+            setUploading(true);
+    
             // const fd = new FormData();
             for (var i = 0; i < files.length; i++) {
-                if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png')) {
-                    setimgFiles(files);
+
+                //validate file type
+                if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png' || files[i].type === 'image/webp')) {
+                    
                     const file = files[i];
-                    imgArr.push(file);
+               
                     formdata.append(`images`, file);
 
-                    setFiles(imgArr);
-
-                    console.log(imgArr);
-                    setIsSelectedImages(true);
-                    postData(apiEndPoint, formdata, id).then((res) => {
-                        context.setAlertBox({
-                            open: true,
-                            error: false,
-                            msg: "Image uploaded!"
-                        })
-                    });
 
                 } else {
                     context.setAlertBox({
@@ -227,21 +249,66 @@ const ProductEdit = () => {
                         error: true,
                         msg: "Please select a valid JPG or PNG image file."
                     });
+
+                    return false;
                 }    
             }
              
-            
-            setIsSelectedFiles(true);
-
-            console.log(imgArr); 
-            postData(apiEndPoint, formdata).then((res) => {
-                       
-            });
            
         } catch (error) {
             console.log(error);
         }
+
+        
+        postData(apiEndPoint, formdata).then((res) => {
+            fetchDataFromApi("/api/imageUpload").then((res) => {
+                if (response !== undefined && response !== null && response !== "" && response.length !== 0) {
+
+                    response.length !== 0 && response.map((item) => {
+                        item?.images.length !== 0 && item?.images?.map((img) => {
+                            img_arr.push(img);
+                        })
+                    })
+
+
+                    uniqueArray = img_arr.filter((item, index) => img_arr.indexOf(item) === index);
+
+                    const appendedArray = [...previews, ...uniqueArray];
+
+                    setPreviews(appendedArray);
+
+                    setTimeout(() => {
+                        setUploading(false);
+                        img_arr = [];
+                        context.setAlertBox({
+                            open: true,
+                            error: false,
+                            msg: "Images Uploaded!"
+                        })
+                    }, 500);
+                }
+            });
+        });
+
     }
+
+    const removeImg = async (index, imgUrl) => {
+    
+        const imgIndex = previews.indexOf(imgUrl);
+    
+        deleteImages(`/api/category/deleteImage?img=${imgUrl}`).then((res) => {
+            context.setAlertBox({
+                open: true,
+                error: false,
+                msg: "Image Deleted!"
+            })
+        })
+    
+        if (imgIndex > -1) { //only splice array when item is found
+            previews.splice(imgIndex, 1); //2nd parameter means remove one item only
+        }
+    }
+    
 
 
     const editProduct = (e) => {
@@ -258,7 +325,10 @@ const ProductEdit = () => {
         formdata.append('countInStock', formFields.countInStock);
         formdata.append('rating', formFields.rating);
         formdata.append('isFeatured', formFields.isFeatured);
-        // formdata.append('images', productImagesArr);
+        formdata.append('discount', formFields.discount);
+        formdata.append('productRAMS', formFields.productRAMS);
+        formdata.append('productSIZE', formFields.productSIZE);
+        formdata.append('productWEIGHT', formFields.productWEIGHT);
 
 
 
@@ -346,6 +416,24 @@ const ProductEdit = () => {
             context.setAlertBox({
                 open: true,
                 msg: 'please select the product is a featured or not',
+                error: true
+            });
+            return false;
+        }
+
+         if(formFields.discount === null) {
+            context.setAlertBox({
+                open: true,
+                msg: 'please select the product discount',
+                error: true
+            });
+            return false;
+        }
+
+        if(formFields.length === 0) {
+            context.setAlertBox({
+                open: true,
+                msg: 'please select images',
                 error: true
             });
             return false;
@@ -533,43 +621,85 @@ const ProductEdit = () => {
                                     <div className='col-md-4'>
                                         <div className='form-group'>   
                                             <h6>BRAND</h6> 
-                                                <input type='text' name="brand" value={formFields.brand} onChange={inputChange} />
+                                            <input type='text' name="brand" value={formFields.brand} onChange={inputChange} />
                                         </div>
-                                    </div>     
-
+                                    </div>   
+                                
                                     <div className='col-md-4'>
                                         <div className='form-group'>   
                                             <h6>DISCOUNT</h6> 
-                                                <input type='text' name="discount" value={formFields.discount} onChange={inputChange} />
+                                            <input type='text' name="discount" value={formFields.discount} onChange={inputChange} />
                                         </div>
                                     </div>    
-
-
+                                
                                     <div className='col-md-4'>
                                         <div className='form-group'>   
                                             <h6>PRODUCT RAMS</h6> 
-                                                <Select
-                                                    multiple
-                                                    value={productRams}
-                                                    onChange={handleChangeProductRams}
-                                                    displayEmpty
-                                                    className="w-100"
-
-                                                    MenuProps={MenuProps}
-                                                >
-                                                    <MenuItem value="4GB">4GB</MenuItem>
-                                                    <MenuItem value="8GB">8GB</MenuItem>
-                                                    <MenuItem value="16GB">16GB</MenuItem>
-                                                    <MenuItem value="32GB">32GB</MenuItem>
-                                                </Select>
+                                            <Select
+                                                value={productRams}
+                                                onChange={handleChangeProductRams}
+                                                displayEmpty
+                                                inputProps={{ 'aria-label': 'Without label' }}
+                                                className="w-100"
+                                
+                                                MenuProps={MenuProps}
+                                            >
+                                                <MenuItem  value="">
+                                                    <em value={null}>None</em>
+                                                </MenuItem>
+                                                <MenuItem value={'4GB'}>4GB</MenuItem>
+                                                <MenuItem value={'8GB'}>8GB</MenuItem>
+                                                <MenuItem value={'16GB'}>16GB</MenuItem>
+                                                <MenuItem value={'32GB'}>32GB</MenuItem>
+                                            </Select>
                                         </div>
                                     </div> 
-                                </div>
+                                
+                                    <div className='col-md-4'>
+                                        <div className='form-group'>   
+                                            <h6>PRODUCT WEIGHT</h6> 
+                                            <Select
+                                                value={productWeight}
+                                                onChange={handleChangeProductWeight}
+                                                displayEmpty
+                                                inputProps={{ 'aria-label': 'Without label' }}
+                                                className="w-100"
+                                            >
+                                                <MenuItem  value="">
+                                                    <em value={null}>None</em>
+                                                </MenuItem>
+                                                <MenuItem value={'500GM'}>500GM</MenuItem>
+                                                <MenuItem value={'1KG'}>1KG</MenuItem>
+                                                <MenuItem value={'2KG'}>2KG</MenuItem>
+                                                <MenuItem value={'3KG'}>3KG</MenuItem>
+                                                <MenuItem value={'4KG'}>4KG</MenuItem>
+                                            </Select>
+                                        </div>
+                                    </div> 
+                                
+                                    <div className='col-md-4'>
+                                        <div className='form-group'>   
+                                            <h6>PRODUCT SIZE</h6> 
+                                            <Select
+                                                value={productSize}
+                                                onChange={handleChangeProductSize}
+                                                displayEmpty
+                                                inputProps={{ 'aria-label': 'Without label' }}
+                                                className="w-100"
+                                            >
+                                                <MenuItem  value="">
+                                                    <em value={null}>None</em>
+                                                </MenuItem>
+                                                <MenuItem value={'S'}>S</MenuItem>
+                                                <MenuItem value={'M'}>M</MenuItem>
+                                                <MenuItem value={'L'}>L</MenuItem>
+                                                <MenuItem value={'XL'}>XL</MenuItem>
+                                                <MenuItem value={'XXL'}>XXL</MenuItem>
+                                            </Select>
+                                        </div>
+                                            
+                                    </div>  
 
-
-                                <div className="row">
-                                    
-                                    
                                     <div className='col-md-4'>
                                         <div className='col'>
                                             <div className='form-group'>   
@@ -586,17 +716,17 @@ const ProductEdit = () => {
                                                         }}      
                                                     />
                                             </div>
-                                        </div> 
+                                        </div>  
                                     </div>
 
-
-                                </div>
+                                </div> 
 
                             </div>
+
                         </div>
+                        
                     </div>
 
-                    
                     <div className='card p-4 mt-0'>
                         <div className="imagesUploadSec">
                             <h5 className="mb-4">Media And Published</h5>
@@ -607,6 +737,7 @@ const ProductEdit = () => {
                                   previews?.length !== 0 && previews?.map((img, index) => {
                                     return (
                                         <div className="uploadBox" key={index}>
+                                            <span className="remove" onClick={() => removeImg(index, img)}><IoCloseSharp /></span>
                                             {
                                                 isSelectedImages === true ? <img src={`${img}`} className="w-100" /> : <img src={`${context.baseUrl}/uploads/${img}`} className="w-100" />
                                             }
@@ -644,4 +775,4 @@ const ProductEdit = () => {
     )
 }
 
-export default ProductEdit;
+export default EditUpload;
