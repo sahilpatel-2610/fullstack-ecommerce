@@ -156,7 +156,7 @@ const AddCategory = () => {
         });
 
     }
-    
+
     // const onChangeFile = async (e, apiEndPoint) => {
     // try {
     //     const files = e.target.files;
@@ -239,6 +239,9 @@ const AddCategory = () => {
         }
         
     } 
+
+
+    
     const removeImg = (index, imgUrl) => {
 
         deleteImages(`/api/category/deleteImage?img=${imgUrl}`);
