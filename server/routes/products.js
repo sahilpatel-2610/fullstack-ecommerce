@@ -115,7 +115,7 @@ router.get(`/`, async (req, res) => {
         return res.status(404).json({ message: "Page not found" })
     }
 
-    const productList = await Product.find().populate('category subCat')
+    const productList = await Product.find().populate('category subCat productWEIGHT')
     .skip((page - 1) * perPage)
     .limit(perPage)
     .exec();
@@ -166,7 +166,8 @@ router.post(`/create`, async (req, res) => {
         name: req.body.name,
         subCat: req.body.subCat,
         description: req.body.description,
-        images: images_Array,
+        // images: images_Array,
+        images: req.body.images,
         brand: req.body.brand,
         price: req.body.price,
         oldPrice: req.body.oldPrice,

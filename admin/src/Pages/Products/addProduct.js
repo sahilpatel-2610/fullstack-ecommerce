@@ -76,7 +76,7 @@ const ProductUpload = () => {
 
     const [files, setFiles] = useState([]);
     const [imgFiles, setimgFiles] = useState();
-    const [previews, setPreviews] = useState();
+    const [previews, setPreviews] = useState([]);
 
     const history = useNavigate();
 
@@ -94,7 +94,7 @@ const ProductUpload = () => {
         discount: null,
         productRAMS: '',
         productSIZE: '',
-        productWEIGHT: ''
+        productWEIGHT: '',
     });
 
     const productImages = useRef();
@@ -189,7 +189,6 @@ const ProductUpload = () => {
 
     let img_arr = [];
     let uniqueArray = [];
-
     
     const onChangeFile = async(e, apiEndPoint) => {
         try {
@@ -253,27 +252,70 @@ const ProductUpload = () => {
                     }, 500);
                 }
             });
+
+            postData(apiEndPoint, formdata).then((res) => {
+
+                fetchDataFromApi("/api/imageUpload").then((response) => {
+
+                    if (response && response.length !== 0) {
+
+                        response.map((item) => {
+                            item?.images?.map((img) => {
+                                img_arr.push(img);
+                            })
+                        });
+
+                        uniqueArray = img_arr.filter((item, index) => img_arr.indexOf(item) === index);
+
+                        const appendedArray = [...(previews || []), ...uniqueArray];
+
+                        setPreviews(appendedArray);
+
+                        setTimeout(() => {
+                        setUploading(false);
+                        img_arr = [];
+
+                            context.setAlertBox({
+                                open: true,
+                                error: false,
+                                msg: "Images Uploaded!"
+                            })
+
+                        }, 500);
+                    }
+                });
+
+            });
         });
 
     }
 
 
-    const removeImg = async (index, imgUrl) => {
+    // const removeImg = async (index, imgUrl) => {
 
-        const imgIndex = previews.indexOf(imgUrl);
+    //     const imgIndex = previews.indexOf(imgUrl);
 
-        deleteImages(`/api/category/deleteImage?img=${imgUrl}`).then((res) => {
-            context.setAlertBox({
-                open: true,
-                error: false,
-                msg: "Image Deleted!"
-            })
-        })
+    //     deleteImages(`/api/category/deleteImage?img=${imgUrl}`).then((res) => {
+    //         context.setAlertBox({
+    //             open: true,
+    //             error: false,
+    //             msg: "Image Deleted!"
+    //         })
+    //     })
 
-        if (imgIndex > -1) { //only splice array when item is found
-            previews.splice(imgIndex, 1); //2nd parameter means remove one item only
-        }
-    }
+    //     if (imgIndex > -1) { //only splice array when item is found
+    //         previews.splice(imgIndex, 1); //2nd parameter means remove one item only
+    //     }
+    // }
+
+        
+    const removeImg = (index, imgUrl) => {
+
+        deleteImages(`/api/category/deleteImage?img=${imgUrl}`);
+
+        setPreviews((prev) => prev.filter((img) => img !== imgUrl));
+
+    };
 
 
     const addProduct = (e) => {
@@ -401,7 +443,7 @@ const ProductUpload = () => {
             return false;
         }
 
-        if(formFields.length === 0) {
+       if(previews?.length === 0) {
             context.setAlertBox({
                 open: true,
                 msg: 'please select images',

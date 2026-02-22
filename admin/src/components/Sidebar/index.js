@@ -51,7 +51,12 @@ const Sidebar = () => {
                             <li><Link to="/products">Product List</Link></li>
                             <li><Link to="/product/details">Product View</Link></li>
                             <li><Link to="/product/upload">Product Upload</Link></li>
-
+                            <li><Link to="/productRAMS/add">Add Product RAMS</Link></li>
+                            <li><Link to="/productRAMS/list">Product RAMS</Link></li>
+                            <li><Link to="/productWEIGHT/add">Add Product WEIGHT</Link></li>
+                            <li><Link to="/productWEIGHT/list">Product WEIGHT</Link></li>
+                            <li><Link to="/productSIZE/add">Add Product SIZE</Link></li>
+                            <li><Link to="/productSIZE/list">Product SIZE</Link></li>
                         </ul>
                     </div>
                 </li>

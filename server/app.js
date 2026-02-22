@@ -6,6 +6,7 @@ const cors = require('cors');
 require('dotenv/config');
 
 
+
 app.use(cors());
 app.options('*', cors())
 
@@ -15,13 +16,19 @@ app.use(bodyParser.json());
 
 // Routes
 const categoryRoutes = require('./routes/categories');
-const subCatSchema = require('./routes/subCat');
+const subCatSchema = require('./routes/subCat.js');
 const productRoutes = require('./routes/products');
+const imageUploadRoutes = require('./helper/imageUpload.js');
+const productWeightRoutes = require('./routes/productWeight.js');
+const productRAMSRoutes = require('./routes/productRAMS.js');
 
 app.use("/uploads", express.static('uploads'));
 app.use(`/api/category`, categoryRoutes);
 app.use(`/api/subCat`, subCatSchema);
 app.use(`/api/products`, productRoutes);
+app.use(`/api/imageUpload`, imageUploadRoutes);
+app.use(`/api/productWeight`, productWeightRoutes);
+app.use(`/api/productRAMS`, productRAMSRoutes);
 
 
 //Database

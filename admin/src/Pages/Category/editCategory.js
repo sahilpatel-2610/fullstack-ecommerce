@@ -7,7 +7,7 @@ import { useState } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import Button from '@mui/material/Button';
 import 'react-lazy-load-image-component/src/effects/blur.css';
-import { editData, fetchDataFromApi, postData } from "../../utils/api";
+import { deleteData, deleteImages, editData, fetchDataFromApi, postData } from "../../utils/api";
 import { useNavigate } from "react-router-dom";
 import CircularProgress from '@mui/material/CircularProgress';
 import { FaRegImages } from "react-icons/fa6";
@@ -84,16 +84,26 @@ const EditCategory = () => {
 
     useEffect(() => {
         context.setProgress(20);
+        fetchDataFromApi("/api/imageUpload").then((res) => {
+            res?.map((item)=>{
+                item?.images?.map((img)=>{
+                    deleteImages(`/api/category/deleteImage?img=${img}`).then((res) => {
+                        deleteData("/api/imageUpload/deleteAllImages");
+                    })
+                })
+            })
+        })
+
         fetchDataFromApi(`/api/category/${id}`).then((res) => {
             setcategory(res);
             setFormFields({
                 name: res.name,
-                subCat: res.subCat,
                 color: res.color
             });
             setPreviews(res.images);
             context.setProgress(100);
         });
+        
     },[]);
 
 

@@ -12,7 +12,6 @@ import Button from '@mui/material/Button';
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { postData } from "../../utils/api";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 
 //breadcrumb code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
@@ -39,8 +38,6 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 const AddSubCat = () => {
 
     const [categoryVal, setCategoryVal] = useState('');
-    const [catData, setCatData] = useState([]);
-    const [subCatData, setSubCatData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [formFields, setFormFields] = useState({
         category: '',
@@ -49,12 +46,6 @@ const AddSubCat = () => {
 
     const history = useNavigate();
     const context = useContext(MyContext);
-
-
-    useEffect(()=> {
-        setCatData(context.catData);
-        setSubCatData(context.MyContext);
-    },[context.catData, context.subCatData]);
 
     
     const inputChange = (e) => {
@@ -101,11 +92,8 @@ const AddSubCat = () => {
 
         postData('/api/subCat/create', formFields).then(res => {
             setIsLoading(false);
-            context.fetchCategory();
-            context.fetchSubCategory();
             history('/subCategory');
         });
-        
     }
 
 
@@ -153,7 +141,7 @@ const AddSubCat = () => {
                                                 <em value={null}>None</em>
                                             </MenuItem>
                                             {
-                                                catData?.categoryList?.length !== 0 && catData?.categoryList?.map((cat,index)=>{
+                                                context.catData?.categoryList?.length !== 0 && context.catData?.categoryList?.map((cat,index)=>{
                                                 // catData?.categoryList?.map((cat, index) => {
                                                     return(
                                                         <MenuItem className="text-capitalize" value={cat._id} key={index} >{cat.name}</MenuItem>

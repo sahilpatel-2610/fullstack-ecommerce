@@ -21,6 +21,7 @@ import EditCategory from './Pages/Category/editCategory';
 import SubCatAdd from './Pages/Category/addSubCat';
 import SubCatList from './Pages/Category/subCategoryList';
 import EditSubCategory from './Pages/Category/editSubCat';
+import AddProductRAMS from './Pages/Products/addProductRAMS';
 
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
@@ -44,6 +45,7 @@ function App() {
   const [theme, setTheme] = useState(localStorage.getItem('theme') ? localStorage.getItem('theme') : 'light');
   const [catData, setCatData] = useState([]);
   const [subCatData, setSubCatData] = useState([]);
+
   const [baseUrl, setBaseUrl] = useState("http://localhost:4000");
 
   const [progress, setProgress] = useState(0);
@@ -209,6 +211,7 @@ function App() {
               <Route path="/subCategory/" exact={true} element={<SubCatList />} />
               <Route path="/subCategory/add" exact={true} element={<SubCatAdd />} />
               <Route path="/subCategory/edit/:id" exact={true} element={<EditSubCategory />} />
+              <Route path="/productRAMS/add" exact={true} element={<AddProductRAMS />} />
             </Routes>
           </div>
         </div>

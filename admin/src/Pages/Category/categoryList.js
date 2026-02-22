@@ -62,9 +62,16 @@ const Category = () => {
     },[]);
 
     const deleteCat = (id) => {
+        context.setProgress(30);
         deleteData(`/api/category/${id}`).then(res => {
             fetchDataFromApi('/api/category').then((res) => {
                 setCatData(res);
+                context.setProgress(100);
+                context.setProgress({
+                    open: true,
+                    error: false,
+                    msg: "Category Deleted!"
+                })
             })
         })
     }

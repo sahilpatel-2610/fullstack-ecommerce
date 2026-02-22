@@ -54,15 +54,18 @@ const peoductSchema = mongoose.Schema({
         required: true,
     },
     productRAMS:{
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'ProductRams',
         default: null,
     },
     productSIZE:{
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'ProductSize',
         default: null,
     },
     productWEIGHT:{
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'ProductWeight',
         default: null,
     },
     dateCreated: {

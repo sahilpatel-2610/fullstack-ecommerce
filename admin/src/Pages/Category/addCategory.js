@@ -7,7 +7,7 @@ import { useState } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import Button from '@mui/material/Button';
 import 'react-lazy-load-image-component/src/effects/blur.css';
-import { deleteData, fetchDataFromApi, postData } from "../../utils/api";
+import { deleteImages, deleteData, fetchDataFromApi, postData } from "../../utils/api";
 import { useNavigate } from "react-router-dom";
 import CircularProgress from '@mui/material/CircularProgress';
 import { FaRegImages } from "react-icons/fa6";
@@ -80,6 +80,7 @@ const AddCategory = () => {
             }
         }
     }, [imgFiles]);
+
 
 
     const changeInput = (e) => {
@@ -155,6 +156,47 @@ const AddCategory = () => {
         });
 
     }
+    
+    // const onChangeFile = async (e, apiEndPoint) => {
+    // try {
+    //     const files = e.target.files;
+
+    //     setUploading(true);
+
+    //     const formData = new FormData();
+
+    //     for (let i = 0; i < files.length; i++) {
+
+    //         if (
+    //             files[i].type === "image/jpeg" ||
+    //             files[i].type === "image/jpg" ||
+    //             files[i].type === "image/png" ||
+    //             files[i].type === "image/webp"
+    //         ) {
+    //             formData.append("images", files[i]);
+    //         } else {
+    //             context.setAlertBox({
+    //                 open: true,
+    //                 error: true,
+    //                 msg: "Please select a valid image file."
+    //             });
+    //         }
+    //     }
+
+    //     const res = await postData(apiEndPoint, formData);
+
+    //     // IMPORTANT: Assuming API returns uploaded image URLs
+    //     if (res?.images) {
+    //         setPreviews((prev) => [...prev, ...res.images]);
+    //     }
+
+    //     setUploading(false);
+
+    // } catch (error) {
+    //     console.log(error);
+    //     setUploading(false);
+    // }
+    // };
 
 
     const addCat = (e) => {
@@ -197,6 +239,13 @@ const AddCategory = () => {
         }
         
     } 
+    const removeImg = (index, imgUrl) => {
+
+        deleteImages(`/api/category/deleteImage?img=${imgUrl}`);
+
+        setPreviews((prev) => prev.filter((img) => img !== imgUrl));
+
+    };
 
 
 

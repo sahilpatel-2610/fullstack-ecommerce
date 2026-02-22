@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { ImageUpload } = require("../../models/imageUpload");
+const { ImageUpload } = require("../models/imageUpload");
 
 router.get(`/`, async (req, res) => {
     try {
