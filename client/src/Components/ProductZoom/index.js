@@ -10,69 +10,69 @@ import { useState } from "react";
 
 const ProductZoom = () => {
 
-    const [slideIndex, setSlideIndex] = useState(0);
-    const zoomSliderBig = useRef();
-    const zoomSlider = useRef();
+  const [slideIndex, setSlideIndex] = useState(0);
+  const zoomSliderBig = useRef();
+  const zoomSlider = useRef();
 
-    const goto = (index) => {
-        setSlideIndex(index);
-        zoomSliderBig.current.swiper.slideTo(index);
-        zoomSlider.current.swiper.slideTo(index);
-    };
-    
-
-    return (
-        <div className="productZoom">
-               <div className="productZoom position-relative">
-            <div className="badge badge-primary">23%</div>
-
-            {/* Main Swiper */}
-            <Swiper
-              slidesPerView={1}
-              spaceBetween={0}
-              navigation={false}
-              modules={[Navigation]}
-              className="zoomSliderBig"
-              ref={zoomSliderBig}
-            >
-              <SwiperSlide>
-                <InnerImageZoom
-                  zoomType="hover"
-                  zoomScale={1}
-                  src={`https://wp.alithemes.com/html/nest/demo/assets/imgs/shop/product-16-1.jpg`}
-                />
-              </SwiperSlide>
-              <SwiperSlide>
-                <InnerImageZoom
-                  zoomType="hover"
-                  zoomScale={1}
-                  src={`https://wp.alithemes.com/html/nest/demo/assets/imgs/shop/product-16-2.jpg`}
-                />
-              </SwiperSlide>
-              <SwiperSlide>
-                <InnerImageZoom
-                  zoomType="hover"
-                  zoomScale={1}
-                  src={`https://wp.alithemes.com/html/nest/demo/assets/imgs/shop/product-16-3.jpg`}
-                />
-              </SwiperSlide>
-            </Swiper>
-          </div>
+  const goto = (index) => {
+    setSlideIndex(index);
+    zoomSliderBig.current.swiper.slideTo(index);
+    zoomSlider.current.swiper.slideTo(index);
+  };
 
 
-         
-    
-        {/* Thumbnail Swiper */}
-          <Swiper
-            slidesPerView={4}
-            spaceBetween={10}
-            navigation={true}
-            slidesPerGroup={1}
-            modules={[Navigation]}
-            className="zoomSlider"
-            ref={zoomSlider}
-          >
+  return (
+    <div className="productZoom">
+      <div className="productZoom position-relative">
+        <div className="badge badge-primary">23%</div>
+
+        {/* Main Swiper */}
+        <Swiper
+          slidesPerView={1}
+          spaceBetween={0}
+          navigation={false}
+          modules={[Navigation]}
+          className="zoomSliderBig"
+          ref={zoomSliderBig}
+        >
           <SwiperSlide>
+            <InnerImageZoom
+              zoomType="hover"
+              zoomScale={1}
+              src={`https://wp.alithemes.com/html/nest/demo/assets/imgs/shop/product-16-1.jpg`}
+            />
+          </SwiperSlide>
+          <SwiperSlide>
+            <InnerImageZoom
+              zoomType="hover"
+              zoomScale={1}
+              src={`https://wp.alithemes.com/html/nest/demo/assets/imgs/shop/product-16-2.jpg`}
+            />
+          </SwiperSlide>
+          <SwiperSlide>
+            <InnerImageZoom
+              zoomType="hover"
+              zoomScale={1}
+              src={`https://wp.alithemes.com/html/nest/demo/assets/imgs/shop/product-16-3.jpg`}
+            />
+          </SwiperSlide>
+        </Swiper>
+      </div>
+
+
+
+
+      {/* Thumbnail Swiper */}
+      <Swiper
+        slidesPerView={4}
+        spaceBetween={10}
+        navigation={true}
+        slidesPerGroup={1}
+        modules={[Navigation]}
+        className="zoomSlider"
+        ref={zoomSlider}
+      >
+        <SwiperSlide>
           <div
             className={`thumb_item ${slideIndex === 0 ? 'active' : ''}`}
             onClick={() => goto(0)}
@@ -82,9 +82,9 @@ const ProductZoom = () => {
               alt="thumb1"
             />
           </div>
-          </SwiperSlide>
+        </SwiperSlide>
 
-          <SwiperSlide>
+        <SwiperSlide>
           <div
             className={`thumb_item ${slideIndex === 1 ? 'active' : ''}`}
             onClick={() => goto(1)}
@@ -94,22 +94,22 @@ const ProductZoom = () => {
               alt="thumb2"
             />
           </div>
-          </SwiperSlide>
+        </SwiperSlide>
 
-          <SwiperSlide>
+        <SwiperSlide>
           <div
             className={`thumb_item ${slideIndex === 2 ? 'active' : ''}`}
             onClick={() => goto(2)}
           >
             <img
-             src="https://wp.alithemes.com/html/nest/demo/assets/imgs/shop/thumbnail-5.jpg"
+              src="https://wp.alithemes.com/html/nest/demo/assets/imgs/shop/thumbnail-5.jpg"
               alt="thumb3"
             />
           </div>
-          </SwiperSlide>
-          </Swiper>
-        </div>
-    )
+        </SwiperSlide>
+      </Swiper>
+    </div>
+  )
 }
 
 export default ProductZoom;

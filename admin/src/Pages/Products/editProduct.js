@@ -29,35 +29,35 @@ import { Link, useParams } from "react-router-dom";
 
 //breadcrumb code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
-  const backgroundColor =
-    theme.palette.mode === "light"
-        ? theme.palette.grey[100]
-        : theme.palette.grey[800];
-  return {
-    backgroundColor,
-    height: theme.spacing(3),
-    color: theme.palette.text.primary,
-    fontWeight: theme.typography.fontWeightRegular,
-    "&:hover, &:focus": {
-      backgroundColor: emphasize(backgroundColor, 0.06),
-    },
-    '&:active': {
-      boxShadow: theme.shadows[1],
-      backgroundColor: emphasize(backgroundColor, 0.12),
-    },
-  };
+    const backgroundColor =
+        theme.palette.mode === "light"
+            ? theme.palette.grey[100]
+            : theme.palette.grey[800];
+    return {
+        backgroundColor,
+        height: theme.spacing(3),
+        color: theme.palette.text.primary,
+        fontWeight: theme.typography.fontWeightRegular,
+        "&:hover, &:focus": {
+            backgroundColor: emphasize(backgroundColor, 0.06),
+        },
+        '&:active': {
+            boxShadow: theme.shadows[1],
+            backgroundColor: emphasize(backgroundColor, 0.12),
+        },
+    };
 });
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
-  PaperProps: {
+    PaperProps: {
         style: {
             maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
             width: 250,
         },
     },
-};          
+};
 
 const EditUpload = () => {
 
@@ -69,7 +69,7 @@ const EditUpload = () => {
 
     const [ratingValue, setRatingValue] = useState(1);
     const [isFeaturedValue, setisFeaturedValue] = useState('');
-   
+
     const [catData, setCatData] = useState([]);
     const [subCatData, setSubCatData] = useState([]);
     const [productImagesArr, setproductImagesArr] = useState([]);
@@ -146,13 +146,13 @@ const EditUpload = () => {
             context.setProgress(100);
         });
 
-    },[]);
+    }, []);
 
 
     useEffect(() => {
         if (!imgFiles) return;
         let tmp = [];
-        for(let i=0; i<imgFiles.length; i++){
+        for (let i = 0; i < imgFiles.length; i++) {
             tmp.push(URL.createObjectURL(imgFiles[i]));
         }
 
@@ -160,8 +160,8 @@ const EditUpload = () => {
         setPreviews(objectUrls);
 
         // free memory 
-        for(let i=0; i<objectUrls.length; i++){
-            return() => {
+        for (let i = 0; i < objectUrls.length; i++) {
+            return () => {
                 URL.revokeObjectURL(objectUrls[i]);
             }
         }
@@ -188,16 +188,16 @@ const EditUpload = () => {
         setisFeaturedValue(event.target.value);
         setFormFields(() => ({
             ...formFields,
-            isFeatured:event.target.value
+            isFeatured: event.target.value
         }))
     };
 
     const handleChangeProductRams = (event) => {
-       setProductRams(event.target.value);
-         setFormFields(() => ({
+        setProductRams(event.target.value);
+        setFormFields(() => ({
             ...formFields,
             productRAMS: event.target.value
-         }))
+        }))
     };
 
     const handleChangeProductWeight = (event) => {
@@ -225,21 +225,21 @@ const EditUpload = () => {
     }
 
 
-  
-    const onChangeFile = async(e, apiEndPoint) => {
+
+    const onChangeFile = async (e, apiEndPoint) => {
         try {
-            
+
             const files = e.target.files;
             setUploading(true);
-    
+
             // const fd = new FormData();
             for (var i = 0; i < files.length; i++) {
 
                 //validate file type
                 if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png' || files[i].type === 'image/webp')) {
-                    
+
                     const file = files[i];
-               
+
                     formdata.append(`images`, file);
 
 
@@ -251,51 +251,40 @@ const EditUpload = () => {
                     });
 
                     return false;
-                }    
+                }
             }
-             
-           
+
+
         } catch (error) {
             console.log(error);
         }
 
-        
+
         postData(apiEndPoint, formdata).then((res) => {
-            fetchDataFromApi("/api/imageUpload").then((res) => {
-                if (response !== undefined && response !== null && response !== "" && response.length !== 0) {
+            if (res && res.length !== 0) {
+                const appendedArray = [...(previews || []), ...res];
+                setPreviews(appendedArray);
+                setIsSelectedImages(true);
 
-                    response.length !== 0 && response.map((item) => {
-                        item?.images.length !== 0 && item?.images?.map((img) => {
-                            img_arr.push(img);
-                        })
-                    })
-
-
-                    uniqueArray = img_arr.filter((item, index) => img_arr.indexOf(item) === index);
-
-                    const appendedArray = [...previews, ...uniqueArray];
-
-                    setPreviews(appendedArray);
-
-                    setTimeout(() => {
-                        setUploading(false);
-                        img_arr = [];
-                        context.setAlertBox({
-                            open: true,
-                            error: false,
-                            msg: "Images Uploaded!"
-                        })
-                    }, 500);
-                }
-            });
+                setTimeout(() => {
+                    setUploading(false);
+                    context.setAlertBox({
+                        open: true,
+                        error: false,
+                        msg: "Images Uploaded!"
+                    });
+                }, 500);
+            } else {
+                setUploading(false);
+            }
         });
 
     }
 
     const removeImg = async (index, imgUrl) => {
-    
+
         const imgIndex = previews.indexOf(imgUrl);
-    
+
         deleteImages(`/api/category/deleteImage?img=${imgUrl}`).then((res) => {
             context.setAlertBox({
                 open: true,
@@ -303,17 +292,17 @@ const EditUpload = () => {
                 msg: "Image Deleted!"
             })
         })
-    
+
         if (imgIndex > -1) { //only splice array when item is found
             previews.splice(imgIndex, 1); //2nd parameter means remove one item only
         }
     }
-    
+
 
 
     const editProduct = (e) => {
         e.preventDefault();
-    
+
 
         formdata.append('name', formFields.name);
         formdata.append('description', formFields.description);
@@ -332,7 +321,7 @@ const EditUpload = () => {
 
 
 
-        if(formFields.name === "") {
+        if (formFields.name === "") {
             context.setAlertBox({
                 open: true,
                 msg: 'please add product name',
@@ -341,7 +330,7 @@ const EditUpload = () => {
             return false;
         }
 
-        if(formFields.description === "") {
+        if (formFields.description === "") {
             context.setAlertBox({
                 open: true,
                 msg: 'please add product description',
@@ -350,7 +339,7 @@ const EditUpload = () => {
             return false;
         }
 
-        if(formFields.brand === "") {
+        if (formFields.brand === "") {
             context.setAlertBox({
                 open: true,
                 msg: 'please add product brand',
@@ -359,7 +348,7 @@ const EditUpload = () => {
             return false;
         }
 
-        if(formFields.price === null) {
+        if (formFields.price === null) {
             context.setAlertBox({
                 open: true,
                 msg: 'please add product price',
@@ -368,7 +357,7 @@ const EditUpload = () => {
             return false;
         }
 
-        if(formFields.oldPrice === null) {
+        if (formFields.oldPrice === null) {
             context.setAlertBox({
                 open: true,
                 msg: 'please add product oldPrice',
@@ -377,7 +366,7 @@ const EditUpload = () => {
             return false;
         }
 
-        if(formFields.category === "") {
+        if (formFields.category === "") {
             context.setAlertBox({
                 open: true,
                 msg: 'please select a category',
@@ -385,7 +374,7 @@ const EditUpload = () => {
             })
         }
 
-        if(formFields.subCat === "") {
+        if (formFields.subCat === "") {
             context.setAlertBox({
                 open: true,
                 msg: 'please select a sub category',
@@ -394,7 +383,7 @@ const EditUpload = () => {
         }
 
 
-        if(formFields.countInStock === null) {
+        if (formFields.countInStock === null) {
             context.setAlertBox({
                 open: true,
                 msg: 'please add product count in stock',
@@ -403,7 +392,7 @@ const EditUpload = () => {
             return false;
         }
 
-        if(formFields.rating === 0) {
+        if (formFields.rating === 0) {
             context.setAlertBox({
                 open: true,
                 msg: 'please select product rating',
@@ -412,7 +401,7 @@ const EditUpload = () => {
             return false;
         }
 
-        if(formFields.isFeatured === null) {
+        if (formFields.isFeatured === null) {
             context.setAlertBox({
                 open: true,
                 msg: 'please select the product is a featured or not',
@@ -421,7 +410,7 @@ const EditUpload = () => {
             return false;
         }
 
-         if(formFields.discount === null) {
+        if (formFields.discount === null) {
             context.setAlertBox({
                 open: true,
                 msg: 'please select the product discount',
@@ -430,7 +419,9 @@ const EditUpload = () => {
             return false;
         }
 
-        if(formFields.length === 0) {
+        formFields.images = previews;
+
+        if (!previews || previews.length === 0) {
             context.setAlertBox({
                 open: true,
                 msg: 'please select images',
@@ -454,7 +445,7 @@ const EditUpload = () => {
         })
     }
 
-   
+
     return (
         <>
             <div className="right-content w-100">
@@ -484,7 +475,7 @@ const EditUpload = () => {
                         <div className="col-md-12">
                             <div className="card p-4 mt-0">
                                 <h5 className="mb-4">Basic Information</h5>
-                                
+
                                 <div className="form-group">
                                     <h6>PRODUCT NAME</h6>
                                     <input type='text' name="name" value={formFields.name} onChange={inputChange} />
@@ -501,8 +492,8 @@ const EditUpload = () => {
 
                                 <div className='row'>
                                     <div className='col'>
-                                        <div className='form-group'>   
-                                            <h6>CATEGORY</h6>  
+                                        <div className='form-group'>
+                                            <h6>CATEGORY</h6>
                                             <Select
                                                 value={categoryVal}
                                                 onChange={handleChangeCategory}
@@ -514,22 +505,22 @@ const EditUpload = () => {
                                                     <em value={null}>None</em>
                                                 </MenuItem>
                                                 {
-                                                    context.catData?.categoryList?.length !== 0 && context.catData?.categoryList?.map((cat,index)=>{
-                                                    // catData?.categoryList?.map((cat, index) => {
-                                                        return(
+                                                    context.catData?.categoryList?.length !== 0 && context.catData?.categoryList?.map((cat, index) => {
+                                                        // catData?.categoryList?.map((cat, index) => {
+                                                        return (
                                                             <MenuItem className="text-capitalize" value={cat._id} key={index} >{cat.name}</MenuItem>
                                                         )
                                                     })
                                                 }
 
                                             </Select>
-                                          
-                                        </div> 
+
+                                        </div>
                                     </div>
 
-                                   <div className='col'>
-                                        <div className='form-group'>   
-                                            <h6>SUB CATEGORY</h6>  
+                                    <div className='col'>
+                                        <div className='form-group'>
+                                            <h6>SUB CATEGORY</h6>
                                             <Select
                                                 value={subCatVal}
                                                 onChange={handleChangeSubCategory}
@@ -551,30 +542,30 @@ const EditUpload = () => {
 
                                                 {
                                                     context.subCatData?.subCategoryList?.length !== 0 &&
-                                                    context.subCatData?.subCategoryList?.map((subCat,index)=>{
+                                                    context.subCatData?.subCategoryList?.map((subCat, index) => {
                                                         return (
                                                             <MenuItem value={subCat._id} key={index}>
-                                                            {subCat.subCat}
-                                                        </MenuItem>
+                                                                {subCat.subCat}
+                                                            </MenuItem>
                                                         )
                                                     })
 
                                                 }
 
-                                                
+
 
                                             </Select>
-                                          
-                                        </div> 
+
+                                        </div>
                                     </div>
 
 
                                     <div className='col'>
-                                        <div className='form-group'>   
-                                            <h6>PRICE</h6> 
-                                                <input type='text' name="price" value={formFields.price} onChange={inputChange} />
+                                        <div className='form-group'>
+                                            <h6>PRICE</h6>
+                                            <input type='text' name="price" value={formFields.price} onChange={inputChange} />
                                         </div>
-                                    </div>  
+                                    </div>
 
                                 </div>
 
@@ -582,69 +573,69 @@ const EditUpload = () => {
                                 <div className="row">
 
                                     <div className='col'>
-                                        <div className='form-group'>   
-                                            <h6>OLD PRICE</h6> 
-                                                <input type='text' name="oldPrice" value={formFields.oldPrice}  onChange={inputChange} />
+                                        <div className='form-group'>
+                                            <h6>OLD PRICE</h6>
+                                            <input type='text' name="oldPrice" value={formFields.oldPrice} onChange={inputChange} />
                                         </div>
-                                    </div>     
+                                    </div>
 
                                     <div className='col'>
-                                       <div className='form-group'>   
-                                                <h6 className="text-uppercase">is Featured</h6> 
-                                                    <Select
-                                                        value={isFeaturedValue}
-                                                        onChange={handleChangeisFeaturedValue}
-                                                        displayEmpty
-                                                        inputProps={{ 'aria-label': 'Without label' }}
-                                                        className="w-100"
-                                                    >
-                                                    <MenuItem value="">
-                                                        <em value={null}>None</em>
-                                                    </MenuItem>
-                                                    <MenuItem value={true}>True</MenuItem>
-                                                    <MenuItem value={false}>False</MenuItem>
-                                                </Select>
-                                            </div>
-                                    </div>        
+                                        <div className='form-group'>
+                                            <h6 className="text-uppercase">is Featured</h6>
+                                            <Select
+                                                value={isFeaturedValue}
+                                                onChange={handleChangeisFeaturedValue}
+                                                displayEmpty
+                                                inputProps={{ 'aria-label': 'Without label' }}
+                                                className="w-100"
+                                            >
+                                                <MenuItem value="">
+                                                    <em value={null}>None</em>
+                                                </MenuItem>
+                                                <MenuItem value={true}>True</MenuItem>
+                                                <MenuItem value={false}>False</MenuItem>
+                                            </Select>
+                                        </div>
+                                    </div>
 
                                     <div className='col'>
-                                        <div className='form-group'>   
-                                            <h6>PRODUCT STOCK</h6> 
-                                                <input type='text' name="countInStock" value={formFields.countInStock} onChange={inputChange} />
+                                        <div className='form-group'>
+                                            <h6>PRODUCT STOCK</h6>
+                                            <input type='text' name="countInStock" value={formFields.countInStock} onChange={inputChange} />
                                         </div>
-                                    </div> 
+                                    </div>
                                 </div>
 
 
 
                                 <div className="row">
                                     <div className='col-md-4'>
-                                        <div className='form-group'>   
-                                            <h6>BRAND</h6> 
+                                        <div className='form-group'>
+                                            <h6>BRAND</h6>
                                             <input type='text' name="brand" value={formFields.brand} onChange={inputChange} />
                                         </div>
-                                    </div>   
-                                
+                                    </div>
+
                                     <div className='col-md-4'>
-                                        <div className='form-group'>   
-                                            <h6>DISCOUNT</h6> 
+                                        <div className='form-group'>
+                                            <h6>DISCOUNT</h6>
                                             <input type='text' name="discount" value={formFields.discount} onChange={inputChange} />
                                         </div>
-                                    </div>    
-                                
+                                    </div>
+
                                     <div className='col-md-4'>
-                                        <div className='form-group'>   
-                                            <h6>PRODUCT RAMS</h6> 
+                                        <div className='form-group'>
+                                            <h6>PRODUCT RAMS</h6>
                                             <Select
                                                 value={productRams}
                                                 onChange={handleChangeProductRams}
                                                 displayEmpty
                                                 inputProps={{ 'aria-label': 'Without label' }}
                                                 className="w-100"
-                                
+
                                                 MenuProps={MenuProps}
                                             >
-                                                <MenuItem  value="">
+                                                <MenuItem value="">
                                                     <em value={null}>None</em>
                                                 </MenuItem>
                                                 <MenuItem value={'4GB'}>4GB</MenuItem>
@@ -653,11 +644,11 @@ const EditUpload = () => {
                                                 <MenuItem value={'32GB'}>32GB</MenuItem>
                                             </Select>
                                         </div>
-                                    </div> 
-                                
+                                    </div>
+
                                     <div className='col-md-4'>
-                                        <div className='form-group'>   
-                                            <h6>PRODUCT WEIGHT</h6> 
+                                        <div className='form-group'>
+                                            <h6>PRODUCT WEIGHT</h6>
                                             <Select
                                                 value={productWeight}
                                                 onChange={handleChangeProductWeight}
@@ -665,7 +656,7 @@ const EditUpload = () => {
                                                 inputProps={{ 'aria-label': 'Without label' }}
                                                 className="w-100"
                                             >
-                                                <MenuItem  value="">
+                                                <MenuItem value="">
                                                     <em value={null}>None</em>
                                                 </MenuItem>
                                                 <MenuItem value={'500GM'}>500GM</MenuItem>
@@ -675,11 +666,11 @@ const EditUpload = () => {
                                                 <MenuItem value={'4KG'}>4KG</MenuItem>
                                             </Select>
                                         </div>
-                                    </div> 
-                                
+                                    </div>
+
                                     <div className='col-md-4'>
-                                        <div className='form-group'>   
-                                            <h6>PRODUCT SIZE</h6> 
+                                        <div className='form-group'>
+                                            <h6>PRODUCT SIZE</h6>
                                             <Select
                                                 value={productSize}
                                                 onChange={handleChangeProductSize}
@@ -687,7 +678,7 @@ const EditUpload = () => {
                                                 inputProps={{ 'aria-label': 'Without label' }}
                                                 className="w-100"
                                             >
-                                                <MenuItem  value="">
+                                                <MenuItem value="">
                                                     <em value={null}>None</em>
                                                 </MenuItem>
                                                 <MenuItem value={'S'}>S</MenuItem>
@@ -697,34 +688,34 @@ const EditUpload = () => {
                                                 <MenuItem value={'XXL'}>XXL</MenuItem>
                                             </Select>
                                         </div>
-                                            
-                                    </div>  
+
+                                    </div>
 
                                     <div className='col-md-4'>
                                         <div className='col'>
-                                            <div className='form-group'>   
-                                                <h6>RATINGS</h6> 
-                                                    <Rating
-                                                        name="simple-controlled"
-                                                        value={ratingValue}
-                                                        onChange={(event, newValue) => {
-                                                            setRatingValue(newValue);
-                                                            setFormFields(() => ({
-                                                                ...formFields,
-                                                                rating:newValue
-                                                            }))
-                                                        }}      
-                                                    />
+                                            <div className='form-group'>
+                                                <h6>RATINGS</h6>
+                                                <Rating
+                                                    name="simple-controlled"
+                                                    value={ratingValue}
+                                                    onChange={(event, newValue) => {
+                                                        setRatingValue(newValue);
+                                                        setFormFields(() => ({
+                                                            ...formFields,
+                                                            rating: newValue
+                                                        }))
+                                                    }}
+                                                />
                                             </div>
-                                        </div>  
+                                        </div>
                                     </div>
 
-                                </div> 
+                                </div>
 
                             </div>
 
                         </div>
-                        
+
                     </div>
 
                     <div className='card p-4 mt-0'>
@@ -733,19 +724,16 @@ const EditUpload = () => {
 
                             <div className="imgUploadBox d-flex align-items-center">
 
-                               {
-                                  previews?.length !== 0 && previews?.map((img, index) => {
-                                    return (
-                                        <div className="uploadBox" key={index}>
-                                            <span className="remove" onClick={() => removeImg(index, img)}><IoCloseSharp /></span>
-                                            {
-                                                isSelectedImages === true ? <img src={`${img}`} className="w-100" /> : <img src={`${context.baseUrl}/uploads/${img}`} className="w-100" />
-                                            }
-                                            
-                                        </div>
-                                    )
-                                  })
-                               }
+                                {
+                                    previews?.length !== 0 && previews?.map((img, index) => {
+                                        return (
+                                            <div className="uploadBox" key={index}>
+                                                <span className="remove" onClick={() => removeImg(index, img)}><IoCloseSharp /></span>
+                                                <img src={img} className="w-100" />
+                                            </div>
+                                        )
+                                    })
+                                }
 
 
 

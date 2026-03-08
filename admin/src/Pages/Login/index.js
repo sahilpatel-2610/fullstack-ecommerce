@@ -18,11 +18,11 @@ const Login = () => {
 
     const [inputIndex, setInputIndex] = useState(null);
     const [isShowPassword, setisShowPassword] = useState(false);
-    const  context = useContext(MyContext);
+    const context = useContext(MyContext);
 
     useEffect(() => {
         context.setisHideSidebarAndHeader(true);
-    },[])
+    }, [])
 
     const focusInput = (index) => {
         setInputIndex(index);
@@ -47,13 +47,13 @@ const Login = () => {
 
                             <div className={`form-group position-relative ${inputIndex === 1 && 'focus'}`}>
                                 <span className='icon'><IoMdLock /></span>
-                                <input type={`${isShowPassword === true  ? 'text' : 'password'}`} className='form-control' placeholder='enter your password' onFocus={() => focusInput(1)} onBlur={() => setInputIndex(null)} />
+                                <input type={`${isShowPassword === true ? 'text' : 'password'}`} className='form-control' placeholder='enter your password' onFocus={() => focusInput(1)} onBlur={() => setInputIndex(null)} />
 
                                 <span className='toggleShowPassword' onClick={() => setisShowPassword(!isShowPassword)}>
-                                {
-                                    isShowPassword === true ? <IoMdEyeOff /> : <IoMdEye />
-                                }    
-                                    
+                                    {
+                                        isShowPassword === true ? <IoMdEyeOff /> : <IoMdEye />
+                                    }
+
                                 </span>
 
                             </div>
@@ -72,7 +72,7 @@ const Login = () => {
                                 </div>
 
                                 <Button variant="outlined" className='w-100 btn-lg btn-big loginWithGooogle'>
-                                   <img src={googleicon} width="25px" /> &nbsp; Sign In with Google
+                                    <img src={googleicon} width="25px" /> &nbsp; Sign In with Google
                                 </Button>
 
 
@@ -82,12 +82,12 @@ const Login = () => {
 
                     </div>
 
-                     <div className='wrapper mt-3 card border footer p-3'>
+                    <div className='wrapper mt-3 card border footer p-3'>
                         <span className='text-center'>
                             Don't have an account?
                             <Link to={'/signUp'} className='link color ml-2'>  Register</Link>
                         </span>
-                     </div>
+                    </div>
 
 
 

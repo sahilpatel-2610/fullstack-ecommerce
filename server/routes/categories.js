@@ -20,13 +20,13 @@ var imagesArr = [];
 
 const storage = multer.diskStorage({
 
-  destination: function (req, file, cb) {
-    cb(null, 'uploads');
-  },
-  filename: function (req, file, cb) {
-    cb(null, `${Date.now()}_${file.originalname}`);
-    // imagesArr.push(`${Date.now()}-${file.originalname}`);
-  },
+    destination: function (req, file, cb) {
+        cb(null, 'uploads');
+    },
+    filename: function (req, file, cb) {
+        cb(null, `${Date.now()}_${file.originalname}`);
+        // imagesArr.push(`${Date.now()}-${file.originalname}`);
+    },
 })
 
 const upload = multer({ storage: storage });
@@ -50,7 +50,7 @@ router.post(`/upload`, upload.array("images"), async (req, res) => {
                     imagesArr.push(result.secure_url);
                     fs.unlinkSync(`uploads/${req.files[i].filename}`);
                 });
-        } 
+        }
 
         let imagesUploaded = new ImageUpload({
             images: imagesArr,
@@ -62,12 +62,12 @@ router.post(`/upload`, upload.array("images"), async (req, res) => {
     } catch (error) {
         console.log(error);
     }
-    
+
 });
 
 
 router.get(`/`, async (req, res) => {
-   try {
+    try {
         const page = parseInt(req.query.page) || 1;
         const perPage = 6;
         const totalPosts = await Category.countDocuments();
@@ -78,52 +78,71 @@ router.get(`/`, async (req, res) => {
         }
 
         const categoryList = await Category.find()
-        .skip((page - 1) * perPage)
-        .limit(perPage)
-        .exec();
+            .skip((page - 1) * perPage)
+            .limit(perPage)
+            .exec();
 
         if (!categoryList) {
-        res.status(500).json({ success: false })
+            res.status(500).json({ success: false })
         }
-        
+
         return res.status(200).json({
             "categoryList": categoryList,
             "totalPages": totalPages,
             "page": page
         });
-        
-    }catch(error){
+
+    } catch (error) {
         res.status(500).json({ success: false })
     }
 });
 
 router.get('/:id', async (req, res) => {
 
-  try {
-    categoryEditId = req.params.id;
+    try {
+        categoryEditId = req.params.id;
 
-    const category = await Category.findById(req.params.id);
+        const category = await Category.findById(req.params.id);
 
-    if (!category) {
-      return res.status(404).json({ success: false, message: "Category not found" });
+        if (!category) {
+            return res.status(404).json({ success: false, message: "Category not found" });
+        }
+
+        return res.status(200).send(category);
+    } catch (error) {
+        console.error("Error fetching category:", error);
+        return res.status(500).json({ success: false, error: error.message });
     }
-
-    return res.status(200).send(category);
-  } catch (error) {
-    console.error("Error fetching category:", error);
-    return res.status(500).json({ success: false, error: error.message });
-  }
 });
 
+router.delete('/deleteImage', async (req, res) => {
+    const imgUrl = req.query.img;
 
+    if (!imgUrl) {
+        return res.status(400).send("Image URL is required");
+    }
+
+    const urlArr = imgUrl.split('/');
+    const image = urlArr[urlArr.length - 1];
+
+    const imageName = image.split('.')[0];
+
+    try {
+        const response = await cloudinary.uploader.destroy(imageName);
+        return res.status(200).send(response || { success: true, message: "Image removed" });
+    } catch (error) {
+        console.error("Cloudinary delete error:", error);
+        return res.status(500).send(error);
+    }
+});
 
 router.delete('/:id', async (req, res) => {
 
     const category = await Category.findById(req.params.id);
     const images = category.images;
-    
-    if(images.length!==0){
-        for(image of images){
+
+    if (images.length !== 0) {
+        for (image of images) {
             fs.unlinkSync(`uploads/${image}`);
         }
     }
@@ -154,7 +173,7 @@ router.post('/create', async (req, res) => {
     });
 
 
-    if(!category) {
+    if (!category) {
         res.status(500).json({
             error: err,
             success: false
@@ -172,7 +191,7 @@ router.post('/create', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
     try {
-      
+
         const category = await Category.findByIdAndUpdate(
             req.params.id,
             {

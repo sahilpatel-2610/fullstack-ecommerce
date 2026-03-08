@@ -49,7 +49,7 @@
 //       {
 //         catData?.length!==0 && <HomeCat catData={catData} />
 //       }
-      
+
 
 //       <section className="homeProducts py-5">
 //         <div className="container">
@@ -99,7 +99,7 @@
 //                     )
 //                   })
 //                 }
-                
+
 //               </Swiper>
 
 //               {/* -------- NEW PRODUCTS -------- */}
@@ -116,7 +116,7 @@
 //               </div>
 
 //               <div className="product_row productRow2 w-100 mt-4 d-flex">
-                
+
 //                 {
 //                   productsData?.products?.length !== 0 && productsData?.products?.map((item, index) => {
 //                     return (
@@ -126,7 +126,7 @@
 //                     )
 //                   })
 //                 }
-                
+
 
 
 //                 <div className="col-md-3 col-6 mb-4"><ProductItem /></div>
@@ -149,7 +149,7 @@
 //                   <img src={banner4} className="w-100 cursor" alt="Banner4" />
 //                 </div>
 //               </div>
-              
+
 //             </div>
 //           </div>
 //         </div>
@@ -179,7 +179,7 @@
 //         </div>
 //       </section>
 
-    
+
 
 //     </>
 //   );
@@ -218,30 +218,30 @@ const Home = () => {
   const [productsData, setProductsData] = useState([]);
 
 
-  
+
   useEffect(() => {
     fetchDataFromApi("/api/category/").then((res) => {
       setCatData(res);
     })
 
     fetchDataFromApi(`/api/products/featured`).then((res) => {
-     setFeaturedProducts(res);
+      setFeaturedProducts(res);
     })
 
     fetchDataFromApi("/api/products/").then((res) => {
       setProductsData(res);
     })
 
-  },[])
+  }, [])
 
 
   return (
     <>
       <HomeBanner />
       {
-        catData?.length!==0 && <HomeCat catData={catData} />
+        catData?.categoryList?.length !== 0 && <HomeCat catData={catData} />
       }
-      
+
 
       <section className="homeProducts py-5">
         <div className="container">
@@ -284,22 +284,14 @@ const Home = () => {
               >
 
                 {
-                  featuredProducts?.featured?.length !== 0 && featuredProducts?.featured?.map((item, index) => {
+                  featuredProducts?.length !== 0 && Array.isArray(featuredProducts) && featuredProducts?.map((item, index) => {
                     return (
                       <SwiperSlide key={index}>
                         <ProductItem item={item} />
                       </SwiperSlide>
                     )
                   })
-                } 
-
-
-                <SwiperSlide><ProductItem /></SwiperSlide>
-                <SwiperSlide><ProductItem /></SwiperSlide>
-                <SwiperSlide><ProductItem /></SwiperSlide>
-                <SwiperSlide><ProductItem /></SwiperSlide>
-                <SwiperSlide><ProductItem /></SwiperSlide>
-                <SwiperSlide><ProductItem /></SwiperSlide>
+                }
               </Swiper>
 
               {/* -------- NEW PRODUCTS -------- */}
@@ -337,7 +329,7 @@ const Home = () => {
                   <img src={banner4} className="w-100 cursor" alt="Banner4" />
                 </div>
               </div>
-              
+
             </div>
           </div>
         </div>
@@ -347,16 +339,16 @@ const Home = () => {
         <div className="container">
           <div className="row">
             <div className="col-md-6">
-                <p className="text-white mb-1">$20 discount for your first order</p>
-                <h3 className="text-white">Join our newsletter and get...</h3>
-                <p className="text-light">Join our email subscription now to get updates on<br /> promotions and coupons.</p>
+              <p className="text-white mb-1">$20 discount for your first order</p>
+              <h3 className="text-white">Join our newsletter and get...</h3>
+              <p className="text-light">Join our email subscription now to get updates on<br /> promotions and coupons.</p>
 
 
-               <form>
-                  <IoMailOutline />
-                  <input type="text" placeholder="Your Email Address"/>
-                  <Button>Subscribe</Button>
-               </form>
+              <form>
+                <IoMailOutline />
+                <input type="text" placeholder="Your Email Address" />
+                <Button>Subscribe</Button>
+              </form>
 
             </div>
 
@@ -367,7 +359,7 @@ const Home = () => {
         </div>
       </section>
 
-    
+
 
     </>
   );

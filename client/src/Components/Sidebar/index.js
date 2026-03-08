@@ -23,34 +23,34 @@ const Sidebar = () => {
                             <li>
                                 <FormControlLabel className='w-100' control={<Checkbox />} label="Women" />
                             </li>
-                             <li>
+                            <li>
                                 <FormControlLabel className='w-100' control={<Checkbox />} label="Beauty" />
                             </li>
-                             <li>
+                            <li>
                                 <FormControlLabel className='w-100' control={<Checkbox />} label="Watches" />
                             </li>
-                             <li>
+                            <li>
                                 <FormControlLabel className='w-100' control={<Checkbox />} label="Kids" />
                             </li>
-                             <li>
+                            <li>
                                 <FormControlLabel className='w-100' control={<Checkbox />} label="Gift" />
                             </li>
-                                 <li>
+                            <li>
                                 <FormControlLabel className='w-100' control={<Checkbox />} label="Man" />
                             </li>
                             <li>
                                 <FormControlLabel className='w-100' control={<Checkbox />} label="Women" />
                             </li>
-                             <li>
+                            <li>
                                 <FormControlLabel className='w-100' control={<Checkbox />} label="Beauty" />
                             </li>
-                             <li>
+                            <li>
                                 <FormControlLabel className='w-100' control={<Checkbox />} label="Watches" />
                             </li>
-                             <li>
+                            <li>
                                 <FormControlLabel className='w-100' control={<Checkbox />} label="Kids" />
                             </li>
-                             <li>
+                            <li>
                                 <FormControlLabel className='w-100' control={<Checkbox />} label="Gift" />
                             </li>
                         </ul>
@@ -70,7 +70,7 @@ const Sidebar = () => {
 
                 </div>
 
-                 <div className="filterBox">
+                <div className="filterBox">
                     <h6>PRODUCT STATUS</h6>
 
                     <div className='scroll'>
@@ -81,12 +81,12 @@ const Sidebar = () => {
                             <li>
                                 <FormControlLabel className='w-100' control={<Checkbox />} label="On Sale" />
                             </li>
-                            
+
                         </ul>
                     </div>
                 </div>
 
-                 <div className="filterBox">
+                <div className="filterBox">
                     <h6>BRANDS</h6>
 
                     <div className='scroll'>
@@ -97,16 +97,16 @@ const Sidebar = () => {
                             <li>
                                 <FormControlLabel className='w-100' control={<Checkbox />} label="Nespresso" />
                             </li>
-                             <li>
+                            <li>
                                 <FormControlLabel className='w-100' control={<Checkbox />} label="Oreo" />
                             </li>
-                             <li>
+                            <li>
                                 <FormControlLabel className='w-100' control={<Checkbox />} label="Quaker" />
                             </li>
-                             <li>
+                            <li>
                                 <FormControlLabel className='w-100' control={<Checkbox />} label="Welch's" />
                             </li>
-                            
+
                         </ul>
                     </div>
                 </div>
@@ -114,7 +114,7 @@ const Sidebar = () => {
 
 
 
-                <Link to="#"><img src='https://klbtheme.com/bacola/wp-content/uploads/2021/05/sidebar-banner.gif' className='w-100'/></Link>
+                <Link to="#"><img src='https://klbtheme.com/bacola/wp-content/uploads/2021/05/sidebar-banner.gif' className='w-100' /></Link>
 
             </div>
         </>

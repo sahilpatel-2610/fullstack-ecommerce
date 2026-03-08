@@ -19,25 +19,25 @@ import { IoCloseSharp } from "react-icons/io5";
 
 //breadcrumb code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
-  const backgroundColor =
-    theme.palette.mode === "light"
-        ? theme.palette.grey[100]
-        : theme.palette.grey[800];
-  return {
-    backgroundColor,
-    height: theme.spacing(3),
-    color: theme.palette.text.primary,
-    fontWeight: theme.typography.fontWeightRegular,
-    "&:hover, &:focus": {
-      backgroundColor: emphasize(backgroundColor, 0.06),
-    },
-    '&:active': {
-      boxShadow: theme.shadows[1],
-      backgroundColor: emphasize(backgroundColor, 0.12),
-    },
-  };
+    const backgroundColor =
+        theme.palette.mode === "light"
+            ? theme.palette.grey[100]
+            : theme.palette.grey[800];
+    return {
+        backgroundColor,
+        height: theme.spacing(3),
+        color: theme.palette.text.primary,
+        fontWeight: theme.typography.fontWeightRegular,
+        "&:hover, &:focus": {
+            backgroundColor: emphasize(backgroundColor, 0.06),
+        },
+        '&:active': {
+            boxShadow: theme.shadows[1],
+            backgroundColor: emphasize(backgroundColor, 0.12),
+        },
+    };
 });
-      
+
 
 const AddCategory = () => {
 
@@ -61,7 +61,7 @@ const AddCategory = () => {
 
     const context = useContext(MyContext);
 
-    
+
     useEffect(() => {
         if (!imgFiles) return;
 
@@ -69,10 +69,10 @@ const AddCategory = () => {
         for (let i = 0; i < imgFiles.length; i++) {
             tmp.push(URL.createObjectURL(imgFiles[i]));
         }
-    
+
         const objectUrls = tmp;
         setPreviews(objectUrls);
-    
+
         // free memory 
         for (let i = 0; i < objectUrls.length; i++) {
             return () => {
@@ -95,13 +95,13 @@ const AddCategory = () => {
     let img_arr = [];
     let uniqueArray = [];
 
-    const onChangeFile = async(e, apiEndPoint) => {
+    const onChangeFile = async (e, apiEndPoint) => {
         try {
-            
+
             const files = e.target.files;
 
             setUploading(true);
-         
+
             // const fd = new FormData();
             for (var i = 0; i < files.length; i++) {
 
@@ -118,41 +118,29 @@ const AddCategory = () => {
                         error: true,
                         msg: "Please select a valid JPG or PNG image file."
                     });
-                } 
-           
+                }
+
             }
-           
+
         } catch (error) {
             console.log(error);
         }
 
         postData(apiEndPoint, formdata).then(res => {
-
-            fetchDataFromApi("/api/imageUpload").then((response) => {
-                if (response !== undefined && response !== null && response !== "" && response.length !== 0) {
-
-                    response.length !== 0 && response.map((item) => {
-                        item?.images.length !== 0 && item?.images?.map((img) => {
-                            img_arr.push(img);
-                        })
+            if (res && res.length !== 0) {
+                const appendedArray = [...(previews || []), ...res];
+                setPreviews(appendedArray);
+                setTimeout(() => {
+                    setUploading(false);
+                    context.setAlertBox({
+                        open: true,
+                        error: false,
+                        msg: "Images Uploaded!"
                     })
-
-                    uniqueArray = img_arr.filter((item, index) => img_arr.indexOf(item) === index);
-
-                    const appendedArray = [...previews, ...uniqueArray];
-
-                    setPreviews(appendedArray);
-                    setTimeout(() => {
-                        setUploading(false);
-                        img_arr = [];
-                        context.setAlertBox({
-                            open: true,
-                            error: false,
-                            msg: "Images Uploaded!"
-                        })
-                    }, 200);
-                }
-            });
+                }, 200);
+            } else {
+                setUploading(false);
+            }
         });
 
     }
@@ -202,13 +190,13 @@ const AddCategory = () => {
     const addCat = (e) => {
         e.preventDefault();
 
-        const appendedArray = [...previews, ...uniqueArray];
+        const appendedArray = [...previews];
 
         img_arr = [];
         formdata.append('name', formFields.name);
         formdata.append('color', formFields.color);
 
-        formdata.append('images',appendedArray);
+        formdata.append('images', appendedArray);
 
         formFields.images = appendedArray
 
@@ -226,7 +214,7 @@ const AddCategory = () => {
                 history('/category');
             });
 
-           
+
         }
 
         else {
@@ -237,11 +225,11 @@ const AddCategory = () => {
             });
             return false;
         }
-        
-    } 
+
+    }
 
 
-    
+
     const removeImg = (index, imgUrl) => {
 
         deleteImages(`/api/category/deleteImage?img=${imgUrl}`);
@@ -296,9 +284,9 @@ const AddCategory = () => {
                                 {/* <div className='card p-4 mt-0'> */}
                                 <div className="imagesUploadSec">
                                     <h5 className="mb-4">Media And Published</h5>
-                        
+
                                     <div className="imgUploadBox d-flex align-items-center">
-                        
+
                                         {
                                             previews?.length !== 0 && previews?.map((img, index) => {
                                                 return (
@@ -311,52 +299,52 @@ const AddCategory = () => {
                                                 )
                                             })
                                         }
-                        
-                        
-                        
-                        
+
+
+
+
                                         <div className="uploadBox">
-                                           {
-                                                uploading === true ? 
-                                                <div className="progressBar text-center d-flex align-items-center justify-content-center flex-column">
-                                                    <CircularProgress />
-                                                    <span>Uploading...</span>
-                                                </div>
-                                                :
-
-                                                <>
-                                                    <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/category/upload')} name="images" />
-                                                    <div className="info">
-                                                        <FaRegImages />
-                                                        <h5>image upload</h5>
+                                            {
+                                                uploading === true ?
+                                                    <div className="progressBar text-center d-flex align-items-center justify-content-center flex-column">
+                                                        <CircularProgress />
+                                                        <span>Uploading...</span>
                                                     </div>
-                                                </>
+                                                    :
 
-                                           }
-                        
+                                                    <>
+                                                        <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/category/upload')} name="images" />
+                                                        <div className="info">
+                                                            <FaRegImages />
+                                                            <h5>image upload</h5>
+                                                        </div>
+                                                    </>
+
+                                            }
+
                                         </div>
-                        
-                        
+
+
                                     </div>
-                        
-                        
+
+
                                     <br />
-                        
+
                                     <Button type="submit" className="btn-blue btn-lg btn-big w-100" ><FaCloudUploadAlt /> &nbsp; {isLoading === true ? <CircularProgress color="inherit" className="loader" /> : 'PUBLISH AND VIEW'} </Button>
                                 </div>
-                            {/* </div> */}
-                        
+                                {/* </div> */}
+
 
                             </div>
                         </div>
 
-                      
-                            
-                        
+
+
+
                     </div>
 
 
-                    
+
                 </form>
 
             </div>

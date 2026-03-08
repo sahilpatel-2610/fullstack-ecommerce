@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const productSizeSchema = mongoose.Schema({
-    name:{
-        type:String,
-        default:null
+    size: {
+        type: String,
+        default: null
     }
 })
 

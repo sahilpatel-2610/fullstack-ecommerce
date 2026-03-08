@@ -29,14 +29,14 @@ const peoductSchema = mongoose.Schema({
     },
     category: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Category',    
+        ref: 'Category',
         required: true
-    }, 
+    },
     subCat: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'SubCategory',    
+        ref: 'SubCategory',
         required: true
-    },     
+    },
     countInStock: {
         type: Number,
         required: true,
@@ -53,19 +53,16 @@ const peoductSchema = mongoose.Schema({
         type: Number,
         required: true,
     },
-    productRAMS:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'ProductRams',
+    productRAMS: {
+        type: String,
         default: null,
     },
-    productSIZE:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'ProductSize',
+    productSIZE: {
+        type: String,
         default: null,
     },
-    productWEIGHT:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'ProductWeight',
+    productWEIGHT: {
+        type: String,
         default: null,
     },
     dateCreated: {

@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const productRamsSchema = mongoose.Schema({
-    productRam:{
-        type:String,
-        default:null
+    productRam: {
+        type: String,
+        default: null
     }
 })
 

@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
- 
+
 const subCatSchema = mongoose.Schema({
     category: {
-        type:String,   
+        type: String,
         required: true
-    }, 
-    subCat:{
-        type:String,
-        required:true
+    },
+    subCat: {
+        type: String,
+        required: true
     }
 })
 

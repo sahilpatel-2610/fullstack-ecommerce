@@ -1,5 +1,4 @@
-const { Category } = require("../models/category.js");
-const { ProductRams } = require("../models/productRAMS.js");
+const { ProductSize } = require("../models/productSize");
 const express = require('express');
 const router = express.Router();
 
@@ -7,13 +6,13 @@ const router = express.Router();
 router.get(`/`, async (req, res) => {
 
     try {
-        const productRAMSList = await ProductRams.find();
+        const productSizeList = await ProductSize.find();
 
-        if (!productRAMSList) {
+        if (!productSizeList) {
             res.status(500).json({ success: false })
         }
 
-        return res.status(200).json(productRAMSList);
+        return res.status(200).json(productSizeList);
 
     } catch (error) {
         res.status(500).json({ success: false })
@@ -24,7 +23,7 @@ router.get(`/`, async (req, res) => {
 
 router.get('/:id', async (req, res) => {
 
-    const item = await ProductRams.findById(req.params.id);
+    const item = await ProductSize.findById(req.params.id);
 
     if (!item) {
         res.status(500).json({ message: 'The item with the given ID was not found.' })
@@ -33,15 +32,16 @@ router.get('/:id', async (req, res) => {
 });
 
 
+
 router.post('/create', async (req, res) => {
 
-    let productRAMS = new ProductRams({
-        productRam: req.body.productRam
+    let productSize = new ProductSize({
+        size: req.body.size
     });
 
 
 
-    if (!productRAMS) {
+    if (!productSize) {
         res.status(500).json({
             error: err,
             success: false
@@ -49,15 +49,15 @@ router.post('/create', async (req, res) => {
     }
 
 
-    productRAMS = await productRAMS.save();
+    productSize = await productSize.save();
 
-    res.status(201).json(productRAMS);
+    res.status(201).json(productSize);
 
 });
 
 
 router.delete('/:id', async (req, res) => {
-    const deletedItem = await ProductRams.findByIdAndDelete(req.params.id);
+    const deletedItem = await ProductSize.findByIdAndDelete(req.params.id);
 
     if (!deletedItem) {
         res.status(404).json({
@@ -76,10 +76,10 @@ router.delete('/:id', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
 
-    const item = await ProductRams.findByIdAndUpdate(
+    const item = await ProductSize.findByIdAndUpdate(
         req.params.id,
         {
-            productRam: req.body.productRam,
+            size: req.body.size,
         },
         { new: true }
     )

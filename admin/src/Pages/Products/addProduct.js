@@ -28,35 +28,35 @@ import { useNavigate } from "react-router-dom";
 
 //breadcrumb code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
-  const backgroundColor =
-    theme.palette.mode === "light"
-        ? theme.palette.grey[100]
-        : theme.palette.grey[800];
-  return {
-    backgroundColor,
-    height: theme.spacing(3),
-    color: theme.palette.text.primary,
-    fontWeight: theme.typography.fontWeightRegular,
-    "&:hover, &:focus": {
-      backgroundColor: emphasize(backgroundColor, 0.06),
-    },
-    '&:active': {
-      boxShadow: theme.shadows[1],
-      backgroundColor: emphasize(backgroundColor, 0.12),
-    },
-  };
+    const backgroundColor =
+        theme.palette.mode === "light"
+            ? theme.palette.grey[100]
+            : theme.palette.grey[800];
+    return {
+        backgroundColor,
+        height: theme.spacing(3),
+        color: theme.palette.text.primary,
+        fontWeight: theme.typography.fontWeightRegular,
+        "&:hover, &:focus": {
+            backgroundColor: emphasize(backgroundColor, 0.06),
+        },
+        '&:active': {
+            boxShadow: theme.shadows[1],
+            backgroundColor: emphasize(backgroundColor, 0.12),
+        },
+    };
 });
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
-  PaperProps: {
+    PaperProps: {
         style: {
             maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
             width: 250,
         },
     },
-};          
+};
 
 const ProductUpload = () => {
 
@@ -107,7 +107,7 @@ const ProductUpload = () => {
         window.scrollTo(0, 0);
         setCatData(context.catData);
         setSubCatData(context.subCatData);
-    },[]);
+    }, []);
 
 
     useEffect(() => {
@@ -122,8 +122,8 @@ const ProductUpload = () => {
         setPreviews(objectUrls);
 
         // free memory 
-        for(let i=0; i<objectUrls.length; i++){
-            return() => {
+        for (let i = 0; i < objectUrls.length; i++) {
+            return () => {
                 URL.revokeObjectURL(objectUrls[i]);
             }
         }
@@ -155,11 +155,11 @@ const ProductUpload = () => {
     };
 
     const handleChangeProductRams = (event) => {
-       setProductRams(event.target.value);
-         setFormFields(() => ({
+        setProductRams(event.target.value);
+        setFormFields(() => ({
             ...formFields,
             productRAMS: event.target.value
-         }))
+        }))
     };
 
     const handleChangeProductWeight = (event) => {
@@ -189,21 +189,21 @@ const ProductUpload = () => {
 
     let img_arr = [];
     let uniqueArray = [];
-    
-    const onChangeFile = async(e, apiEndPoint) => {
+
+    const onChangeFile = async (e, apiEndPoint) => {
         try {
-            
+
             const files = e.target.files;
             setUploading(true);
-    
+
             // const fd = new FormData();
             for (var i = 0; i < files.length; i++) {
 
                 //validate file type
                 if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png' || files[i].type === 'image/webp')) {
-                    
+
                     const file = files[i];
-               
+
                     formdata.append(`images`, file);
 
 
@@ -215,77 +215,31 @@ const ProductUpload = () => {
                     });
 
                     return false;
-                }    
+                }
             }
-             
-           
+
+
         } catch (error) {
             console.log(error);
         }
 
-        
+
         postData(apiEndPoint, formdata).then((res) => {
-            fetchDataFromApi("/api/imageUpload").then((res) => {
-                if (response !== undefined && response !== null && response !== "" && response.length !== 0) {
+            if (res && res.length !== 0) {
+                const appendedArray = [...(previews || []), ...res];
+                setPreviews(appendedArray);
 
-                    response.length !== 0 && response.map((item) => {
-                        item?.images.length !== 0 && item?.images?.map((img) => {
-                            img_arr.push(img);
-                        })
-                    })
-
-
-                    uniqueArray = img_arr.filter((item, index) => img_arr.indexOf(item) === index);
-
-                    const appendedArray = [...previews, ...uniqueArray];
-
-                    setPreviews(appendedArray);
-
-                    setTimeout(() => {
-                        setUploading(false);
-                        img_arr = [];
-                        context.setAlertBox({
-                            open: true,
-                            error: false,
-                            msg: "Images Uploaded!"
-                        })
-                    }, 500);
-                }
-            });
-
-            postData(apiEndPoint, formdata).then((res) => {
-
-                fetchDataFromApi("/api/imageUpload").then((response) => {
-
-                    if (response && response.length !== 0) {
-
-                        response.map((item) => {
-                            item?.images?.map((img) => {
-                                img_arr.push(img);
-                            })
-                        });
-
-                        uniqueArray = img_arr.filter((item, index) => img_arr.indexOf(item) === index);
-
-                        const appendedArray = [...(previews || []), ...uniqueArray];
-
-                        setPreviews(appendedArray);
-
-                        setTimeout(() => {
-                        setUploading(false);
-                        img_arr = [];
-
-                            context.setAlertBox({
-                                open: true,
-                                error: false,
-                                msg: "Images Uploaded!"
-                            })
-
-                        }, 500);
-                    }
-                });
-
-            });
+                setTimeout(() => {
+                    setUploading(false);
+                    context.setAlertBox({
+                        open: true,
+                        error: false,
+                        msg: "Images Uploaded!"
+                    });
+                }, 500);
+            } else {
+                setUploading(false);
+            }
         });
 
     }
@@ -308,7 +262,7 @@ const ProductUpload = () => {
     //     }
     // }
 
-        
+
     const removeImg = (index, imgUrl) => {
 
         deleteImages(`/api/category/deleteImage?img=${imgUrl}`);
@@ -321,7 +275,7 @@ const ProductUpload = () => {
     const addProduct = (e) => {
         e.preventDefault();
 
-        const appendedArray = [...previews, ...uniqueArray];
+        const appendedArray = [...previews];
 
         img_arr = [];
 
@@ -345,7 +299,7 @@ const ProductUpload = () => {
 
         console.log(appendedArray);
 
-        if(formFields.name === "") {
+        if (formFields.name === "") {
             context.setAlertBox({
                 open: true,
                 msg: 'please add product name',
@@ -354,7 +308,7 @@ const ProductUpload = () => {
             return false;
         }
 
-        if(formFields.description === "") {
+        if (formFields.description === "") {
             context.setAlertBox({
                 open: true,
                 msg: 'please add product description',
@@ -363,7 +317,7 @@ const ProductUpload = () => {
             return false;
         }
 
-        if(formFields.brand === "") {
+        if (formFields.brand === "") {
             context.setAlertBox({
                 open: true,
                 msg: 'please add product brand',
@@ -372,7 +326,7 @@ const ProductUpload = () => {
             return false;
         }
 
-        if(formFields.price === null) {
+        if (formFields.price === null) {
             context.setAlertBox({
                 open: true,
                 msg: 'please add product price',
@@ -381,7 +335,7 @@ const ProductUpload = () => {
             return false;
         }
 
-        if(formFields.oldPrice === null) {
+        if (formFields.oldPrice === null) {
             context.setAlertBox({
                 open: true,
                 msg: 'please add product oldPrice',
@@ -390,7 +344,7 @@ const ProductUpload = () => {
             return false;
         }
 
-        if(formFields.category === "") {
+        if (formFields.category === "") {
             context.setAlertBox({
                 open: true,
                 msg: 'please select a category',
@@ -398,7 +352,7 @@ const ProductUpload = () => {
             })
         }
 
-        if(formFields.subCat === "") {
+        if (formFields.subCat === "") {
             context.setAlertBox({
                 open: true,
                 msg: 'please select sub category',
@@ -407,7 +361,7 @@ const ProductUpload = () => {
             return false;
         }
 
-        if(formFields.countInStock === null) {
+        if (formFields.countInStock === null) {
             context.setAlertBox({
                 open: true,
                 msg: 'please add product count in stock',
@@ -416,7 +370,7 @@ const ProductUpload = () => {
             return false;
         }
 
-        if(formFields.rating === 0) {
+        if (formFields.rating === 0) {
             context.setAlertBox({
                 open: true,
                 msg: 'please select product rating',
@@ -425,7 +379,7 @@ const ProductUpload = () => {
             return false;
         }
 
-        if(formFields.isFeatured === null) {
+        if (formFields.isFeatured === null) {
             context.setAlertBox({
                 open: true,
                 msg: 'please select the product is a featured or not',
@@ -434,7 +388,7 @@ const ProductUpload = () => {
             return false;
         }
 
-        if(formFields.discount === null) {
+        if (formFields.discount === null) {
             context.setAlertBox({
                 open: true,
                 msg: 'please select the product discount',
@@ -443,7 +397,7 @@ const ProductUpload = () => {
             return false;
         }
 
-       if(previews?.length === 0) {
+        if (previews?.length === 0) {
             context.setAlertBox({
                 open: true,
                 msg: 'please select images',
@@ -497,7 +451,7 @@ const ProductUpload = () => {
                         <div className="col-md-12">
                             <div className="card p-4 mt-0">
                                 <h5 className="mb-4">Basic Information</h5>
-                                
+
                                 <div className="form-group">
                                     <h6>PRODUCT NAME</h6>
                                     <input type='text' name="name" value={formFields.name} onChange={inputChange} />
@@ -514,8 +468,8 @@ const ProductUpload = () => {
 
                                 <div className='row'>
                                     <div className='col'>
-                                        <div className='form-group'>   
-                                            <h6>CATEGORY</h6>  
+                                        <div className='form-group'>
+                                            <h6>CATEGORY</h6>
                                             <Select
                                                 value={categoryVal}
                                                 onChange={handleChangeCategory}
@@ -527,22 +481,22 @@ const ProductUpload = () => {
                                                     <em value={null}>None</em>
                                                 </MenuItem>
                                                 {
-                                                    context.catData?.categoryList?.length !== 0 && context.catData?.categoryList?.map((cat,index)=>{
-                                                    // catData?.categoryList?.map((cat, index) => {
-                                                        return(
+                                                    context.catData?.categoryList?.length !== 0 && context.catData?.categoryList?.map((cat, index) => {
+                                                        // catData?.categoryList?.map((cat, index) => {
+                                                        return (
                                                             <MenuItem className="text-capitalize" value={cat._id} key={index} >{cat.name}</MenuItem>
                                                         )
                                                     })
                                                 }
 
                                             </Select>
-                                          
-                                        </div> 
+
+                                        </div>
                                     </div>
 
                                     <div className='col'>
-                                        <div className='form-group'>   
-                                            <h6>SUB CATEGORY</h6>  
+                                        <div className='form-group'>
+                                            <h6>SUB CATEGORY</h6>
                                             <Select
                                                 value={subCatVal}
                                                 onChange={handleChangeSubCategory}
@@ -554,27 +508,27 @@ const ProductUpload = () => {
                                                     <em value={null}>None</em>
                                                 </MenuItem>
                                                 {
-                                                    context.subCatData?.subCategoryList?.length !== 0 && context.subCatData?.subCategoryList?.map((subCat,index)=>{
-                                                    // catData?.categoryList?.map((cat, index) => {
-                                                        return(
+                                                    context.subCatData?.subCategoryList?.length !== 0 && context.subCatData?.subCategoryList?.map((subCat, index) => {
+                                                        // catData?.categoryList?.map((cat, index) => {
+                                                        return (
                                                             <MenuItem className="text-capitalize" value={subCat._id} key={index} >{subCat.subCat}</MenuItem>
                                                         )
                                                     })
                                                 }
-                                                
+
 
                                             </Select>
-                                          
-                                        </div> 
+
+                                        </div>
                                     </div>
 
 
                                     <div className='col'>
-                                        <div className='form-group'>   
-                                            <h6>PRICE</h6> 
-                                                <input type='text' name="price" value={formFields.price} onChange={inputChange} />
+                                        <div className='form-group'>
+                                            <h6>PRICE</h6>
+                                            <input type='text' name="price" value={formFields.price} onChange={inputChange} />
                                         </div>
-                                    </div>  
+                                    </div>
 
                                 </div>
 
@@ -582,171 +536,171 @@ const ProductUpload = () => {
                                 <div className="row">
 
                                     <div className='col'>
-                                        <div className='form-group'>   
-                                            <h6>OLD PRICE</h6> 
-                                                <input type='text' name="oldPrice" value={formFields.oldPrice}  onChange={inputChange} />
+                                        <div className='form-group'>
+                                            <h6>OLD PRICE</h6>
+                                            <input type='text' name="oldPrice" value={formFields.oldPrice} onChange={inputChange} />
                                         </div>
-                                    </div>     
+                                    </div>
 
                                     <div className='col'>
-                                       <div className='form-group'>   
-                                                <h6 className="text-uppercase">is Featured</h6> 
-                                                <Select
-                                                    value={isFeaturedValue}
-                                                    onChange={handleChangeisFeaturedValue}
-                                                    displayEmpty
-                                                    inputProps={{ 'aria-label': 'Without label' }}
-                                                    className="w-100"
-                                                >
-                                                    <MenuItem value="">
-                                                        <em value={null}>None</em>
-                                                    </MenuItem>
-                                                    <MenuItem value={true}>True</MenuItem>
-                                                    <MenuItem value={false}>False</MenuItem>
-                                                </Select>
-                                            </div>
-                                    </div>        
+                                        <div className='form-group'>
+                                            <h6 className="text-uppercase">is Featured</h6>
+                                            <Select
+                                                value={isFeaturedValue}
+                                                onChange={handleChangeisFeaturedValue}
+                                                displayEmpty
+                                                inputProps={{ 'aria-label': 'Without label' }}
+                                                className="w-100"
+                                            >
+                                                <MenuItem value="">
+                                                    <em value={null}>None</em>
+                                                </MenuItem>
+                                                <MenuItem value={true}>True</MenuItem>
+                                                <MenuItem value={false}>False</MenuItem>
+                                            </Select>
+                                        </div>
+                                    </div>
 
                                     <div className='col'>
-                                        <div className='form-group'>   
-                                            <h6>PRODUCT STOCK</h6> 
-                                                <input type='text' name="countInStock" value={formFields.countInStock} onChange={inputChange} />
+                                        <div className='form-group'>
+                                            <h6>PRODUCT STOCK</h6>
+                                            <input type='text' name="countInStock" value={formFields.countInStock} onChange={inputChange} />
                                         </div>
-                                    </div> 
+                                    </div>
                                 </div>
 
 
 
                                 <div className="row">
                                     <div className='col-md-4'>
-                                        <div className='form-group'>   
-                                            <h6>BRAND</h6> 
-                                                <input type='text' name="brand" value={formFields.brand} onChange={inputChange} />
+                                        <div className='form-group'>
+                                            <h6>BRAND</h6>
+                                            <input type='text' name="brand" value={formFields.brand} onChange={inputChange} />
                                         </div>
-                                    </div>   
+                                    </div>
 
                                     <div className='col-md-4'>
-                                        <div className='form-group'>   
-                                            <h6>DISCOUNT</h6> 
-                                                <input type='text' name="discount" value={formFields.discount} onChange={inputChange} />
+                                        <div className='form-group'>
+                                            <h6>DISCOUNT</h6>
+                                            <input type='text' name="discount" value={formFields.discount} onChange={inputChange} />
                                         </div>
-                                    </div>    
+                                    </div>
 
 
                                     <div className='col-md-4'>
-                                        <div className='form-group'>   
-                                            <h6>PRODUCT RAMS</h6> 
-                                                <Select
-                                                    value={productRams}
-                                                    onChange={handleChangeProductRams}
-                                                    displayEmpty
-                                                    inputProps={{ 'aria-label': 'Without label' }}
-                                                    className="w-100"
+                                        <div className='form-group'>
+                                            <h6>PRODUCT RAMS</h6>
+                                            <Select
+                                                value={productRams}
+                                                onChange={handleChangeProductRams}
+                                                displayEmpty
+                                                inputProps={{ 'aria-label': 'Without label' }}
+                                                className="w-100"
 
-                                                    MenuProps={MenuProps}
-                                                >
-                                                    <MenuItem  value="">
-                                                        <em value={null}>None</em>
-                                                    </MenuItem>
-                                                    <MenuItem value={'4GB'}>4GB</MenuItem>
-                                                    <MenuItem value={'8GB'}>8GB</MenuItem>
-                                                    <MenuItem value={'16GB'}>16GB</MenuItem>
-                                                    <MenuItem value={'32GB'}>32GB</MenuItem>
-                                                </Select>
+                                                MenuProps={MenuProps}
+                                            >
+                                                <MenuItem value="">
+                                                    <em value={null}>None</em>
+                                                </MenuItem>
+                                                <MenuItem value={'4GB'}>4GB</MenuItem>
+                                                <MenuItem value={'8GB'}>8GB</MenuItem>
+                                                <MenuItem value={'16GB'}>16GB</MenuItem>
+                                                <MenuItem value={'32GB'}>32GB</MenuItem>
+                                            </Select>
                                         </div>
-                                    </div> 
-
-                                    <div className='col-md-4'>
-                                        <div className='form-group'>   
-                                            <h6>PRODUCT WEIGHT</h6> 
-                                                <Select
-                                                    value={productWeight}
-                                                    onChange={handleChangeProductWeight}
-                                                    displayEmpty
-                                                    inputProps={{ 'aria-label': 'Without label' }}
-                                                    className="w-100"
-                                                >
-                                                    <MenuItem  value="">
-                                                        <em value={null}>None</em>
-                                                    </MenuItem>
-                                                    <MenuItem value={'500GM'}>500GM</MenuItem>
-                                                    <MenuItem value={'1KG'}>1KG</MenuItem>
-                                                    <MenuItem value={'2KG'}>2KG</MenuItem>
-                                                    <MenuItem value={'3KG'}>3KG</MenuItem>
-                                                    <MenuItem value={'4KG'}>4KG</MenuItem>
-                                                </Select>
-                                        </div>
-                                    </div> 
+                                    </div>
 
                                     <div className='col-md-4'>
-                                        <div className='form-group'>   
-                                            <h6>PRODUCT SIZE</h6> 
-                                                <Select
-                                                    value={productSize}
-                                                    onChange={handleChangeProductSize}
-                                                    displayEmpty
-                                                    inputProps={{ 'aria-label': 'Without label' }}
-                                                    className="w-100"
-                                                >
-                                                    <MenuItem  value="">
-                                                        <em value={null}>None</em>
-                                                    </MenuItem>
-                                                    <MenuItem value={'S'}>S</MenuItem>
-                                                    <MenuItem value={'M'}>M</MenuItem>
-                                                    <MenuItem value={'L'}>L</MenuItem>
-                                                    <MenuItem value={'XL'}>XL</MenuItem>
-                                                    <MenuItem value={'XXL'}>XXL</MenuItem>
-                                                </Select>
+                                        <div className='form-group'>
+                                            <h6>PRODUCT WEIGHT</h6>
+                                            <Select
+                                                value={productWeight}
+                                                onChange={handleChangeProductWeight}
+                                                displayEmpty
+                                                inputProps={{ 'aria-label': 'Without label' }}
+                                                className="w-100"
+                                            >
+                                                <MenuItem value="">
+                                                    <em value={null}>None</em>
+                                                </MenuItem>
+                                                <MenuItem value={'500GM'}>500GM</MenuItem>
+                                                <MenuItem value={'1KG'}>1KG</MenuItem>
+                                                <MenuItem value={'2KG'}>2KG</MenuItem>
+                                                <MenuItem value={'3KG'}>3KG</MenuItem>
+                                                <MenuItem value={'4KG'}>4KG</MenuItem>
+                                            </Select>
                                         </div>
-                                    </div>   
+                                    </div>
+
+                                    <div className='col-md-4'>
+                                        <div className='form-group'>
+                                            <h6>PRODUCT SIZE</h6>
+                                            <Select
+                                                value={productSize}
+                                                onChange={handleChangeProductSize}
+                                                displayEmpty
+                                                inputProps={{ 'aria-label': 'Without label' }}
+                                                className="w-100"
+                                            >
+                                                <MenuItem value="">
+                                                    <em value={null}>None</em>
+                                                </MenuItem>
+                                                <MenuItem value={'S'}>S</MenuItem>
+                                                <MenuItem value={'M'}>M</MenuItem>
+                                                <MenuItem value={'L'}>L</MenuItem>
+                                                <MenuItem value={'XL'}>XL</MenuItem>
+                                                <MenuItem value={'XXL'}>XXL</MenuItem>
+                                            </Select>
+                                        </div>
+                                    </div>
 
                                     <div className='col-md-4'>
                                         <div className='col'>
-                                            <div className='form-group'>   
-                                                <h6>RATINGS</h6> 
-                                                    <Rating
-                                                        name="simple-controlled"
-                                                        value={ratingValue}
-                                                        onChange={(event, newValue) => {
-                                                            setRatingValue(newValue);
-                                                            setFormFields(() => ({
-                                                                ...formFields,
-                                                                rating:newValue
-                                                            }))
-                                                        }}      
-                                                    />
+                                            <div className='form-group'>
+                                                <h6>RATINGS</h6>
+                                                <Rating
+                                                    name="simple-controlled"
+                                                    value={ratingValue}
+                                                    onChange={(event, newValue) => {
+                                                        setRatingValue(newValue);
+                                                        setFormFields(() => ({
+                                                            ...formFields,
+                                                            rating: newValue
+                                                        }))
+                                                    }}
+                                                />
                                             </div>
-                                        </div> 
-                                    </div>  
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    
+
                     <div className='card p-4 mt-0'>
                         <div className="imagesUploadSec">
                             <h5 className="mb-4">Media And Published</h5>
 
                             <div className="imgUploadBox d-flex align-items-center">
 
-                               {
-                                  previews?.length !== 0 && previews?.map((img, index) => {
-                                    return (
-                                        <div className="uploadBox" key={index}>
-                                            <span className="remove" onClick={() => removeImg(index, img)}><IoCloseSharp /></span>
-                                            <div className="box">
-                                                <LazyLoadImage 
-                                                    alt={"imag"}
-                                                    effect="blur"
-                                                    className="w-100"
-                                                    src={img}
-                                                />
+                                {
+                                    previews?.length !== 0 && previews?.map((img, index) => {
+                                        return (
+                                            <div className="uploadBox" key={index}>
+                                                <span className="remove" onClick={() => removeImg(index, img)}><IoCloseSharp /></span>
+                                                <div className="box">
+                                                    <LazyLoadImage
+                                                        alt={"imag"}
+                                                        effect="blur"
+                                                        className="w-100"
+                                                        src={img}
+                                                    />
+                                                </div>
                                             </div>
-                                        </div>
-                                    )
-                                  })
-                               }
+                                        )
+                                    })
+                                }
 
 
 

@@ -28,16 +28,16 @@ import { deleteData } from "../../utils/api";
 import { Rating } from "@mui/material";
 
 export const data = [
-  ["Year", "Sales", "Expenses"],
-  ["2013", 1000, 400],
-  ["2014", 1170, 460],
-  ["2015", 660, 1120],
-  ["2016", 1030, 540],
+    ["Year", "Sales", "Expenses"],
+    ["2013", 1000, 400],
+    ["2014", 1170, 460],
+    ["2015", 660, 1120],
+    ["2016", 1030, 540],
 ];
 
 export const options = {
     'backgroundColor': 'transparent',
-    'chartArea': {'width': '100%', 'height': '80%'},
+    'chartArea': { 'width': '100%', 'height': '80%' },
 };
 
 const Dashboard = () => {
@@ -48,7 +48,7 @@ const Dashboard = () => {
     const [productList, setProductList] = useState([]);
     const [categoryVal, setCategoryVal] = useState('');
     const open = Boolean(anchorEl);
-    
+
     const ITEM_HEIGHT = 48;
 
     const context = useContext(MyContext);
@@ -56,42 +56,42 @@ const Dashboard = () => {
 
     useEffect(() => {
         context.setisHideSidebarAndHeader(false);
-        window.scrollTo(0,0);
+        window.scrollTo(0, 0);
         context.setProgress(40);
-        fetchDataFromApi("/api/products").then((res)=>{
+        fetchDataFromApi("/api/products").then((res) => {
             setProductList(res);
             context.setProgress(100);
         })
-    },[]);
+    }, []);
 
     const deleteProduct = (id) => {
         context.setProgress(40);
-        deleteData(`/api/products/${id}`).then((res)=>{
+        deleteData(`/api/products/${id}`).then((res) => {
             context.setProgress(100);
             context.setAlertBox({
                 open: true,
                 error: false,
                 msg: "Product Deleted!",
             });
-                
-            fetchDataFromApi("/api/products").then((res)=>{
+
+            fetchDataFromApi("/api/products").then((res) => {
                 setProductList(res);
             })
-    
+
         })
     }
-    
+
     const handleChange = (event, value) => {
-    context.setProgress(40);
+        context.setProgress(40);
         fetchDataFromApi(`/api/products?page=${value}`).then((res) => {
             setProductList(res);
             context.setProgress(100);
         })
     }
-            
 
-   
-    
+
+
+
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -106,7 +106,7 @@ const Dashboard = () => {
     return (
         <>
             <div className="right-content w-100">
-               <div className="row dashboardBoxWrapperRow">
+                <div className="row dashboardBoxWrapperRow">
                     <div className="col-md-8">
                         <div className="dashboardBoxWrapper d-flex">
                             <DashboardBox color={["#1da256", "#48d483"]} icon={<FaUserCircle />} grow={true} />
@@ -121,46 +121,46 @@ const Dashboard = () => {
                         <div className="box graphBox">
                             <div className="d-flex align-items-center w-100 bottomEle">
                                 <h6 className="text-white mb-0 mt-0">Total Sales</h6>
-                                    <div className="ml-auto">
-                                        <Button className="ml-auto toggleIcon"  onClick={handleClick}><HiDotsVertical /></Button>
-                                        <Menu
-                                            className="dropdown_menu"
-                                            MenuListProps={{
-                                                'aria-labelledby': 'long-button',
-                                            }}
-                                            anchorEl={anchorEl}
-                                            open={open}
-                                            onClose={handleClose}
-                                            slotProps={{
-                                                paper: {
-                                                    style: {
-                                                        maxHeight: ITEM_HEIGHT * 4.5,
-                                                        width: '20ch',
-                                                    },
+                                <div className="ml-auto">
+                                    <Button className="ml-auto toggleIcon" onClick={handleClick}><HiDotsVertical /></Button>
+                                    <Menu
+                                        className="dropdown_menu"
+                                        MenuListProps={{
+                                            'aria-labelledby': 'long-button',
+                                        }}
+                                        anchorEl={anchorEl}
+                                        open={open}
+                                        onClose={handleClose}
+                                        slotProps={{
+                                            paper: {
+                                                style: {
+                                                    maxHeight: ITEM_HEIGHT * 4.5,
+                                                    width: '20ch',
                                                 },
-                            
-                                            }}
-                                        >
-                                                       
-                                            <MenuItem onClick={handleClose}>
-                                                <IoIosTimer /> Last Day
-                                            </MenuItem>
-                                            <MenuItem onClick={handleClose}>
-                                                <IoIosTimer /> Last Week
-                                            </MenuItem>
-                                            <MenuItem onClick={handleClose}>
-                                                <IoIosTimer /> Last Month
-                                            </MenuItem>
-                                            <MenuItem onClick={handleClose}>
-                                                <IoIosTimer /> Last Year
-                                            </MenuItem>
-                                        </Menu>
-                                    </div>
+                                            },
+
+                                        }}
+                                    >
+
+                                        <MenuItem onClick={handleClose}>
+                                            <IoIosTimer /> Last Day
+                                        </MenuItem>
+                                        <MenuItem onClick={handleClose}>
+                                            <IoIosTimer /> Last Week
+                                        </MenuItem>
+                                        <MenuItem onClick={handleClose}>
+                                            <IoIosTimer /> Last Month
+                                        </MenuItem>
+                                        <MenuItem onClick={handleClose}>
+                                            <IoIosTimer /> Last Year
+                                        </MenuItem>
+                                    </Menu>
+                                </div>
                             </div>
 
                             <h3 className="text-white font-weight-bold">$3,787,681.00</h3>
                             <p>$3,578.90 in last month</p>
-                            
+
 
                             <Chart
                                 chartType="PieChart"
@@ -189,138 +189,138 @@ const Dashboard = () => {
                         <div className="col-md-3">
                             <h4>SHOW BY</h4>
                             <FormControl size="small" className="w-100">
-                            <Select
-                                value={showBy}
-                                onChange={(e) => setShowBy(e.target.value)}
-                                displayEmpty
-                                inputProps={{ 'aria-label': 'Without label' }}
-                                labelId="demo-select-small-label"
-                                className="w-100"
-                            >
-                                <MenuItem value="">
-                                    <em>None</em>
-                                </MenuItem>
-                                <MenuItem value={10}>Ten</MenuItem>
-                                <MenuItem value={20}>Twenty</MenuItem>
-                                <MenuItem value={30}>Thirty</MenuItem>
-                            </Select>
+                                <Select
+                                    value={showBy}
+                                    onChange={(e) => setShowBy(e.target.value)}
+                                    displayEmpty
+                                    inputProps={{ 'aria-label': 'Without label' }}
+                                    labelId="demo-select-small-label"
+                                    className="w-100"
+                                >
+                                    <MenuItem value="">
+                                        <em>None</em>
+                                    </MenuItem>
+                                    <MenuItem value={10}>Ten</MenuItem>
+                                    <MenuItem value={20}>Twenty</MenuItem>
+                                    <MenuItem value={30}>Thirty</MenuItem>
+                                </Select>
                             </FormControl>
                         </div>
 
                         <div className="col-md-3">
                             <h4>CATEGORY BY</h4>
                             <FormControl size="small" className="w-100">
-                            <Select
-                                value={categoryVal}
-                                onChange={handleChangeCategory}
-                                displayEmpty
-                                inputProps={{ 'aria-label': 'Without label' }}
-                                className="w-100"
-                            >
-                                <MenuItem value="">
-                                    <em value={null}>None</em>
-                                </MenuItem>
-                                {
-                                    context.catData?.categoryList?.length !== 0 && context.catData?.categoryList?.map((cat,index)=>{
-                                    // catData?.categoryList?.map((cat, index) => {
-                                        return(
-                                            <MenuItem className="text-capitalize" value={cat._id} key={index} >{cat.name}</MenuItem>
-                                        )
-                                    })
-                                }
+                                <Select
+                                    value={categoryVal}
+                                    onChange={handleChangeCategory}
+                                    displayEmpty
+                                    inputProps={{ 'aria-label': 'Without label' }}
+                                    className="w-100"
+                                >
+                                    <MenuItem value="">
+                                        <em value={null}>None</em>
+                                    </MenuItem>
+                                    {
+                                        context.catData?.categoryList?.length !== 0 && context.catData?.categoryList?.map((cat, index) => {
+                                            // catData?.categoryList?.map((cat, index) => {
+                                            return (
+                                                <MenuItem className="text-capitalize" value={cat._id} key={index} >{cat.name}</MenuItem>
+                                            )
+                                        })
+                                    }
 
-                            </Select>
+                                </Select>
                             </FormControl>
                         </div>
                     </div>
-                    
 
 
-                <div className="table-responsive mt-3">
-                    <table className="table table-bordered table-striped v-align">
-                        <thead className="thead-dark">
-                            <tr>
-                                {/* <th>UID</th> */}
-                                <th style={{width:'300px'}}>PRODUCT</th>
-                                <th>CATEGORY</th>
-                                <th>SUB CATEGORY</th>
-                                <th>BRAND</th>
-                                <th>PRICE</th>
-                                <th>RATING</th>
-                                <th>ACTION</th>
-                            </tr>
-                        </thead>
-                
-                        <tbody>
-                            {
-                                productList?.products?.length !== 0 && productList?.products?.map((item,index)=>{
-                                    return (
-                                        <tr>
-                                            {/* <td>
+
+                    <div className="table-responsive mt-3">
+                        <table className="table table-bordered table-striped v-align">
+                            <thead className="thead-dark">
+                                <tr>
+                                    {/* <th>UID</th> */}
+                                    <th style={{ width: '300px' }}>PRODUCT</th>
+                                    <th>CATEGORY</th>
+                                    <th>SUB CATEGORY</th>
+                                    <th>BRAND</th>
+                                    <th>PRICE</th>
+                                    <th>RATING</th>
+                                    <th>ACTION</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {
+                                    productList?.products?.length !== 0 && productList?.products?.map((item, index) => {
+                                        return (
+                                            <tr>
+                                                {/* <td>
                                                 <div className="d-flex align-items-center">
                                                     <Checkbox {...label} />  <span>#1</span>
                                                 </div>
                                             </td> */}
-                                            <td>
-                                                <div className="d-flex align-items-center productBox">
-                                                    <div className="imgWrapper">
-                                                        <div className="img card shadow m-0">
-                                                            <img src={`${context.baseUrl}/uploads/${item?.images[0]}`} className="w-100" />
+                                                <td>
+                                                    <div className="d-flex align-items-center productBox">
+                                                        <div className="imgWrapper">
+                                                            <div className="img card shadow m-0">
+                                                                <img src={item?.images[0]} className="w-100" />
+                                                            </div>
+                                                        </div>
+                                                        <div className="info pl-0">
+                                                            <h6> &nbsp; {item?.name}</h6>
+                                                            <p> &nbsp; {item?.description}
+                                                            </p>
                                                         </div>
                                                     </div>
-                                                    <div className="info pl-0">
-                                                        <h6> &nbsp; {item?.name}</h6>
-                                                        <p> &nbsp; {item?.description}
-                                                        </p>
+                                                </td>
+                                                <td>{item?.category?.name}</td>
+                                                <td>{item?.subCat?.subCat}</td>
+                                                <td>{item?.brand}</td>
+                                                <td>
+                                                    <div style={{ width: '70px' }}>
+                                                        <del className="old">Rs {item?.oldPrice}</del>
+                                                        <span className="new text-danger">Rs {item?.price}</span>
                                                     </div>
-                                                </div>
-                                            </td>
-                                            <td>{item?.category?.name}</td>
-                                            <td>{item?.subCat?.subCat}</td>
-                                            <td>{item?.brand}</td>
-                                            <td>
-                                                <div style={{ width: '70px' }}>
-                                                    <del className="old">Rs {item?.oldPrice}</del>
-                                                    <span className="new text-danger">Rs {item?.price}</span>
-                                                </div>
-                                            </td>
-                                            <td><Rating name="read-only" defaultValue={item?.rating} precision={0.5} size="small" readOnly /></td>
-                                                            
-                                            <td>
-                                                <div className="actions d-flex align-items-center">
-                                                    <Link to="product/details">
-                                                        <Button className="secondary"
-                                                            color="secondary"><FaEye />
-                                                        </Button>
-                                                    </Link>
-                
-                                                    <Link to={`/product/edit/${item._id}`}>
-                                                        <Button className="success"
-                                                            color="success"><FaPencilAlt /></Button>
-                                                    </Link>
-                
-                                                    <Button className="error"
-                                                        color="error" onClick={() => deleteProduct(item.id)}><MdDelete /></Button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                
-                                    )
-                                })
-                            }
-                                               
-                        </tbody>
-                    </table>
-                
-                    {
-                        productList?.totalPages > 1 && <div className="d-flex tableFooter">
-                            <Pagination count={productList?.totalPages} color="primary" className="pagination" showFirstButton showLastButton onChange={handleChange} />
-                        </div>
-                    }
-                
-                                       
-                
-                </div>
+                                                </td>
+                                                <td><Rating name="read-only" defaultValue={item?.rating} precision={0.5} size="small" readOnly /></td>
+
+                                                <td>
+                                                    <div className="actions d-flex align-items-center">
+                                                        <Link to="product/details">
+                                                            <Button className="secondary"
+                                                                color="secondary"><FaEye />
+                                                            </Button>
+                                                        </Link>
+
+                                                        <Link to={`/product/edit/${item._id}`}>
+                                                            <Button className="success"
+                                                                color="success"><FaPencilAlt /></Button>
+                                                        </Link>
+
+                                                        <Button className="error"
+                                                            color="error" onClick={() => deleteProduct(item.id)}><MdDelete /></Button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                        )
+                                    })
+                                }
+
+                            </tbody>
+                        </table>
+
+                        {
+                            productList?.totalPages > 1 && <div className="d-flex tableFooter">
+                                <Pagination count={productList?.totalPages} color="primary" className="pagination" showFirstButton showLastButton onChange={handleChange} />
+                            </div>
+                        }
+
+
+
+                    </div>
 
                 </div>
 

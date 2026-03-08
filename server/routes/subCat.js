@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 router.get(`/`, async (req, res) => {
-   try {
+    try {
         const page = parseInt(req.query.page) || 1;
         const perPage = 6;
         const totalPosts = await SubCategory.countDocuments();
@@ -14,21 +14,21 @@ router.get(`/`, async (req, res) => {
         }
 
         const SubCategoryList = await SubCategory.find().populate('category')
-        .skip((page - 1) * perPage)
-        .limit(perPage)
-        .exec();
+            .skip((page - 1) * perPage)
+            .limit(perPage)
+            .exec();
 
         if (!SubCategoryList) {
-        res.status(500).json({ success: false })
+            res.status(500).json({ success: false })
         }
-        
+
         return res.status(200).json({
-            "subCategoryList":SubCategoryList,
-            "totalPages":totalPages,
-            "page":page
+            "subCategoryList": SubCategoryList,
+            "totalPages": totalPages,
+            "page": page
         });
-        
-    }catch(error){
+
+    } catch (error) {
         res.status(500).json({ success: false })
     }
 });
@@ -50,13 +50,13 @@ router.get('/:id', async (req, res) => {
     }
 
     // router.get('/:id', async (req, res) => {
-    
+
     //   const subCat = await SubCategory.findById(req.params.id).populate('category');
-    
+
     //     if (!subCat) {
     //        res.status(500).json({ message: 'The sub category with the given ID was not found.' });
     //     }
-    
+
     //     return res.status(200).send(subCat);
     // });
 });
@@ -70,7 +70,7 @@ router.post('/create', async (req, res) => {
     });
 
 
-    if(!subCat) {
+    if (!subCat) {
         res.status(500).json({
             error: err,
             success: false
@@ -80,7 +80,7 @@ router.post('/create', async (req, res) => {
 
     subCat = await subCat.save();
 
-    
+
     res.status(201).json(subCat);
 
 });
@@ -105,7 +105,7 @@ router.delete('/:id', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
     try {
-      
+
         const subCat = await SubCategory.findByIdAndUpdate(
             req.params.id,
             {

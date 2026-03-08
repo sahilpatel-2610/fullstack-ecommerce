@@ -22,12 +22,15 @@ import SubCatAdd from './Pages/Category/addSubCat';
 import SubCatList from './Pages/Category/subCategoryList';
 import EditSubCategory from './Pages/Category/editSubCat';
 import AddProductRAMS from './Pages/Products/addProductRAMS';
+import ProductWeight from './Pages/Products/addProductWeight';
+import ProductSize from './Pages/Products/addProductSize';
 
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
 import LoadingBar from "react-top-loading-bar";
 import { fetchDataFromApi } from './utils/api';
+
 
 
 
@@ -212,6 +215,8 @@ function App() {
               <Route path="/subCategory/add" exact={true} element={<SubCatAdd />} />
               <Route path="/subCategory/edit/:id" exact={true} element={<EditSubCategory />} />
               <Route path="/productRAMS/add" exact={true} element={<AddProductRAMS />} />
+              <Route path="/productWEIGHT/add" exact={true} element={<ProductWeight />} />
+              <Route path="/productSIZE/add" exact={true} element={<ProductSize />} />
             </Routes>
           </div>
         </div>

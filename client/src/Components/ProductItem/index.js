@@ -51,7 +51,7 @@
 //       }, 20);
 //     }
 
-    
+
 //     return(
 //        <>
 //             <div className={`productItem ${props.itemView}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
@@ -100,14 +100,14 @@
 //                     </div>
 
 //                 </div>
-        
+
 
 //            {/* <ProductModal />  */}
 //        </>
 
-        
 
-                
+
+
 //     )
 // }
 
@@ -167,9 +167,9 @@ const ProductItem = (props) => {
     }
 
     return (
-        <div 
-            className={`productItem ${props.itemView}`} 
-            onMouseEnter={handleMouseEnter} 
+        <div
+            className={`productItem ${props.itemView}`}
+            onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
 
@@ -182,9 +182,9 @@ const ProductItem = (props) => {
                                 {
                                     props.item.images.map((img, index) => (
                                         <div key={index}>
-                                            <img 
-                                                src={img} 
-                                                className='w-100' 
+                                            <img
+                                                src={img}
+                                                className='w-100'
                                                 alt="product"
                                             />
                                         </div>
@@ -192,14 +192,14 @@ const ProductItem = (props) => {
                                 }
                             </Slider>
                         )
-                        :
-                        (
-                            <img 
-                                src={props?.item?.images?.[0]} 
-                                className='w-100' 
-                                alt="product"
-                            />
-                        )
+                            :
+                            (
+                                <img
+                                    src={props?.item?.images?.[0]}
+                                    className='w-100'
+                                    alt="product"
+                                />
+                            )
                     }
 
                 </Link>
@@ -310,9 +310,9 @@ export default ProductItem;
 
 //     return (
 //         <>
-//             <div 
-//                 className={`productItem ${props.itemView}`} 
-//                 onMouseEnter={handleMouseEnter} 
+//             <div
+//                 className={`productItem ${props.itemView}`}
+//                 onMouseEnter={handleMouseEnter}
 //                 onMouseLeave={handleMouseLeave}
 //             >
 
@@ -333,9 +333,9 @@ export default ProductItem;
 //                             )
 //                             :
 //                             (
-//                                 <img 
-//                                     src={props?.item?.images?.[0]} 
-//                                     className='w-100' 
+//                                 <img
+//                                     src={props?.item?.images?.[0]}
+//                                     className='w-100'
 //                                     alt="product"
 //                                 />
 //                             )

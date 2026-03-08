@@ -66,7 +66,7 @@
 //                                 className="zoomSliderBig"
 //                                 ref={zoomSliderBig}
 //                             >    
-                           
+
 //                             <SwiperSlide>
 //                                 <div className='item'>
 //                                     <InnerImageZoom zoomType="hover" zoomScale={1} src={`https://klbtheme.com/bacola/wp-content/uploads/2021/04/product-image-62.jpg`} />
@@ -112,7 +112,7 @@
 //                                 <img src={`https://klbtheme.com/bacola/wp-content/uploads/2021/04/product-image3-35.jpg`} className='w-100' onClick={() => goto(2)} />
 //                             </div>
 //                         </SwiperSlide>
-                      
+
 //                        </Swiper>
 
 //                     </div>
@@ -176,7 +176,7 @@ const ProductModal = () => {
 
   const context = useContext(MyContext);
 
-  
+
   return (
     <Dialog
       open={true}
@@ -202,9 +202,9 @@ const ProductModal = () => {
       <div className="row mt-2 productDetailsModal">
         <div className="col-md-5">
 
-        <ProductZoom/>
+          <ProductZoom />
 
-      </div>
+        </div>
 
         <div className="col-md-7">
           <div className="d-flex info align-items-center mb-3">
@@ -220,7 +220,7 @@ const ProductModal = () => {
 
           <div className="d-flex align-items-center">
             <QuantityBox />
-            <Button className="btn-blue btn-lg btn-big btn-round ml-3"><IoCartSharp/>Add to Cart</Button>
+            <Button className="btn-blue btn-lg btn-big btn-round ml-3"><IoCartSharp />Add to Cart</Button>
           </div>
 
           <div className="d-flex align-items-center mt-5 actions">

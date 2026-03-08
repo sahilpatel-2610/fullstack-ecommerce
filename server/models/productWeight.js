@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const productWeightSchema = mongoose.Schema({
-    name:{
-        type:String,
-        default:null
+    productWeight: {
+        type: String,
+        default: null
     }
 })
 

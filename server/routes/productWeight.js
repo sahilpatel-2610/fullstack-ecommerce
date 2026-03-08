@@ -1,4 +1,4 @@
-const {ProductWeight} = require("../models/productWeight");
+const { ProductWeight } = require("../models/productWeight");
 const express = require('express');
 const router = express.Router();
 
@@ -13,7 +13,7 @@ router.get(`/`, async (req, res) => {
         }
 
         return res.status(200).json(productWeightList);
-    
+
     } catch (error) {
         res.status(500).json({ success: false })
     }
@@ -21,11 +21,22 @@ router.get(`/`, async (req, res) => {
 
 });
 
+router.get('/:id', async (req, res) => {
+
+    const item = await ProductWeight.findById(req.params.id);
+
+    if (!item) {
+        res.status(500).json({ message: 'The item with the given ID was not found.' })
+    }
+    return res.status(200).send(item);
+});
+
+
 
 router.post('/create', async (req, res) => {
 
     let productWeight = new ProductWeight({
-        name : req.body.name
+        productWeight: req.body.productWeight
     });
 
 
@@ -59,7 +70,7 @@ router.delete('/:id', async (req, res) => {
         success: true,
         message: 'Item Deleted!'
     })
-    
+
 });
 
 
@@ -68,7 +79,7 @@ router.put('/:id', async (req, res) => {
     const item = await ProductWeight.findByIdAndUpdate(
         req.params.id,
         {
-            name: req.body.name,
+            productWeight: req.body.productWeight,
         },
         { new: true }
     )

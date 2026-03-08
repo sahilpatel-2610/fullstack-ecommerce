@@ -58,7 +58,7 @@ function App() {
         {
           isHeaderFooterShow === true && <Header />
         }
-        
+
         <Routes>
           <Route path="/" exact={true} element={<Home />} />
           <Route path="/cat/:id" exact={true} element={<Listing />} />
@@ -68,15 +68,15 @@ function App() {
           <Route exact={true} path="/signUp" element={<SignUp />} />
         </Routes>
         {
-          isHeaderFooterShow === true &&  <Footer />
+          isHeaderFooterShow === true && <Footer />
         }
-        
-      
 
-        
-          {
-            isOpenProductModal===true && <ProductModal />
-          }
+
+
+
+        {
+          isOpenProductModal === true && <ProductModal />
+        }
 
 
       </MyContext.Provider>

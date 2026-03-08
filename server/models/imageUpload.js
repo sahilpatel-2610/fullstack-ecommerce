@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
- 
+
 const imageUploadSchema = mongoose.Schema({
-    images:[
+    images: [
         {
-            type:String,
-            required:true
+            type: String,
+            required: true
         }
     ],
 })

@@ -36,13 +36,13 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 });
 
 
-const AddProductRAMS = () => {
+const AddProductSize = () => {
 
     const [editId, setEditId] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [productRamData, setProductRamData] = useState([]);
+    const [productSizeData, setProductSizeData] = useState([]);
     const [formFields, setFormFields] = useState({
-        productRam: '',
+        size: '',
     });
 
     const history = useNavigate();
@@ -56,21 +56,21 @@ const AddProductRAMS = () => {
     }
 
     useEffect(() => {
-        fetchDataFromApi("/api/productRAMS").then((res) => {
-            setProductRamData(res);
+        fetchDataFromApi("/api/productSIZE").then((res) => {
+            setProductSizeData(res);
         })
     }, []);
 
-    const addproductRam = (e) => {
+    const addproductSize = (e) => {
         e.preventDefault();
         const formdata = new FormData();
-        formdata.append('productRam', formFields.productRam);
+        formdata.append('size', formFields.size);
 
-        if (formFields.productRam === "") {
+        if (formFields.size === "") {
             context.setAlertBox({
                 open: true,
                 error: true,
-                msg: 'Please add product Ram',
+                msg: 'Please add product Size',
             });
             return false;
         }
@@ -79,24 +79,24 @@ const AddProductRAMS = () => {
 
         if (editId === "") {
 
-            postData('/api/productRAMS/create', formFields).then(res => {
+            postData('/api/productSIZE/create', formFields).then(res => {
                 setIsLoading(false);
                 setFormFields({
-                    productRam: ""
+                    size: ""
                 });
 
 
-                fetchDataFromApi("/api/productRAMS").then((res) => {
-                    setProductRamData(res);
+                fetchDataFromApi("/api/productSIZE").then((res) => {
+                    setProductSizeData(res);
                 })
 
             });
 
         } else {
 
-            editData(`/api/productRAMS/${editId}`, formFields).then((res) => {
-                fetchDataFromApi("/api/productRAMS").then((res) => {
-                    setProductRamData(res);
+            editData(`/api/productSIZE/${editId}`, formFields).then((res) => {
+                fetchDataFromApi("/api/productSIZE").then((res) => {
+                    setProductSizeData(res);
                     setEditId("");
                     setIsLoading(false);
                 })
@@ -107,18 +107,18 @@ const AddProductRAMS = () => {
     }
 
     const deleteItem = (id) => {
-        deleteData(`/api/productRAMS/${id}`).then((res) => {
-            fetchDataFromApi("/api/productRAMS").then((res) => {
-                setProductRamData(res);
+        deleteData(`/api/productSIZE/${id}`).then((res) => {
+            fetchDataFromApi("/api/productSIZE").then((res) => {
+                setProductSizeData(res);
             })
         })
     }
 
     const updateData = (id) => {
-        fetchDataFromApi(`/api/productRAMS/${id}`).then((res) => {
+        fetchDataFromApi(`/api/productSIZE/${id}`).then((res) => {
             setEditId(id);
             setFormFields({
-                productRam: res.productRam
+                size: res.size
             })
         })
     }
@@ -127,7 +127,7 @@ const AddProductRAMS = () => {
     return (
         <div className="right-content w-100">
             <div className="card shadow border-0 w-100 flex-row p-4 mt-2">
-                <h5 className="mb-0">Add Product RAMS</h5>
+                <h5 className="mb-0">Add Product SIZE</h5>
                 <Breadcrumbs aria-label="breadcrumb" className="ms-auto breadcrumbs_">
                     <StyledBreadcrumb
                         component="a"
@@ -137,18 +137,18 @@ const AddProductRAMS = () => {
                     />
                     <StyledBreadcrumb
                         component="a"
-                        label="Product RAMS"
+                        label="Product SIZE"
                         href="#"
                         deleteIcon={<ExpandMoreIcon />}
                     />
                     <StyledBreadcrumb
-                        label="Add Product RAMS"
+                        label="Add Product SIZE"
                         deleteIcon={<ExpandMoreIcon />}
                     />
                 </Breadcrumbs>
             </div>
 
-            <form className="form" onSubmit={addproductRam}>
+            <form className="form" onSubmit={addproductSize}>
                 <div className='row'>
                     <div className="col-sm-9">
                         <div className="card p-4 mt-0">
@@ -156,8 +156,8 @@ const AddProductRAMS = () => {
 
                                 <div className='col md-4'>
                                     <div className='form-group'>
-                                        <h6>PRODUCT RAM</h6>
-                                        <input type='text' name="productRam" value={formFields.productRam} onChange={inputChange} />
+                                        <h6>PRODUCT SIZE</h6>
+                                        <input type='text' name="size" value={formFields.size} onChange={inputChange} />
                                     </div>
                                 </div>
 
@@ -174,7 +174,7 @@ const AddProductRAMS = () => {
             </form>
 
             {
-                productRamData.length !== 0 &&
+                productSizeData.length !== 0 &&
 
                 <div className="row">
                     <div className="col-md-9">
@@ -183,18 +183,18 @@ const AddProductRAMS = () => {
                                 <table className="table table-bordered table-striped v-align">
                                     <thead className="thead-dark">
                                         <tr>
-                                            <th>PRODUCT RAM</th>
+                                            <th>PRODUCT SIZE</th>
                                             <th width="25%">ACTION</th>
                                         </tr>
                                     </thead>
 
                                     <tbody>
                                         {
-                                            productRamData?.map((item, index) => {
+                                            productSizeData?.map((item, index) => {
                                                 return (
                                                     <tr>
                                                         <td>
-                                                            {item.productRam}
+                                                            {item.size}
                                                         </td>
                                                         <td>
                                                             <div className="actions d-flex align-items-center">
@@ -225,4 +225,4 @@ const AddProductRAMS = () => {
     );
 }
 
-export default AddProductRAMS;
+export default AddProductSize;

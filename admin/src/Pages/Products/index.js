@@ -19,7 +19,7 @@ import { FaEye } from "react-icons/fa";
 import { FaPencilAlt } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import Pagination from "@mui/material/Pagination";
-import {  MyContext } from "../../App";
+import { MyContext } from "../../App";
 
 import Rating from "@mui/material/Rating";
 import { Link } from "react-router-dom";
@@ -39,23 +39,23 @@ const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
 //breadcrumb code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
-  const backgroundColor =
-    theme.palette.mode === "light"
-        ? theme.palette.grey[100]
-        : theme.palette.grey[800];
-  return {
-    backgroundColor,
-    height: theme.spacing(3),
-    color: theme.palette.text.primary,
-    fontWeight: theme.typography.fontWeightRegular,
-    "&:hover, &:focus": {
-      backgroundColor: emphasize(backgroundColor, 0.06),
-    },
-    '&:active': {
-      boxShadow: theme.shadows[1],
-      backgroundColor: emphasize(backgroundColor, 0.12),
-    },
-  };
+    const backgroundColor =
+        theme.palette.mode === "light"
+            ? theme.palette.grey[100]
+            : theme.palette.grey[800];
+    return {
+        backgroundColor,
+        height: theme.spacing(3),
+        color: theme.palette.text.primary,
+        fontWeight: theme.typography.fontWeightRegular,
+        "&:hover, &:focus": {
+            backgroundColor: emphasize(backgroundColor, 0.06),
+        },
+        '&:active': {
+            boxShadow: theme.shadows[1],
+            backgroundColor: emphasize(backgroundColor, 0.12),
+        },
+    };
 });
 
 const Products = () => {
@@ -71,26 +71,26 @@ const Products = () => {
 
     const ITEM_HEIGHT = 48;
 
-    useEffect(()=>{
+    useEffect(() => {
         window.scrollTo(0, 0);
         context.setProgress(40);
-        fetchDataFromApi("/api/products").then((res)=>{
+        fetchDataFromApi("/api/products").then((res) => {
             setProductList(res);
             context.setProgress(100);
         })
-    },[]);
+    }, []);
 
     const deleteProduct = (id) => {
         context.setProgress(40);
-        deleteData(`/api/products/${id}`).then((res)=>{
+        deleteData(`/api/products/${id}`).then((res) => {
             context.setProgress(100);
             context.setAlertBox({
                 open: true,
                 error: false,
                 msg: "Product Deleted!",
             });
-            
-            fetchDataFromApi("/api/products").then((res)=>{
+
+            fetchDataFromApi("/api/products").then((res) => {
                 setProductList(res);
             })
             context.fetchCategory();
@@ -98,13 +98,13 @@ const Products = () => {
     }
 
     const handleChange = (event, value) => {
-    context.setProgress(40);
+        context.setProgress(40);
         fetchDataFromApi(`/api/products?page=${value}`).then((res) => {
             setProductList(res);
             context.setProgress(100);
         })
     };
-        
+
 
     return (
         <>
@@ -127,22 +127,11 @@ const Products = () => {
                     <Link to="/product/upload"><Button className="btn-blue ml-3 pl-3 pr-3">Add Product</Button></Link>
 
                 </div>
-                
 
-
-                <div className="row dashboardBoxWrapperRow dashboardBoxWrapperRowV2">
-                    <div className="col-md-12">
-                        <div className="dashboardBoxWrapper d-flex">
-                            <DashboardBox color={["#1da256", "#48d483"]} icon={<FaUserCircle />} grow={true} />
-                            <DashboardBox color={["#c012e2", "#eb64fe"]} icon={<IoMdCart />} />
-                            <DashboardBox color={["#2c78e5", "#60aff5"]} icon={<MdShoppingBag />} />
-                        </div> 
-                    </div>
-                </div>
 
 
                 <div className="card shadow border-0 p-3 mt-4">
-                    <h3 className="hd">Best Selling Products</h3>
+                    <h3 className="hd">All Products</h3>
 
                     <div className="row cardFilters mt-3">
                         <div className="col-md-3">
@@ -162,7 +151,7 @@ const Products = () => {
                                     <MenuItem value={10}>Ten</MenuItem>
                                     <MenuItem value={20}>Twenty</MenuItem>
                                     <MenuItem value={30}>Thirty</MenuItem>
-                                </Select>    
+                                </Select>
                             </FormControl>
                         </div>
 
@@ -182,14 +171,14 @@ const Products = () => {
                                         <em value={null}>None</em>
                                     </MenuItem>
                                     {
-                                        context.catData?.categoryList?.length !== 0 && context.catData?.categoryList?.map((cat,index)=>{
-                                        // catData?.categoryList?.map((cat, index) => {
-                                            return(
+                                        context.catData?.categoryList?.length !== 0 && context.catData?.categoryList?.map((cat, index) => {
+                                            // catData?.categoryList?.map((cat, index) => {
+                                            return (
                                                 <MenuItem className="text-capitalize" value={cat._id} key={index} >{cat.name}</MenuItem>
                                             )
                                         })
                                     }
-                                </Select>    
+                                </Select>
                             </FormControl>
                         </div>
 
@@ -203,7 +192,7 @@ const Products = () => {
                             <thead className="thead-dark">
                                 <tr>
                                     {/* <th>UID</th> */}
-                                    <th style={{width:'300px'}}>PRODUCT</th>
+                                    <th style={{ width: '300px' }}>PRODUCT</th>
                                     <th>CATEGORY</th>
                                     <th>SUB CATEGORY</th>
                                     <th>BRAND</th>
@@ -218,78 +207,78 @@ const Products = () => {
                             </thead>
 
                             <tbody>
-                            {
-                                productList?.products?.length !== 0 && productList?.products?.map((item,index)=>{
-                                    return (
-                                        <tr>
-                                            {/* <td>
+                                {
+                                    productList?.products?.length !== 0 && productList?.products?.map((item, index) => {
+                                        return (
+                                            <tr>
+                                                {/* <td>
                                                 <div className="d-flex align-items-center">
                                                     <Checkbox {...label} />  <span>#1</span>
                                                 </div>
                                             </td> */}
-                                            <td>
-                                            <div className="d-flex align-items-center productBox">
-                                                <div className="imgWrapper">
-                                                    <div className="img card shadow m-0">
-                                                        <img src={`${context.baseUrl}/uploads/${item?.images[0]}`} className="w-100" />
+                                                <td>
+                                                    <div className="d-flex align-items-center productBox">
+                                                        <div className="imgWrapper">
+                                                            <div className="img card shadow m-0">
+                                                                <img src={item?.images[0]} className="w-100" />
+                                                            </div>
+                                                        </div>
+                                                        <div className="info pl-0">
+                                                            <h6> &nbsp; {item?.name}</h6>
+                                                            <p> &nbsp; {item?.description}
+                                                            </p>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div className="info pl-0">
-                                                    <h6> &nbsp; {item?.name}</h6>
-                                                    <p> &nbsp; {item?.description}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            </td>
-                                            <td>{item?.category?.name}</td>
-                                            <td>{item?.subCat?.subCat}</td>
-                                            <td>{item?.brand}</td>
-                                            <td>
-                                                <div style={{ width: '70px' }}>
-                                                    <del className="old">Rs {item?.oldPrice}</del>
-                                                    <span className="new text-danger">Rs {item?.price}</span>
-                                                </div>
-                                            </td>
-                                            <td><Rating name="read-only" defaultValue={item?.rating} precision={0.5} size="small" readOnly /></td>
+                                                </td>
+                                                <td>{item?.category?.name}</td>
+                                                <td>{item?.subCat?.subCat}</td>
+                                                <td>{item?.brand}</td>
+                                                <td>
+                                                    <div style={{ width: '70px' }}>
+                                                        <del className="old">Rs {item?.oldPrice}</del>
+                                                        <span className="new text-danger">Rs {item?.price}</span>
+                                                    </div>
+                                                </td>
+                                                <td><Rating name="read-only" defaultValue={item?.rating} precision={0.5} size="small" readOnly /></td>
 
-                                            <td>{item?.discount}</td>
-                                            <td>{item?.productRAMS}</td>
-                                            <td>{item?.productSIZE}</td>
-                                            <td>{item?.productWEIGHT}</td>
-                                            
-                                            <td>
-                                                <div className="actions d-flex align-items-center">
-                                                    <Link to="product/details">
-                                                        <Button className="secondary"
-                                                            color="secondary"><FaEye />
-                                                        </Button>
-                                                    </Link>
+                                                <td>{item?.discount}</td>
+                                                <td>{item?.productRAMS}</td>
+                                                <td>{item?.productWEIGHT}</td>
+                                                <td>{item?.productSIZE}</td>
 
-                                                    <Link to={`/product/edit/${item._id}`}>
-                                                        <Button className="success"
-                                                        color="success"><FaPencilAlt /></Button>
-                                                    </Link>
+                                                <td>
+                                                    <div className="actions d-flex align-items-center">
+                                                        <Link to="product/details">
+                                                            <Button className="secondary"
+                                                                color="secondary"><FaEye />
+                                                            </Button>
+                                                        </Link>
 
-                                                    <Button className="error"
-                                                    color="error" onClick={() => deleteProduct(item.id)}><MdDelete /></Button>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                                        <Link to={`/product/edit/${item._id}`}>
+                                                            <Button className="success"
+                                                                color="success"><FaPencilAlt /></Button>
+                                                        </Link>
 
-                                    )
-                                })
-                            }
-                               
+                                                        <Button className="error"
+                                                            color="error" onClick={() => deleteProduct(item.id)}><MdDelete /></Button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                        )
+                                    })
+                                }
+
                             </tbody>
                         </table>
 
                         {
                             productList?.totalPages > 1 && <div className="d-flex tableFooter">
-                            <Pagination count={productList?.totalPages} color="primary" className="pagination" showFirstButton showLastButton onChange={handleChange} />
+                                <Pagination count={productList?.totalPages} color="primary" className="pagination" showFirstButton showLastButton onChange={handleChange} />
                             </div>
                         }
 
-                       
+
 
                     </div>
 

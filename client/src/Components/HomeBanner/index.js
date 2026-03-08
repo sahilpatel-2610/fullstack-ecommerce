@@ -115,7 +115,7 @@ const HomeBanner = () => {
             </div>
           </SwiperSlide>
 
-           <SwiperSlide>
+          <SwiperSlide>
             <div className="item">
               <img
                 src="https://api.spicezgold.com/download/file_1734524971122_NewProject(8).jpg"
@@ -125,7 +125,7 @@ const HomeBanner = () => {
             </div>
           </SwiperSlide>
 
-           <SwiperSlide>
+          <SwiperSlide>
             <div className="item">
               <img
                 src="https://api.spicezgold.com/download/file_1734524985581_NewProject(11).jpg"

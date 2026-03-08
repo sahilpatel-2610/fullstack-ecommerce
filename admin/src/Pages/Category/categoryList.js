@@ -1,4 +1,4 @@
-import React,{ useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import Button from "@mui/material/Button";
 
 import { FaPencilAlt } from "react-icons/fa";
@@ -9,7 +9,7 @@ import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Chip from "@mui/material/Chip";
 import HomeIcon from "@mui/icons-material/Home";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Pagination } from "@mui/material"; 
+import { Pagination } from "@mui/material";
 import { deleteData, editData, fetchDataFromApi } from "../../utils/api";
 
 import { Link } from "react-router-dom";
@@ -20,23 +20,23 @@ const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
 //breadcrumb code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
-  const backgroundColor =
-    theme.palette.mode === "light"
-        ? theme.palette.grey[100]
-        : theme.palette.grey[800];
-  return {
-    backgroundColor,
-    height: theme.spacing(3),
-    color: theme.palette.text.primary,
-    fontWeight: theme.typography.fontWeightRegular,
-    "&:hover, &:focus": {
-      backgroundColor: emphasize(backgroundColor, 0.06),
-    },
-    '&:active': {
-      boxShadow: theme.shadows[1],
-      backgroundColor: emphasize(backgroundColor, 0.12),
-    },
-  };
+    const backgroundColor =
+        theme.palette.mode === "light"
+            ? theme.palette.grey[100]
+            : theme.palette.grey[800];
+    return {
+        backgroundColor,
+        height: theme.spacing(3),
+        color: theme.palette.text.primary,
+        fontWeight: theme.typography.fontWeightRegular,
+        "&:hover, &:focus": {
+            backgroundColor: emphasize(backgroundColor, 0.06),
+        },
+        '&:active': {
+            boxShadow: theme.shadows[1],
+            backgroundColor: emphasize(backgroundColor, 0.12),
+        },
+    };
 });
 
 
@@ -48,7 +48,7 @@ const Category = () => {
     });
 
     const context = useContext(MyContext);
-    
+
     useEffect(() => {
         window.scrollTo(0, 0);
         context.setProgress(20)
@@ -59,7 +59,7 @@ const Category = () => {
         })
 
 
-    },[]);
+    }, []);
 
     const deleteCat = (id) => {
         context.setProgress(30);
@@ -83,7 +83,7 @@ const Category = () => {
             context.setProgress(100);
         })
     }
-    
+
 
 
     return (
@@ -115,7 +115,7 @@ const Category = () => {
                             <thead className="thead-dark">
                                 <tr>
                                     {/* <th>UID</th> */}
-                                    <th style={{width:'100px'}}>IMAGE</th>
+                                    <th style={{ width: '100px' }}>IMAGE</th>
                                     <th>CATEGORY</th>
                                     <th>COLOR</th>
                                     <th>ACTION</th>
@@ -148,13 +148,13 @@ const Category = () => {
 
                                             <td>
                                                 <div className="actions d-flex align-items-center">
-                                                <Link to={`/category/edit/${item._id}`}>
-                                                    <Button
-                                                        color="success"
-                                                    >
-                                                        <FaPencilAlt />
-                                                    </Button>
-                                                </Link>
+                                                    <Link to={`/category/edit/${item._id}`}>
+                                                        <Button
+                                                            color="success"
+                                                        >
+                                                            <FaPencilAlt />
+                                                        </Button>
+                                                    </Link>
 
                                                     <Button
                                                         color="error"
@@ -163,25 +163,25 @@ const Category = () => {
                                                         <MdDelete />
                                                     </Button>
                                                 </div>
-                                             
+
                                             </td>
                                         </tr>
                                     ))
                                 }
                             </tbody>
 
-                             
-                            
+
+
                         </table>
 
-                        
+
                         {
                             catData?.totalPages > 1 && <div className="d-flex tableFooter">
-                            <Pagination count={catData?.totalPages} color="primary" className="pagination" showFirstButton showLastButton onChange={handleChange} />
+                                <Pagination count={catData?.totalPages} color="primary" className="pagination" showFirstButton showLastButton onChange={handleChange} />
                             </div>
 
                         }
-                       
+
 
                     </div>
 
@@ -189,7 +189,7 @@ const Category = () => {
 
 
             </div>
-      
+
         </>
     )
 }

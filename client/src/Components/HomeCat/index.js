@@ -72,9 +72,9 @@
 //                         })
 //                 }
 
-                
-                   
-                    
+
+
+
 //                 </Swiper>  
 //             </div>
 //         </section>
@@ -92,7 +92,7 @@ import { Navigation } from 'swiper/modules';
 
 const HomeCat = (props) => {
 
-    return(
+    return (
         <section className="homeCat">
             <div className="container">
                 <h3 className="mb-3 hd">Featured Categories</h3>
@@ -106,26 +106,26 @@ const HomeCat = (props) => {
                     className="mySwiper"
                 >
 
-                {
-                    props.catData?.categoryList?.length > 0 &&
-                    props.catData.categoryList.map((cat,index) => (
-                        <SwiperSlide key={index}>
-                            <div 
-                                className="item text-center cursor" 
-                                style={{ background: cat.color }}
-                            >
-                                <img 
-                                    src={cat.images?.[0]} 
-                                    alt={cat.name} 
-                                />
+                    {
+                        props.catData?.categoryList?.length > 0 &&
+                        props.catData.categoryList.map((cat, index) => (
+                            <SwiperSlide key={index}>
+                                <div
+                                    className="item text-center cursor"
+                                    style={{ background: cat.color }}
+                                >
+                                    <img
+                                        src={cat.images?.[0]}
+                                        alt={cat.name}
+                                    />
 
-                                <h6>{cat.name}</h6>
-                            </div>
-                        </SwiperSlide>
-                    ))
-                }
+                                    <h6>{cat.name}</h6>
+                                </div>
+                            </SwiperSlide>
+                        ))
+                    }
 
-                </Swiper>  
+                </Swiper>
             </div>
         </section>
     )

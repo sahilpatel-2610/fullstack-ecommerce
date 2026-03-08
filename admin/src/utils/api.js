@@ -11,22 +11,42 @@ export const fetchDataFromApi = async (url) => {
 }
 
 export const postData = async (url, formData) => {
-    const { res } = await axios.post("http://localhost:4000" + url, formData)
-    return res;
+    try {
+        const response = await axios.post("http://localhost:4000" + url, formData);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        return error.response ? error.response.data : error;
+    }
 }
 
 export const editData = async (url, updateData) => {
-    const { res } = await axios.put(`${"http://localhost:4000"}${url}`,updateData)
-    return res;
+    try {
+        const response = await axios.put(`${"http://localhost:4000"}${url}`, updateData);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        return error.response ? error.response.data : error;
+    }
 }
 
 export const deleteData = async (url) => {
-    const { res } = await axios.delete(`${"http://localhost:4000"}${url}`);
-    return res;
+    try {
+        const response = await axios.delete(`${"http://localhost:4000"}${url}`);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        return error.response ? error.response.data : error;
+    }
 };
 
 export const deleteImages = async (url, image) => {
-    const { res } = await axios.delete(`${"http://localhost:4000"}${url}`,image);
-    return res;
+    try {
+        const response = await axios.delete(`${"http://localhost:4000"}${url}`, { data: image });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        return error.response ? error.response.data : error;
+    }
 };
 

@@ -18,25 +18,25 @@ import { Link, useParams } from "react-router-dom";
 
 //breadcrumb code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
-  const backgroundColor =
-    theme.palette.mode === "light"
-        ? theme.palette.grey[100]
-        : theme.palette.grey[800];
-  return {
-    backgroundColor,
-    height: theme.spacing(3),
-    color: theme.palette.text.primary,
-    fontWeight: theme.typography.fontWeightRegular,
-    "&:hover, &:focus": {
-      backgroundColor: emphasize(backgroundColor, 0.06),
-    },
-    '&:active': {
-      boxShadow: theme.shadows[1],
-      backgroundColor: emphasize(backgroundColor, 0.12),
-    },
-  };
+    const backgroundColor =
+        theme.palette.mode === "light"
+            ? theme.palette.grey[100]
+            : theme.palette.grey[800];
+    return {
+        backgroundColor,
+        height: theme.spacing(3),
+        color: theme.palette.text.primary,
+        fontWeight: theme.typography.fontWeightRegular,
+        "&:hover, &:focus": {
+            backgroundColor: emphasize(backgroundColor, 0.06),
+        },
+        '&:active': {
+            boxShadow: theme.shadows[1],
+            backgroundColor: emphasize(backgroundColor, 0.12),
+        },
+    };
 });
-      
+
 
 const EditCategory = () => {
 
@@ -53,7 +53,7 @@ const EditCategory = () => {
     const [imgFiles, setimgFiles] = useState();
     const [previews, setPreviews] = useState();
     const [isSelectedFiles, setIsSelectedFiles] = useState(false);
-  
+
     let { id } = useParams();
 
     const formdata = new FormData();
@@ -62,7 +62,7 @@ const EditCategory = () => {
 
     const context = useContext(MyContext);
 
-    
+
     useEffect(() => {
         if (!imgFiles) return;
 
@@ -70,10 +70,10 @@ const EditCategory = () => {
         for (let i = 0; i < imgFiles.length; i++) {
             tmp.push(URL.createObjectURL(imgFiles[i]));
         }
-    
+
         const objectUrls = tmp;
         setPreviews(objectUrls);
-    
+
         // free memory 
         for (let i = 0; i < objectUrls.length; i++) {
             return () => {
@@ -85,8 +85,8 @@ const EditCategory = () => {
     useEffect(() => {
         context.setProgress(20);
         fetchDataFromApi("/api/imageUpload").then((res) => {
-            res?.map((item)=>{
-                item?.images?.map((img)=>{
+            res?.map((item) => {
+                item?.images?.map((img) => {
                     deleteImages(`/api/category/deleteImage?img=${img}`).then((res) => {
                         deleteData("/api/imageUpload/deleteAllImages");
                     })
@@ -103,8 +103,8 @@ const EditCategory = () => {
             setPreviews(res.images);
             context.setProgress(100);
         });
-        
-    },[]);
+
+    }, []);
 
 
     const changeInput = (e) => {
@@ -116,11 +116,11 @@ const EditCategory = () => {
         ))
     }
 
-   const onChangeFile = async (e, apiEndPoint) => {
+    const onChangeFile = async (e, apiEndPoint) => {
         try {
             const imgArr = [];
             const files = e.target.files;
-         
+
             // const fd = new FormData();
             for (var i = 0; i < files.length; i++) {
 
@@ -147,10 +147,10 @@ const EditCategory = () => {
                         error: true,
                         msg: "Please select a valid JPG or PNG image file."
                     });
-                } 
-           
+                }
+
             }
-           
+
         } catch (error) {
             console.log(error);
         }
@@ -191,11 +191,11 @@ const EditCategory = () => {
             });
             return false;
         }
-        
-    } 
+
+    }
 
 
-  
+
 
     return (
         <>
@@ -245,10 +245,10 @@ const EditCategory = () => {
                                 {/* <div className='card p-4 mt-0'> */}
                                 <div className="imagesUploadSec">
                                     <h5 className="mb-4">Media And Published</h5>
-                        
+
                                     <div className="imgUploadBox d-flex align-items-center">
-                        
-                                        {/* {
+
+                                        {
                                             previews?.length !== 0 && previews?.map((img, index) => {
                                                 return (
                                                     <div className="uploadBox" key={index}>
@@ -257,22 +257,6 @@ const EditCategory = () => {
                                                 )
                                             })
                                         }
-  */}
-                                        {
-                                            previews?.length !== 0 && previews?.map((img, index) => {
-                                                return (
-                                                    <div className="uploadBox" key={index}>
-                                                        {
-                                                            isSelectedFiles === true ? <img src={`${img}`} className="w-100" /> : <img src={`${context.baseUrl}/uploads/${img}`} className="w-100" />
-                                                        }
-                                                    </div>
-                                                )
-                                            })
-                                        } 
-                        
-                        
-                        
-                        
                                         <div className="uploadBox">
                                             <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/category/upload')} name="images" />
                                             <div className="info">
@@ -280,28 +264,28 @@ const EditCategory = () => {
                                                 <h5>image upload</h5>
                                             </div>
                                         </div>
-                        
-                        
+
+
                                     </div>
-                        
-                        
+
+
                                     <br />
-                        
+
                                     <Button type="submit" className="btn-blue btn-lg btn-big w-100" ><FaCloudUploadAlt /> &nbsp; {isLoading === true ? <CircularProgress color="inherit" className="loader" /> : 'PUBLISH AND VIEW'} </Button>
                                 </div>
-                            {/* </div> */}
-                        
+                                {/* </div> */}
+
 
                             </div>
                         </div>
 
-                      
-                            
-                        
+
+
+
                     </div>
 
 
-                    
+
                 </form>
 
             </div>
