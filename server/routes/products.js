@@ -4,6 +4,7 @@ const { ImageUpload } = require('../models/imageUpload.js');
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
+const mongoose = require('mongoose');
 const fs = require("fs");
 
 // const cloudinary = require('cloudinary').v2;
@@ -175,9 +176,9 @@ router.post(`/create`, async (req, res) => {
         rating: req.body.rating,
         isFeatured: req.body.isFeatured,
         discount: req.body.discount,
-        productRAMS: req.body.productRAMS,
-        productSIZE: req.body.productSIZE,
-        productWEIGHT: req.body.productWEIGHT,
+        productRam: req.body.productRam,
+        size: req.body.size,
+        productWeight: req.body.productWeight,
     });
 
     try {
@@ -235,8 +236,15 @@ router.delete('/deleteImage', async (req, res) => {
 
 
 router.delete('/:id', async (req, res) => {
+    if (!req.params.id || req.params.id === 'undefined' || !mongoose.isValidObjectId(req.params.id)) {
+        return res.status(400).json({ success: false, message: 'Invalid product ID' });
+    }
 
     const product = await Product.findById(req.params.id);
+
+    if (!product) {
+        return res.status(404).json({ success: false, message: 'Product not found!' });
+    }
     const images = product.images;
 
     for (img of images) {
@@ -287,9 +295,9 @@ router.put('/:id', async (req, res) => {
                 rating: req.body.rating,
                 numReviews: req.body.numReviews,
                 isFeatured: req.body.isFeatured,
-                productRAMS: req.body.productRAMS,
-                productSIZE: req.body.productSIZE,
-                productWEIGHT: req.body.productWEIGHT
+                productRam: req.body.productRam,
+                size: req.body.size,
+                productWeight: req.body.productWeight,
             },
             { new: true }
         );

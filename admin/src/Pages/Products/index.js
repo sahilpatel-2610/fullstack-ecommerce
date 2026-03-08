@@ -111,27 +111,36 @@ const Products = () => {
             <div className="right-content w-100">
                 <div className="card shadow border-0 w-100 flex-row p-4 res-col">
                     <h5 className="mb-0">Product List</h5>
-                    <Breadcrumbs aria-label="breadcrumb" className="ms-auto breadcrumbs_">
-                        <StyledBreadcrumb
-                            component="a"
-                            href="#"
-                            label="Dashboard"
-                            icon={<HomeIcon fontSize="small" />}
-                        />
-                        <StyledBreadcrumb
-                            label="Products"
-                            deleteIcon={<ExpandMoreIcon />}
-                        />
-                    </Breadcrumbs>
+                    <div className="ms-auto d-flex align-items-center">
+                        <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs_">
+                            <StyledBreadcrumb
+                                component="a"
+                                href="#"
+                                label="Dashboard"
+                                icon={<HomeIcon fontSize="small" />}
+                            />
+                            <StyledBreadcrumb
+                                label="Products"
+                                deleteIcon={<ExpandMoreIcon />}
+                            />
+                        </Breadcrumbs>
 
-                    <Link to="/product/upload"><Button className="btn-blue ml-3 pl-3 pr-3">Add Product</Button></Link>
+                        <Link to="/product/upload"><Button className="btn-blue pl-3 pr-3 ms-3">Add Product</Button></Link>
+                    </div>
 
                 </div>
+                {/* 
+                <div className="dashboardBoxWrapper d-flex">
+                    <DashboardBox color={["#1da256", "#48d483"]} icon={<FaUserCircle />} grow={true} />
+                    <DashboardBox color={["#c012e2", "#eb64fe"]} icon={<IoMdCart />} />
+                    <DashboardBox color={["#2c78e5", "#60aff5"]} icon={<MdShoppingBag />} />
+
+                </div> */}
 
 
 
                 <div className="card shadow border-0 p-3 mt-4">
-                    <h3 className="hd">All Products</h3>
+                    <h3 className="hd">Best Selling Products</h3>
 
                     <div className="row cardFilters mt-3">
                         <div className="col-md-3">
@@ -242,9 +251,24 @@ const Products = () => {
                                                 <td><Rating name="read-only" defaultValue={item?.rating} precision={0.5} size="small" readOnly /></td>
 
                                                 <td>{item?.discount}</td>
-                                                <td>{item?.productRAMS}</td>
-                                                <td>{item?.productWEIGHT}</td>
-                                                <td>{item?.productSIZE}</td>
+
+                                                <td>{item?.productRam?.map((ram) => {
+                                                    return (
+                                                        <span className="badge badge-primary mr-2">{ram}</span>
+                                                    )
+                                                })}</td>
+
+                                                <td>{item?.productWeight?.map((weight) => {
+                                                    return (
+                                                        <span className="badge badge-primary mr-2">{weight}</span>
+                                                    )
+                                                })}</td>
+
+                                                <td>{item?.size?.map((size) => {
+                                                    return (
+                                                        <span className="badge badge-primary mr-2">{size}</span>
+                                                    )
+                                                })}</td>
 
                                                 <td>
                                                     <div className="actions d-flex align-items-center">
@@ -260,7 +284,7 @@ const Products = () => {
                                                         </Link>
 
                                                         <Button className="error"
-                                                            color="error" onClick={() => deleteProduct(item.id)}><MdDelete /></Button>
+                                                            color="error" onClick={() => deleteProduct(item._id)}><MdDelete /></Button>
                                                     </div>
                                                 </td>
                                             </tr>

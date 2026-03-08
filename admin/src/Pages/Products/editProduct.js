@@ -18,7 +18,7 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import { useRef } from "react";
-import { editData, fetchDataFromApi, postData } from "../../utils/api";
+import { editData, fetchDataFromApi, postData, deleteImages } from "../../utils/api";
 import { useEffect } from "react";
 import { MyContext } from "../../App";
 import { useContext } from "react";
@@ -63,12 +63,17 @@ const EditUpload = () => {
 
     const [categoryVal, setCategoryVal] = useState('');
     const [subCatVal, setSubCatVal] = useState('');
-    const [productRams, setProductRams] = useState('');
-    const [productWeight, setProductWeight] = useState('');
-    const [productSize, setProductSize] = useState('');
+
+    const [productRams, setProductRams] = useState([]);
+    const [productWeight, setProductWeight] = useState([]);
+    const [productSize, setProductSize] = useState([]);
 
     const [ratingValue, setRatingValue] = useState(1);
     const [isFeaturedValue, setisFeaturedValue] = useState('');
+
+    const [productRAMSData, setProductRAMSData] = useState([]);
+    const [productWEIGHTData, setProductWEIGHTData] = useState([]);
+    const [productSIZEData, setProductSIZEData] = useState([]);
 
     const [catData, setCatData] = useState([]);
     const [subCatData, setSubCatData] = useState([]);
@@ -99,9 +104,9 @@ const EditUpload = () => {
         rating: 0,
         isFeatured: null,
         discount: null,
-        productRAMS: '',
-        productSIZE: '',
-        productWEIGHT: ''
+        productRam: [],
+        size: [],
+        productWeight: []
     });
 
     const productImages = useRef();
@@ -130,42 +135,37 @@ const EditUpload = () => {
                 rating: res.rating,
                 isFeatured: res.isFeatured,
                 discount: res.discount,
-                productRAMS: res.productRAMS,
-                productSIZE: res.productSIZE,
-                productWEIGHT: res.productWEIGHT
+                productRam: res.productRam,
+                size: res.size,
+                productWeight: res.productWeight
             });
 
             setRatingValue(res.rating);
             setCategoryVal(res.category);
             setSubCatVal(res.subCat);
             setisFeaturedValue(res.isFeatured);
-            setProductRams(res.productRAMS);
-            setProductSize(res.productSIZE);
-            setProductWeight(res.productWEIGHT);
+            setProductRams(res.productRam || []);
+            setProductSize(res.size || []);
+            setProductWeight(res.productWeight || []);
             setPreviews(res.images);
             context.setProgress(100);
         });
 
+        fetchDataFromApi("/api/productWeight").then((res) => {
+            setProductWEIGHTData(res);
+        });
+
+        fetchDataFromApi("/api/productRAMS").then((res) => {
+            setProductRAMSData(res);
+        });
+
+        fetchDataFromApi("/api/productSIZE").then((res) => {
+            setProductSIZEData(res);
+        });
+
+
     }, []);
 
-
-    useEffect(() => {
-        if (!imgFiles) return;
-        let tmp = [];
-        for (let i = 0; i < imgFiles.length; i++) {
-            tmp.push(URL.createObjectURL(imgFiles[i]));
-        }
-
-        const objectUrls = tmp;
-        setPreviews(objectUrls);
-
-        // free memory 
-        for (let i = 0; i < objectUrls.length; i++) {
-            return () => {
-                URL.revokeObjectURL(objectUrls[i]);
-            }
-        }
-    }, [imgFiles]);
 
 
     const handleChangeCategory = (event) => {
@@ -192,28 +192,86 @@ const EditUpload = () => {
         }))
     };
 
+    // const handleChangeProductRams = (event) => {
+    //     setProductRams(event.target.value);
+    //     setFormFields(() => ({
+    //         ...formFields,
+    //         productRAMS: event.target.value
+    //     }))
+    // };
+
+    // const handleChangeProductWeight = (event) => {
+    //     setProductWeight(event.target.value);
+    //     setFormFields(() => ({
+    //         ...formFields,
+    //         productWEIGHT: event.target.value
+    //     }))
+    // };
+
+    // const handleChangeProductSize = (event) => {
+    //     setProductSize(event.target.value);
+    //     setFormFields(() => ({
+    //         ...formFields,
+    //         productSIZE: event.target.value
+    //     }))
+    // };
+
     const handleChangeProductRams = (event) => {
-        setProductRams(event.target.value);
-        setFormFields(() => ({
-            ...formFields,
-            productRAMS: event.target.value
-        }))
+        // setProductRams(event.target.value);
+        // setFormFields(() => ({
+        //     ...formFields,
+        //     productRam: event.target.value
+        // }))
+
+        const {
+            target: { value },
+        } = event;
+        setProductRams(
+            // On autofill we get a stringified value.
+            typeof value === 'string' ? value.split(',') : value,
+        );
+
+        formFields.productRam = value;
+
     };
 
     const handleChangeProductWeight = (event) => {
-        setProductWeight(event.target.value);
-        setFormFields(() => ({
-            ...formFields,
-            productWEIGHT: event.target.value
-        }))
+        // setProductWeight(event.target.value);
+        // setFormFields(() => ({
+        //     ...formFields,
+        //     productWeight: event.target.value
+        // }))
+
+
+        const {
+            target: { value },
+        } = event;
+        setProductWeight(
+            // On autofill we get a stringified value.
+            typeof value === 'string' ? value.split(',') : value,
+        );
+
+        formFields.productWeight = value;
+
     };
 
     const handleChangeProductSize = (event) => {
-        setProductSize(event.target.value);
-        setFormFields(() => ({
-            ...formFields,
-            productSIZE: event.target.value
-        }))
+        // setProductSize(event.target.value);
+        // setFormFields(() => ({
+        //     ...formFields,
+        //     size: event.target.value
+        // }))  
+
+        const {
+            target: { value },
+        } = event;
+        setProductSize(
+            // On autofill we get a stringified value.
+            typeof value === 'string' ? value.split(',') : value,
+        );
+
+        formFields.size = value;
+
     };
 
 
@@ -315,9 +373,9 @@ const EditUpload = () => {
         formdata.append('rating', formFields.rating);
         formdata.append('isFeatured', formFields.isFeatured);
         formdata.append('discount', formFields.discount);
-        formdata.append('productRAMS', formFields.productRAMS);
-        formdata.append('productSIZE', formFields.productSIZE);
-        formdata.append('productWEIGHT', formFields.productWEIGHT);
+        formdata.append('productRam', formFields.productRam);
+        formdata.append('size', formFields.size);
+        formdata.append('productWeight', formFields.productWeight);
 
 
 
@@ -627,21 +685,20 @@ const EditUpload = () => {
                                         <div className='form-group'>
                                             <h6>PRODUCT RAMS</h6>
                                             <Select
+                                                multiple
                                                 value={productRams}
                                                 onChange={handleChangeProductRams}
                                                 displayEmpty
-                                                inputProps={{ 'aria-label': 'Without label' }}
                                                 className="w-100"
-
                                                 MenuProps={MenuProps}
                                             >
-                                                <MenuItem value="">
-                                                    <em value={null}>None</em>
-                                                </MenuItem>
-                                                <MenuItem value={'4GB'}>4GB</MenuItem>
-                                                <MenuItem value={'8GB'}>8GB</MenuItem>
-                                                <MenuItem value={'16GB'}>16GB</MenuItem>
-                                                <MenuItem value={'32GB'}>32GB</MenuItem>
+                                                {
+                                                    Array.isArray(productRAMSData) && productRAMSData?.map((item, index) => {
+                                                        return (
+                                                            <MenuItem key={index} value={item.productRam}>{item.productRam}</MenuItem>
+                                                        )
+                                                    })
+                                                }
                                             </Select>
                                         </div>
                                     </div>
@@ -650,20 +707,20 @@ const EditUpload = () => {
                                         <div className='form-group'>
                                             <h6>PRODUCT WEIGHT</h6>
                                             <Select
+                                                multiple
                                                 value={productWeight}
                                                 onChange={handleChangeProductWeight}
                                                 displayEmpty
-                                                inputProps={{ 'aria-label': 'Without label' }}
                                                 className="w-100"
+                                                MenuProps={MenuProps}
                                             >
-                                                <MenuItem value="">
-                                                    <em value={null}>None</em>
-                                                </MenuItem>
-                                                <MenuItem value={'500GM'}>500GM</MenuItem>
-                                                <MenuItem value={'1KG'}>1KG</MenuItem>
-                                                <MenuItem value={'2KG'}>2KG</MenuItem>
-                                                <MenuItem value={'3KG'}>3KG</MenuItem>
-                                                <MenuItem value={'4KG'}>4KG</MenuItem>
+                                                {
+                                                    Array.isArray(productWEIGHTData) && productWEIGHTData?.map((item, index) => {
+                                                        return (
+                                                            <MenuItem key={index} value={item.productWeight}>{item.productWeight}</MenuItem>
+                                                        )
+                                                    })
+                                                }
                                             </Select>
                                         </div>
                                     </div>
@@ -672,23 +729,22 @@ const EditUpload = () => {
                                         <div className='form-group'>
                                             <h6>PRODUCT SIZE</h6>
                                             <Select
+                                                multiple
                                                 value={productSize}
                                                 onChange={handleChangeProductSize}
                                                 displayEmpty
-                                                inputProps={{ 'aria-label': 'Without label' }}
                                                 className="w-100"
+                                                MenuProps={MenuProps}
                                             >
-                                                <MenuItem value="">
-                                                    <em value={null}>None</em>
-                                                </MenuItem>
-                                                <MenuItem value={'S'}>S</MenuItem>
-                                                <MenuItem value={'M'}>M</MenuItem>
-                                                <MenuItem value={'L'}>L</MenuItem>
-                                                <MenuItem value={'XL'}>XL</MenuItem>
-                                                <MenuItem value={'XXL'}>XXL</MenuItem>
+                                                {
+                                                    Array.isArray(productSIZEData) && productSIZEData?.map((item, index) => {
+                                                        return (
+                                                            <MenuItem key={index} value={item.size}>{item.size}</MenuItem>
+                                                        )
+                                                    })
+                                                }
                                             </Select>
                                         </div>
-
                                     </div>
 
                                     <div className='col-md-4'>

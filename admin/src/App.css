@@ -1537,9 +1537,211 @@ body.dark .imgUploadBox .uploadBox * {
 .imgUploadBox .uploadBox .remove {
     position: absolute;
     top: -7px;
+    right: -7px;
     border-radius: 50%;
     cursor: pointer;
     z-index: 100;
+    background: #d32f2f;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.imgUploadBox .uploadBox .remove svg {
+    font-size: 18px;
+    color: #fff;
+}
+
+.imgUploadBox .uploadBox .MuiBox-root {
+    position: absolute;
+}
+
+.imgUploadBox .uploadBox:hover {
+    background: #f1f1f1;
+}
+
+body.dark .imgUploadBox .uploadBox {
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+}
+
+.imgUploadBox .uploadBox img {
+    height: 100%;
+    object-fit: cover;
+}
+
+.imgUploadBox .uploadBox input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+}
+
+.imgUploadBox .uploadBox .info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    pointer-events: none;
+}
+
+.imgUploadBox .uploadBox .info svg {
+    font-size: 50px;
+    opacity: 0.2;
+}
+
+.imgUploadBox .uploadBox .info h5 {
+    font-size: 15px;
+    text-align: center;
+    opacity: 0.5;
+}
+
+
+.dot {
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-radius: 100%;
+}
+
+.editModal .css-xanwcj-MuiFormControl-root-MuiTextField-root {
+    width: 600px !important;
+}
+
+.editModal .css-kw13he-MuiDialogContent-root {
+
+    padding: 0px !important;
+}
+
+body.dark .css-1jy569b-MuiFormLabel-root-MuiTextField-root,
+body.dark .css-1t812tu-MuiInputBase-input-MuiOutlinedInput-input {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+
+.stickyBox {
+    position: sticky;
+    top: 90px;
+}
+
+.stickyBox h4 {
+    font-size: 22px;
+    opacity: 1;
+}
+
+.imgGrid {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.imgGrid .img {
+    width: 47%;
+    height: 100px;
+    overflow: hidden;
+    border-radius: 7px;
+}
+
+.imgGrid .img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.inputBtn button {
+    position: absolute;
+    top: 7px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.form .form-group input:hover,
+.form .form-group textarea:hover {
+    border: 1px solid rgba(0, 0, 0, 0.3) !important;
+}
+
+.form .form-group textarea {
+    height: 120px;
+    padding-top: 15px;
+}
+
+body.dark .form .form-group input,
+body.dark .form .form-group textarea {
+    background: #2b3c5f !important;
+    border: 1px solid #253557 !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+
+.imgUploadBox {
+    width: 100%;
+    flex-wrap: nowrap;
+    gap: 10px;
+}
+
+.imgUploadBox .uploadBox {
+    width: 150px;
+    height: 150px !important;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px dashed rgba(0, 0, 0, 0.3);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: #fafafa;
+}
+
+.imgUploadBox .uploadBox:hover {
+    background: #f1f1f1;
+}
+
+.imgUploadBox .uploadBox .box {
+    width: 100%;
+    height: 150px !important;
+    overflow: hidden;
+    border-radius: 7px;
+    padding: 4px;
+}
+
+.imgUploadBox .uploadBox .box .lazy-load-image-background {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+.imgUploadBox .uploadBox .progressBar .MuiCircularProgress-root {
+    width: 30px !important;
+    height: 30px !important;
+}
+
+.imgUploadBox .uploadBox .progressBar span {
+    font-size: 14px;
+}
+
+body.dark .imgUploadBox .uploadBox {
+    background: #2b3c5f;
+}
+
+body.dark .imgUploadBox .uploadBox * {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.imgUploadBox .uploadBox .remove {
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 100;
+    background: #d32f2f;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .imgUploadBox .uploadBox .remove svg {
@@ -1654,7 +1856,30 @@ button.notAllow {
     cursor: no-drop !important;
 }
 
-from .btn-blue {
+.btn-blue {
     position: relative;
     z-index: 100;
+}
+
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 5px !important;
+}
+
+.badge-primary {
+    background: #0858f7 !important;
+    color: #fff !important;
+}
+
+.mr-2 {
+    margin-right: 0.5rem !important;
+}
+
+.ml-3,
+.ms-3 {
+    margin-left: 1rem !important;
 }

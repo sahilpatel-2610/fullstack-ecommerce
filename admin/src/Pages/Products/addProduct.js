@@ -18,12 +18,13 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import { useRef } from "react";
-import { deleteImages, fetchDataFromApi, postData } from "../../utils/api";
+import { deleteData, deleteImages, fetchDataFromApi, postData } from "../../utils/api";
 import { useEffect } from "react";
 import { MyContext } from "../../App";
 import { useContext } from "react";
 import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from "react-router-dom";
+
 
 
 //breadcrumb code
@@ -62,20 +63,24 @@ const ProductUpload = () => {
 
     const [categoryVal, setCategoryVal] = useState('');
     const [subCatVal, setSubCatVal] = useState('');
+
+    const [productRams, setProductRams] = useState([]);
+    const [productWeight, setProductWeight] = useState([]);
+    const [productSize, setProductSize] = useState([]);
+
     const [ratingValue, setRatingValue] = useState(1);
-    const [productRams, setProductRams] = useState('');
-    const [productWeight, setProductWeight] = useState('');
-    const [productSize, setProductSize] = useState('');
     const [isFeaturedValue, setisFeaturedValue] = useState('');
 
     const [catData, setCatData] = useState([]);
     const [subCatData, setSubCatData] = useState([]);
-    const [productImagesArr, setproductImagesArr] = useState([]);
+
+    const [productRAMSData, setProductRAMSData] = useState([]);
+    const [productWEIGHTData, setProductWEIGHTData] = useState([]);
+    const [productSIZEData, setProductSIZEData] = useState([]);
+
     const [isLoading, setIsLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
 
-    const [files, setFiles] = useState([]);
-    const [imgFiles, setimgFiles] = useState();
     const [previews, setPreviews] = useState([]);
 
     const history = useNavigate();
@@ -92,9 +97,9 @@ const ProductUpload = () => {
         rating: 0,
         isFeatured: null,
         discount: null,
-        productRAMS: '',
-        productSIZE: '',
-        productWEIGHT: '',
+        productRam: [],
+        size: [],
+        productWeight: []
     });
 
     const productImages = useRef();
@@ -107,27 +112,49 @@ const ProductUpload = () => {
         window.scrollTo(0, 0);
         setCatData(context.catData);
         setSubCatData(context.subCatData);
+        fetchDataFromApi("/api/imageUpload").then((res) => {
+            Array.isArray(res) && res?.map((item) => {
+                item?.image?.map((img) => {
+                    deleteImages(`/api/category/deleteImage?img=${img}`).then((res) => {
+                        deleteData("/api/imageUpload/deleteAllImages");
+                    })
+                })
+            })
+        });
+
+        fetchDataFromApi("/api/productWeight").then((res) => {
+            setProductWEIGHTData(res);
+        });
+
+        fetchDataFromApi("/api/productRAMS").then((res) => {
+            setProductRAMSData(res);
+        });
+
+        fetchDataFromApi("/api/productSIZE").then((res) => {
+            setProductSIZEData(res);
+        });
+
     }, []);
 
 
-    useEffect(() => {
-        if (!imgFiles) return;
+    // useEffect(() => {
+    //     if (!imgFiles) return;
 
-        let tmp = [];
-        for (let i = 0; i < imgFiles.length; i++) {
-            tmp.push(URL.createObjectURL(imgFiles[i]));
-        }
+    //     let tmp = [];
+    //     for (let i = 0; i < imgFiles.length; i++) {
+    //         tmp.push(URL.createObjectURL(imgFiles[i]));
+    //     }
 
-        const objectUrls = tmp;
-        setPreviews(objectUrls);
+    //     const objectUrls = tmp;
+    //     setPreviews(objectUrls);
 
-        // free memory 
-        for (let i = 0; i < objectUrls.length; i++) {
-            return () => {
-                URL.revokeObjectURL(objectUrls[i]);
-            }
-        }
-    }, [imgFiles]);
+    //     // free memory 
+    //     for (let i = 0; i < objectUrls.length; i++) {
+    //         return () => {
+    //             URL.revokeObjectURL(objectUrls[i]);
+    //         }
+    //     }
+    // }, [imgFiles]);
 
 
     const handleChangeCategory = (event) => {
@@ -155,27 +182,61 @@ const ProductUpload = () => {
     };
 
     const handleChangeProductRams = (event) => {
-        setProductRams(event.target.value);
-        setFormFields(() => ({
-            ...formFields,
-            productRAMS: event.target.value
-        }))
+        // setProductRams(event.target.value);
+        // setFormFields(() => ({
+        //     ...formFields,
+        //     productRam: event.target.value
+        // }))
+
+        const {
+            target: { value },
+        } = event;
+        setProductRams(
+            // On autofill we get a stringified value.
+            typeof value === 'string' ? value.split(',') : value,
+        );
+
+        formFields.productRam = value;
+
     };
 
     const handleChangeProductWeight = (event) => {
-        setProductWeight(event.target.value);
-        setFormFields(() => ({
-            ...formFields,
-            productWEIGHT: event.target.value
-        }))
+        // setProductWeight(event.target.value);
+        // setFormFields(() => ({
+        //     ...formFields,
+        //     productWeight: event.target.value
+        // }))
+
+
+        const {
+            target: { value },
+        } = event;
+        setProductWeight(
+            // On autofill we get a stringified value.
+            typeof value === 'string' ? value.split(',') : value,
+        );
+
+        formFields.productWeight = value;
+
     };
 
     const handleChangeProductSize = (event) => {
-        setProductSize(event.target.value);
-        setFormFields(() => ({
-            ...formFields,
-            productSIZE: event.target.value
-        }))
+        // setProductSize(event.target.value);
+        // setFormFields(() => ({
+        //     ...formFields,
+        //     size: event.target.value
+        // }))  
+
+        const {
+            target: { value },
+        } = event;
+        setProductSize(
+            // On autofill we get a stringified value.
+            typeof value === 'string' ? value.split(',') : value,
+        );
+
+        formFields.size = value;
+
     };
 
 
@@ -290,9 +351,9 @@ const ProductUpload = () => {
         formdata.append('rating', formFields.rating);
         formdata.append('isFeatured', formFields.isFeatured);
         formdata.append('discount', formFields.discount);
-        formdata.append('productRAMS', formFields.productRAMS);
-        formdata.append('productSIZE', formFields.productSIZE);
-        formdata.append('productWEIGHT', formFields.productWEIGHT);
+        formdata.append('productRam', formFields.productRam);
+        formdata.append('size', formFields.size);
+        formdata.append('productWeight', formFields.productWeight);
 
 
         formFields.images = appendedArray;
@@ -591,21 +652,20 @@ const ProductUpload = () => {
                                         <div className='form-group'>
                                             <h6>PRODUCT RAMS</h6>
                                             <Select
+                                                multiple
                                                 value={productRams}
                                                 onChange={handleChangeProductRams}
                                                 displayEmpty
-                                                inputProps={{ 'aria-label': 'Without label' }}
                                                 className="w-100"
-
                                                 MenuProps={MenuProps}
                                             >
-                                                <MenuItem value="">
-                                                    <em value={null}>None</em>
-                                                </MenuItem>
-                                                <MenuItem value={'4GB'}>4GB</MenuItem>
-                                                <MenuItem value={'8GB'}>8GB</MenuItem>
-                                                <MenuItem value={'16GB'}>16GB</MenuItem>
-                                                <MenuItem value={'32GB'}>32GB</MenuItem>
+                                                {
+                                                    Array.isArray(productRAMSData) && productRAMSData?.map((item, index) => {
+                                                        return (
+                                                            <MenuItem key={index} value={item.productRam}>{item.productRam}</MenuItem>
+                                                        )
+                                                    })
+                                                }
                                             </Select>
                                         </div>
                                     </div>
@@ -614,20 +674,20 @@ const ProductUpload = () => {
                                         <div className='form-group'>
                                             <h6>PRODUCT WEIGHT</h6>
                                             <Select
+                                                multiple
                                                 value={productWeight}
                                                 onChange={handleChangeProductWeight}
                                                 displayEmpty
-                                                inputProps={{ 'aria-label': 'Without label' }}
                                                 className="w-100"
+                                                MenuProps={MenuProps}
                                             >
-                                                <MenuItem value="">
-                                                    <em value={null}>None</em>
-                                                </MenuItem>
-                                                <MenuItem value={'500GM'}>500GM</MenuItem>
-                                                <MenuItem value={'1KG'}>1KG</MenuItem>
-                                                <MenuItem value={'2KG'}>2KG</MenuItem>
-                                                <MenuItem value={'3KG'}>3KG</MenuItem>
-                                                <MenuItem value={'4KG'}>4KG</MenuItem>
+                                                {
+                                                    Array.isArray(productWEIGHTData) && productWEIGHTData?.map((item, index) => {
+                                                        return (
+                                                            <MenuItem key={index} value={item.productWeight}>{item.productWeight}</MenuItem>
+                                                        )
+                                                    })
+                                                }
                                             </Select>
                                         </div>
                                     </div>
@@ -636,20 +696,20 @@ const ProductUpload = () => {
                                         <div className='form-group'>
                                             <h6>PRODUCT SIZE</h6>
                                             <Select
+                                                multiple
                                                 value={productSize}
                                                 onChange={handleChangeProductSize}
                                                 displayEmpty
-                                                inputProps={{ 'aria-label': 'Without label' }}
                                                 className="w-100"
+                                                MenuProps={MenuProps}
                                             >
-                                                <MenuItem value="">
-                                                    <em value={null}>None</em>
-                                                </MenuItem>
-                                                <MenuItem value={'S'}>S</MenuItem>
-                                                <MenuItem value={'M'}>M</MenuItem>
-                                                <MenuItem value={'L'}>L</MenuItem>
-                                                <MenuItem value={'XL'}>XL</MenuItem>
-                                                <MenuItem value={'XXL'}>XXL</MenuItem>
+                                                {
+                                                    Array.isArray(productSIZEData) && productSIZEData?.map((item, index) => {
+                                                        return (
+                                                            <MenuItem key={index} value={item.size}>{item.size}</MenuItem>
+                                                        )
+                                                    })
+                                                }
                                             </Select>
                                         </div>
                                     </div>
@@ -689,14 +749,7 @@ const ProductUpload = () => {
                                         return (
                                             <div className="uploadBox" key={index}>
                                                 <span className="remove" onClick={() => removeImg(index, img)}><IoCloseSharp /></span>
-                                                <div className="box">
-                                                    <LazyLoadImage
-                                                        alt={"imag"}
-                                                        effect="blur"
-                                                        className="w-100"
-                                                        src={img}
-                                                    />
-                                                </div>
+                                                <img src={img} className="w-100" />
                                             </div>
                                         )
                                     })

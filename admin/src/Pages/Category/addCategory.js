@@ -292,9 +292,7 @@ const AddCategory = () => {
                                                 return (
                                                     <div className="uploadBox" key={index}>
                                                         <span className="remove" onClick={() => removeImg(index, img)}><IoCloseSharp /></span>
-                                                        <div className="box">
-                                                            <img src={img} className="w-100" />
-                                                        </div>
+                                                        <img src={img} className="w-100" />
                                                     </div>
                                                 )
                                             })

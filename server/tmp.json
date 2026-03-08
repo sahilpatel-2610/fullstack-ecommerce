@@ -1,0 +1,54 @@
+[
+  {
+    "_id": "69ad4943c9a7d89afca48f7d",
+    "name": "wefv",
+    "description": "dafv",
+    "images": [
+      "https://res.cloudinary.com/dkdvivii2/image/upload/v1772964110/1772964104772_rudraaksha-stylish-dress-for-women-product-images-rvdnjvc7zp-0-202210042029.jpg",
+      "https://res.cloudinary.com/dkdvivii2/image/upload/v1772964111/1772964104777_rudraaksha-stylish-dress-for-women-product-images-rvdnjvc7zp-1-202210042030.jpg"
+    ],
+    "brand": "BRAND",
+    "price": 279,
+    "oldPrice": 200,
+    "category": {
+      "_id": "699ad2b8900cd4c9040202bd",
+      "name": "fashion",
+      "images": [
+        "https://res.cloudinary.com/dkdvivii2/image/upload/v1771754166/1771754163901_3050239.png"
+      ],
+      "color": "#fffceb",
+      "__v": 0
+    },
+    "subCat": {
+      "_id": "699ad5eb27cb8b8823ab9a75",
+      "category": "699ad2b8900cd4c9040202bd",
+      "subCat": "men",
+      "__v": 0
+    },
+    "countInStock": 200,
+    "rating": 5,
+    "isFeatured": true,
+    "discount": 90,
+    "productRam": [
+      "4GB",
+      "6GB",
+      "8GB",
+      "10GB"
+    ],
+    "size": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "productWeight": [
+      "500G",
+      "1KG",
+      "2KG",
+      "3KG",
+      "4KG"
+    ],
+    "dateCreated": "2026-03-08T10:02:43.214Z",
+    "__v": 0
+  }
+]

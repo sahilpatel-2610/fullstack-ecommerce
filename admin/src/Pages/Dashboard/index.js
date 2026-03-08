@@ -300,7 +300,7 @@ const Dashboard = () => {
                                                         </Link>
 
                                                         <Button className="error"
-                                                            color="error" onClick={() => deleteProduct(item.id)}><MdDelete /></Button>
+                                                            color="error" onClick={() => deleteProduct(item._id)}><MdDelete /></Button>
                                                     </div>
                                                 </td>
                                             </tr>
