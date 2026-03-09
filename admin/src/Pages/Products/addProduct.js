@@ -93,6 +93,7 @@ const ProductUpload = () => {
         price: null,
         oldPrice: null,
         category: '',
+        catName: '',
         countInStock: null,
         rating: 0,
         isFeatured: null,
@@ -248,6 +249,10 @@ const ProductUpload = () => {
         }))
     }
 
+    const selectCat = (cat) => {
+        formFields.catName = cat;
+    }
+
     let img_arr = [];
     let uniqueArray = [];
 
@@ -274,6 +279,8 @@ const ProductUpload = () => {
                         error: true,
                         msg: "Please select a valid JPG or PNG image file."
                     });
+
+                    setUploading(false);
 
                     return false;
                 }
@@ -346,6 +353,7 @@ const ProductUpload = () => {
         formdata.append('price', formFields.price);
         formdata.append('oldPrice', formFields.oldPrice);
         formdata.append('category', formFields.category);
+        formdata.append('catName', formFields.catName);
         formdata.append('subCat', formFields.subCat);
         formdata.append('countInStock', formFields.countInStock);
         formdata.append('rating', formFields.rating);
@@ -411,6 +419,7 @@ const ProductUpload = () => {
                 msg: 'please select a category',
                 error: true
             })
+            return false;
         }
 
         if (formFields.subCat === "") {
@@ -470,15 +479,25 @@ const ProductUpload = () => {
         setIsLoading(true);
 
         postData('/api/products/create', formFields).then((res) => {
-            context.setAlertBox({
-                open: true,
-                msg: 'The product is created!',
-                error: false
-            });
+            if (res.error || res.success === false || res.message) {
+                // If there's an error, show it
+                context.setAlertBox({
+                    open: true,
+                    msg: res.error || res.message || 'Product creation failed!',
+                    error: true
+                });
+                setIsLoading(false);
+            } else {
+                context.setAlertBox({
+                    open: true,
+                    msg: 'The product is created!',
+                    error: false
+                });
 
-            setIsLoading(false);
+                setIsLoading(false);
 
-            history('/products');
+                history('/products');
+            }
         })
     }
 
@@ -545,7 +564,9 @@ const ProductUpload = () => {
                                                     context.catData?.categoryList?.length !== 0 && context.catData?.categoryList?.map((cat, index) => {
                                                         // catData?.categoryList?.map((cat, index) => {
                                                         return (
-                                                            <MenuItem className="text-capitalize" value={cat._id} key={index} >{cat.name}</MenuItem>
+                                                            <MenuItem className="text-capitalize" value={cat._id} key={index}
+                                                                onClick={() => selectCat(cat.name)}
+                                                            >{cat.name}</MenuItem>
                                                         )
                                                     })
                                                 }

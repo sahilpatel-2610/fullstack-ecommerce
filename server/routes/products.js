@@ -84,11 +84,9 @@ router.post(`/upload`, upload.array("images"), async (req, res) => {
                 overwrite: false,
             };
 
-            const img = await cloudinary.uploader.upload(req.files[i].path, options,
-                function (error, result) {
-                    imagesArr.push(result.secure_url);
-                    fs.unlinkSync(`uploads/${req.files[i].filename}`);
-                });
+            const img = await cloudinary.uploader.upload(req.files[i].path, options);
+            imagesArr.push(img.secure_url);
+            fs.unlinkSync(`uploads/${req.files[i].filename}`);
         }
 
         let imagesUploaded = new ImageUpload({
@@ -100,38 +98,51 @@ router.post(`/upload`, upload.array("images"), async (req, res) => {
         return res.status(200).json(imagesArr);
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        return res.status(500).json({ error: true, msg: "Images Upload Failed", details: error });
     }
 });
 
 
 router.get(`/`, async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const perPage = parseInt(req.query.perPage);
+        let productList = [];
+        let totalPages = 0;
 
-    const page = parseInt(req.query.page) || 1;
-    const perPage = 12;
-    const totalPosts = await Product.countDocuments();
-    const totalPages = Math.ceil(totalPosts / perPage);
+        if (req.query.page !== undefined && req.query.perPage !== undefined) {
+            const totalPosts = await Product.countDocuments();
+            totalPages = Math.ceil(totalPosts / perPage);
 
-    if (page > totalPages) {
-        return res.status(404).json({ message: "Page not found" })
-    }
+            if (page > totalPages) {
+                return res.status(404).json({ message: "Page not found" })
+            }
 
-    const productList = await Product.find().populate('category subCat')
-        .skip((page - 1) * perPage)
-        .limit(perPage)
-        .exec();
+            productList = await Product.find().populate('category subCat')
+                .skip((page - 1) * perPage)
+                .limit(perPage)
+                .exec();
+        } else {
+            if (req.query.catName !== undefined) {
+                productList = await Product.find({ catName: req.query.catName }).populate('category subCat');
+            } else {
+                productList = await Product.find().populate('category subCat');
+            }
+        }
 
+        if (!productList) {
+            return res.status(500).json({ success: false })
+        }
 
-    if (!productList) {
+        return res.status(200).json({
+            "products": productList,
+            "totalPages": totalPages,
+            "page": page
+        });
+    } catch (error) {
         res.status(500).json({ success: false })
     }
-
-    return res.status(200).json({
-        "products": productList,
-        "totalPages": totalPages,
-        "page": page
-    });
-
 });
 
 router.get(`/featured`, async (req, res) => {
@@ -148,22 +159,11 @@ router.post(`/create`, async (req, res) => {
 
     const category = await Category.findById(req.body.category);
     if (!category) {
-        return res.status(404).send("Invalid Category!");
+        return res.status(404).json({ error: true, message: "Invalid Category!", success: false });
     }
 
-    const images_Array = [];
-    const uploadedImages = await ImageUpload.find();
-
-    const images_Arr = uploadedImages?.map((item) => {
-        item.images?.map((image) => {
-            images_Array.push(image);
-            console.log(image);
-        })
-    })
-
-
-
-    product = new Product({
+    // Using req.body.images directly
+    let product = new Product({
         name: req.body.name,
         subCat: req.body.subCat,
         description: req.body.description,
@@ -172,6 +172,7 @@ router.post(`/create`, async (req, res) => {
         price: req.body.price,
         oldPrice: req.body.oldPrice,
         category: req.body.category,
+        catName: req.body.catName,
         countInStock: req.body.countInStock,
         rating: req.body.rating,
         isFeatured: req.body.isFeatured,
@@ -192,6 +193,7 @@ router.post(`/create`, async (req, res) => {
 
         res.status(201).json(product);
     } catch (err) {
+        console.error("Product creation error:", err);
         return res.status(500).json({
             error: err.message || err,
             success: false
@@ -200,15 +202,23 @@ router.post(`/create`, async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-
     productEditId = req.params.id;
 
-    const product = await Product.findById(req.params.id);
-
-    if (!product) {
-        res.status(500).json({ success: false, message: 'The product with the given ID was not found.' });
+    if (!req.params.id || req.params.id === 'undefined' || !mongoose.isValidObjectId(req.params.id)) {
+        return res.status(400).json({ success: false, message: 'Invalid product ID' });
     }
-    return res.status(200).send(product);
+
+    try {
+        const product = await Product.findById(req.params.id);
+
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'The product with the given ID was not found.' });
+        }
+        return res.status(200).send(product);
+    } catch (error) {
+        console.error("Error fetching product:", error);
+        return res.status(500).json({ success: false, error: 'Server error' });
+    }
 })
 
 
@@ -236,47 +246,48 @@ router.delete('/deleteImage', async (req, res) => {
 
 
 router.delete('/:id', async (req, res) => {
-    if (!req.params.id || req.params.id === 'undefined' || !mongoose.isValidObjectId(req.params.id)) {
-        return res.status(400).json({ success: false, message: 'Invalid product ID' });
-    }
+    try {
+        if (!req.params.id || req.params.id === 'undefined' || !mongoose.isValidObjectId(req.params.id)) {
+            return res.status(400).json({ success: false, message: 'Invalid product ID' });
+        }
 
-    const product = await Product.findById(req.params.id);
+        const product = await Product.findById(req.params.id);
 
-    if (!product) {
-        return res.status(404).json({ success: false, message: 'Product not found!' });
-    }
-    const images = product.images;
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Product not found!' });
+        }
+        const images = product.images;
 
-    for (img of images) {
-        const imgUrl = img;
-        const urlArr = imgUrl.split('/');
-        const image = urlArr[urlArr.length - 1];
+        if (images && images.length !== 0) {
+            for (let img of images) {
+                const urlArr = img.split('/');
+                const image = urlArr[urlArr.length - 1];
+                const imageName = image.split('.')[0];
 
-        const imageName = image.split('.')[0];
+                if (imageName) {
+                    await cloudinary.uploader.destroy(imageName);
+                }
+            }
+        }
 
-        if (imageName) {
-            cloudinary.uploader.destroy(imageName, (error, result) => {
-                // console.log(result, error);
+        const deletedProduct = await Product.findByIdAndDelete(req.params.id);
+
+        if (!deletedProduct) {
+            return res.status(404).json({
+                message: "Product not found!",
+                status: false
             })
         }
 
-        // console.log(imageName);
-    }
-
-    const deletedProduct = await Product.findByIdAndDelete(req.params.id);
-
-    if (!deletedProduct) {
-        res.status(404).json({
-            message: "Category not found!",
-            status: false
+        res.status(200).json({
+            status: true,
+            message: "Product Deleted!"
         })
+    } catch (error) {
+        console.error("Delete product error:", error);
+        res.status(500).json({ status: false, error: error.message });
     }
-    res.status(200).json({
-        status: true,
-        message: "Category Deleted!"
-
-    })
-})
+});
 
 router.put('/:id', async (req, res) => {
     try {
@@ -291,6 +302,7 @@ router.put('/:id', async (req, res) => {
                 price: req.body.price,
                 oldPrice: req.body.oldPrice,
                 category: req.body.category,
+                catName: req.body.catName,
                 countInStock: req.body.countInStock,
                 rating: req.body.rating,
                 numReviews: req.body.numReviews,

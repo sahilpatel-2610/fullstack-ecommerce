@@ -52,7 +52,7 @@ const Category = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
         context.setProgress(20)
-        fetchDataFromApi('/api/category').then((res) => {
+        fetchDataFromApi('/api/category?page=1&perPage=10').then((res) => {
             setCatData(res);
             console.log(res);
             context.setProgress(100);
@@ -64,7 +64,7 @@ const Category = () => {
     const deleteCat = (id) => {
         context.setProgress(30);
         deleteData(`/api/category/${id}`).then(res => {
-            fetchDataFromApi('/api/category').then((res) => {
+            fetchDataFromApi('/api/category?page=1&perPage=10').then((res) => {
                 setCatData(res);
                 context.setProgress(100);
                 context.setProgress({
@@ -78,7 +78,7 @@ const Category = () => {
 
     const handleChange = (event, value) => {
         context.setProgress(40);
-        fetchDataFromApi(`/api/category?page=${value}`).then((res) => {
+        fetchDataFromApi(`/api/category?page=${value}&perPage=10`).then((res) => {
             setCatData(res);
             context.setProgress(100);
         })

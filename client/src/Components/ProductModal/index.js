@@ -159,7 +159,6 @@ import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
 import { MdClose } from "react-icons/md";
 import Rating from '@mui/material/Rating';
-import Slider from "react-slick";
 import { useContext } from 'react';
 
 
@@ -171,7 +170,7 @@ import ProductZoom from '../ProductZoom';
 import { IoCartSharp } from "react-icons/io5";
 
 
-const ProductModal = () => {
+const ProductModal = (props) => {
 
 
   const context = useContext(MyContext);
@@ -181,41 +180,41 @@ const ProductModal = () => {
     <Dialog
       open={true}
       className="productModal"
-      onClose={() => context.setisOpenProductModal(false)}
+      onClose={() => context.setisOpenProductModal({ open: false })}
     >
-      <Button className="close_" onClick={() => context.setisOpenProductModal(false)}>
+      <Button className="close_" onClick={() => context.setisOpenProductModal({ open: false })}>
         <MdClose />
       </Button>
-      <h4 className="mb-1 font-weight-bold">
-        Seeds of Change Organic Quinoa, Brown
+      <h4 className="mb-1 font-weight-bold pr-5">
+        {props?.data?.name}
       </h4>
 
       <div className="d-flex align-items-center">
         <div className="d-flex align-items-center mr-4">
           <span>Brands:</span>
-          <span className="ml-2">Welch's</span>
+          <span className="ml-2">{props?.data?.brand}</span>
         </div>
-        <Rating className="read-only" value={5} size="small" precision={0.5} readOnly />
+        <Rating className="read-only" value={props?.data?.rating} size="small" precision={0.5} readOnly />
       </div>
       <hr />
 
       <div className="row mt-2 productDetailsModal">
         <div className="col-md-5">
 
-          <ProductZoom />
+          <ProductZoom images={props?.data?.images} discount={props?.data?.discount} />
 
         </div>
 
         <div className="col-md-7">
           <div className="d-flex info align-items-center mb-3">
-            <span className="oldPrice lg mr-2">$9.35</span>
-            <span className="netPrice text-danger lg">$7.25</span>
+            <span className="oldPrice lg mr-2">Rs: {props?.data?.oldPrice}</span>
+            <span className="netPrice text-danger lg">RS: {props?.data?.price}</span>
           </div>
 
           <span className="badge bg-success">IN STOCK</span>
 
           <p className="mt-3">
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquam rem officia, corrupti reiciendis minima nisi modi, quasi, odio minus dolore impedit fuga eum eligendi.
+            {props?.data?.description}
           </p>
 
           <div className="d-flex align-items-center">

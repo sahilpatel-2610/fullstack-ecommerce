@@ -62,7 +62,7 @@ import "swiper/css/navigation";
 const HomeBanner = () => {
   return (
     <div className="container mt-3">
-      <div className="HomeBannerSection">
+      <div className="homeBannerSection">
         <Swiper
           slidesPerView={1}
           spaceBetween={15}

@@ -206,40 +206,68 @@ import banner4 from "../../assets/images/banner4.jpg";
 import newsLetterImg from "../../assets/images/coupon.png";
 import { IoMailOutline } from "react-icons/io5";
 import { fetchDataFromApi } from "../../utils/api";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { MyContext } from "../../App";
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Box from '@mui/material/Box';
 
 
 
 const Home = () => {
 
-  const [catData, setCatData] = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [productsData, setProductsData] = useState([]);
+  const [selectedCat, setSelectedCat] = useState();
+  const [filterData, setFilterData] = useState([]);
 
+  const context = useContext(MyContext);
 
+  const [value, setValue] = React.useState(0);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+    if (context.categoryData?.length > 0) {
+      setSelectedCat(context.categoryData[newValue].name);
+    }
+  };
+
+  const selectCat = (cat) => {
+    setSelectedCat(cat);
+  }
 
   useEffect(() => {
-    fetchDataFromApi("/api/category/").then((res) => {
-      setCatData(res);
-    })
+    window.scrollTo(0, 0);
 
     fetchDataFromApi(`/api/products/featured`).then((res) => {
       setFeaturedProducts(res);
     })
 
-    fetchDataFromApi("/api/products/").then((res) => {
+    fetchDataFromApi("/api/products?perPage=8").then((res) => {
       setProductsData(res);
     })
 
   }, [])
 
+  useEffect(() => {
+    if (context.categoryData?.length > 0) {
+      setSelectedCat(context.categoryData[0]?.name);
+    }
+  }, [context.categoryData])
+
+  useEffect(() => {
+    if (selectedCat !== undefined) {
+      fetchDataFromApi(`/api/products?catName=${selectedCat}`).then((res) => {
+        setFilterData(res.products);
+      })
+    }
+  }, [selectedCat]);
 
   return (
     <>
       <HomeBanner />
       {
-        catData?.categoryList?.length !== 0 && <HomeCat catData={catData} />
+        context.categoryData?.length !== 0 && <HomeCat catData={context.categoryData} />
       }
 
 
@@ -263,8 +291,88 @@ const Home = () => {
             <div className="col-md-9">
               {/* -------- HEADING -------- */}
               <div className="d-flex align-items-center mb-3">
+                <div className="info">
+                  <h3 className="mb-0 hd">Popular Products</h3>
+                  <p className="text-muted text-sml mb-0">
+                    Do not miss the current offers until the end of March.
+                  </p>
+                </div>
+
+                <div className="ml-auto filterTabWrapper">
+
+                  <Tabs
+                    value={value}
+                    onChange={handleChange}
+                    variant="scrollable"
+                    scrollButtons="auto"
+                    className="filterTabs"
+                  >
+                    {
+                      context.categoryData?.map((item, index) => {
+                        return (
+                          <Tab key={index} className="item" label={item?.name} />
+                        )
+                      })
+                    }
+
+                  </Tabs>
+
+                </div>
+
+              </div>
+
+              {/* -------- PRODUCT SLIDER -------- */}
+              <Swiper
+                slidesPerView={4}
+                spaceBetween={20}
+                navigation={true}
+                modules={[Navigation]}
+                className="mySwiper"
+              >
+
+                {
+                  filterData?.length !== 0 && filterData?.map((item, index) => {
+                    return (
+                      <SwiperSlide key={index}>
+                        <ProductItem item={item} />
+                      </SwiperSlide>
+                    )
+                  })
+                }
+              </Swiper>
+
+              {/* -------- NEW PRODUCTS -------- */}
+              <div className="d-flex align-items-center mt-5">
                 <div>
-                  <h3 className="mb-1 hd">FEATURED PRODUCTS</h3>
+                  <h3 className="mb-1 hd">NEW PRODUCTS</h3>
+                  <p className="text-muted text-sml mb-0">
+                    New products with updated stocks.
+                  </p>
+                </div>
+
+                <Button className="viewAllBtn ml-auto" variant="outlined">
+                  View All <IoIosArrowRoundForward />
+                </Button>
+
+
+              </div>
+
+              <div className="row mt-4 w-100 d-flex">
+
+                {
+                  productsData?.products?.length !== 0 && productsData?.products?.map((item, index) => {
+                    return (
+                      <div className="col-md-3 col-6 mb-4"><ProductItem key={index} item={item} /></div>
+                    )
+                  })
+                }
+
+              </div>
+
+              {/* -------- HEADING -------- */}
+              <div className="d-flex align-items-center mb-3 mt-4">
+                <div>
+                  <h3 className="mb-1 hd">ELECTRONICS</h3>
                   <p className="text-muted text-sml mb-0">
                     Do not miss the current offers until the end of March.
                   </p>
@@ -293,31 +401,6 @@ const Home = () => {
                   })
                 }
               </Swiper>
-
-              {/* -------- NEW PRODUCTS -------- */}
-              <div className="d-flex align-items-center mt-5">
-                <div>
-                  <h3 className="mb-1 hd">NEW PRODUCTS</h3>
-                  <p className="text-muted text-sml mb-0">
-                    New products with updated stocks.
-                  </p>
-                </div>
-                <Button className="viewAllBtn ml-auto" variant="outlined">
-                  View All <IoIosArrowRoundForward />
-                </Button>
-              </div>
-
-              <div className="row mt-4 w-100 d-flex">
-
-                {
-                  productsData?.products?.length !== 0 && productsData?.products?.map((item, index) => {
-                    return (
-                      <div className="col-md-3 col-6 mb-4"><ProductItem key={index} item={item} /></div>
-                    )
-                  })
-                }
-
-              </div>
 
 
               <div className="d-flex gap-4 bannerSec">

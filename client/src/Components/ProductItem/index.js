@@ -137,15 +137,20 @@ const ProductItem = (props) => {
     const settings = {
         dots: true,
         infinite: true,
-        speed: 300,
+        speed: 500,
         slidesToShow: 1,
         slidesToScroll: 1,
         autoplay: true,
+        autoplaySpeed: 1000,
+        pauseOnHover: false,
         arrows: false
     };
 
-    const viewProductDetails = () => {
-        context.setisOpenProductModal(true);
+    const viewProductDetails = (id) => {
+        context.setisOpenProductModal({
+            id: id,
+            open: true
+        });
     }
 
     const handleMouseEnter = () => {
@@ -209,7 +214,7 @@ const ProductItem = (props) => {
                 </span>
 
                 <div className="actions">
-                    <Button onClick={viewProductDetails}>
+                    <Button onClick={() => viewProductDetails(props?.item?._id)} >
                         <TfiFullscreen />
                     </Button>
 

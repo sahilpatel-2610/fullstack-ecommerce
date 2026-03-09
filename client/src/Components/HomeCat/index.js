@@ -107,22 +107,25 @@ const HomeCat = (props) => {
                 >
 
                     {
-                        props.catData?.categoryList?.length > 0 &&
-                        props.catData.categoryList.map((cat, index) => (
-                            <SwiperSlide key={index}>
-                                <div
-                                    className="item text-center cursor"
-                                    style={{ background: cat.color }}
-                                >
-                                    <img
-                                        src={cat.images?.[0]}
-                                        alt={cat.name}
-                                    />
+                        props.catData?.length !== 0 &&
+                        props.catData?.map((cat, index) => {
+                            return (
+                                <SwiperSlide key={index}>
+                                    <div
+                                        className="item text-center cursor"
+                                        style={{ background: cat.color }}
+                                    >
+                                        <img
+                                            src={cat.images?.[0]}
+                                            alt={cat.name}
+                                        />
 
-                                    <h6>{cat.name}</h6>
-                                </div>
-                            </SwiperSlide>
-                        ))
+                                        <h6>{cat.name}</h6>
+                                    </div>
+                                </SwiperSlide>
+                            )
+                        })
+
                     }
 
                 </Swiper>

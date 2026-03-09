@@ -54,7 +54,11 @@ const Header = () => {
                     </div>
                 </header>
 
-                <Navigation />
+
+                {
+                    context.subCategoryData?.length !== 0 && <Navigation navData={context.subCategoryData} />
+                }
+
 
             </div>
         </>

@@ -7,7 +7,7 @@ import { FaAngleRight } from "react-icons/fa6";
 
 
 
-const Navigation = () => {
+const Navigation = (props) => {
 
     const [isOpenSidebarVal, setIsOpenSidebarVal] = useState(false);
 
@@ -154,7 +154,16 @@ const Navigation = () => {
                     <div className='col-sm-10 navpart2 d-flex align-items-center'>
                         <ul className='list list-inline ml-auto'>
                             <li className='list-inline-item'><Link to="/"><Button>Home</Button></Link></li>
-                            <li className='list-inline-item'>
+                            {
+                                props.navData?.length !== 0 && props.navData?.map((item, index) => {
+                                    return (
+                                        <li className='list-inline-item'>
+                                            <Link to="/cat/1"><Button>{item?.subCat}</Button></Link>
+                                        </li>
+                                    )
+                                })
+                            }
+                            {/* <li className='list-inline-item'>
                                 <Link to="/"><Button>Men</Button></Link>
                                 <div className='submenu shadow'>
                                     <Link to="/"><Button>clothing</Button></Link>
@@ -212,7 +221,7 @@ const Navigation = () => {
                                 <Link to="/"><Button>clothing</Button></Link>
                                 <Link to="/"><Button>footwear</Button></Link>
                                 <Link to="/"><Button>watches</Button></Link>
-                            </div></li>
+                            </div></li> */}
 
                         </ul>
                     </div>

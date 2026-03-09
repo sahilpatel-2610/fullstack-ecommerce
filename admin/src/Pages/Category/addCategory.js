@@ -127,7 +127,7 @@ const AddCategory = () => {
         }
 
         postData(apiEndPoint, formdata).then(res => {
-            if (res && res.length !== 0) {
+            if (Array.isArray(res) && res.length !== 0) {
                 const appendedArray = [...(previews || []), ...res];
                 setPreviews(appendedArray);
                 setTimeout(() => {
@@ -140,7 +140,15 @@ const AddCategory = () => {
                 }, 200);
             } else {
                 setUploading(false);
+                context.setAlertBox({
+                    open: true,
+                    error: true,
+                    msg: "Failed to upload images."
+                });
             }
+        }).catch(err => {
+            setUploading(false);
+            console.error("Upload Error:", err);
         });
 
     }

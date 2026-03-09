@@ -74,7 +74,7 @@ const Products = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
         context.setProgress(40);
-        fetchDataFromApi("/api/products").then((res) => {
+        fetchDataFromApi("/api/products?page=1&perPage=10").then((res) => {
             setProductList(res);
             context.setProgress(100);
         })
@@ -90,7 +90,7 @@ const Products = () => {
                 msg: "Product Deleted!",
             });
 
-            fetchDataFromApi("/api/products").then((res) => {
+            fetchDataFromApi("/api/products?page=1&perPage=10").then((res) => {
                 setProductList(res);
             })
             context.fetchCategory();
@@ -99,7 +99,7 @@ const Products = () => {
 
     const handleChange = (event, value) => {
         context.setProgress(40);
-        fetchDataFromApi(`/api/products?page=${value}`).then((res) => {
+        fetchDataFromApi(`/api/products?page=${value}&perPage=10`).then((res) => {
             setProductList(res);
             context.setProgress(100);
         })

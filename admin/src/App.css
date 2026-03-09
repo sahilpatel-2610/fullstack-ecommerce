@@ -968,10 +968,11 @@ table td .imgWrapper .img {
     display: flex;
     align-items: center;
     justify-content: center;
+    background: #fff;
 }
 
 table td .imgWrapper .img img {
-    max-height: 100%;
+    height: 100%;
     width: 100%;
     object-fit: contain;
 }

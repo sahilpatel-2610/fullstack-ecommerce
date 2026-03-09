@@ -52,7 +52,7 @@ const SubCategory = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
         context.setProgress(20)
-        fetchDataFromApi('/api/subCat').then((res) => {
+        fetchDataFromApi('/api/subCat?page=1&perPage=10').then((res) => {
             setSubCatData(res);
             context.setProgress(100);
         })
@@ -62,7 +62,7 @@ const SubCategory = () => {
 
     const deleteCat = (id) => {
         deleteData(`/api/subCat/${id}`).then(res => {
-            fetchDataFromApi('/api/subCat').then((res) => {
+            fetchDataFromApi('/api/subCat?page=1&perPage=10').then((res) => {
                 setSubCatData(res);
             })
         })
@@ -70,7 +70,7 @@ const SubCategory = () => {
 
     const handleChange = (event, value) => {
         context.setProgress(40);
-        fetchDataFromApi(`/api/subCat?page=${value}`).then((res) => {
+        fetchDataFromApi(`/api/subCat?page=${value}&perPage=10`).then((res) => {
             setSubCatData(res);
             context.setProgress(100);
         })

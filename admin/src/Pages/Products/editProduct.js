@@ -100,6 +100,7 @@ const EditUpload = () => {
         price: null,
         oldPrice: null,
         category: '',
+        catName: '',
         countInStock: null,
         rating: 0,
         isFeatured: null,
@@ -129,6 +130,7 @@ const EditUpload = () => {
                 brand: res.brand,
                 price: res.price,
                 oldPrice: res.oldPrice,
+                catName: res.catName,
                 category: res.category,
                 subCat: res.subCat,
                 countInStock: res.countInStock,
@@ -283,6 +285,12 @@ const EditUpload = () => {
     }
 
 
+    const selectCat = (cat) => {
+        formFields.catName = cat;
+    }
+
+
+
 
     const onChangeFile = async (e, apiEndPoint) => {
         try {
@@ -367,6 +375,7 @@ const EditUpload = () => {
         formdata.append('brand', formFields.brand);
         formdata.append('price', formFields.price);
         formdata.append('oldPrice', formFields.oldPrice);
+        formdata.append('catName', formFields.catName);
         formdata.append('category', formFields.category);
         formdata.append('subCat', formFields.subCat);
         formdata.append('countInStock', formFields.countInStock);
@@ -566,7 +575,9 @@ const EditUpload = () => {
                                                     context.catData?.categoryList?.length !== 0 && context.catData?.categoryList?.map((cat, index) => {
                                                         // catData?.categoryList?.map((cat, index) => {
                                                         return (
-                                                            <MenuItem className="text-capitalize" value={cat._id} key={index} >{cat.name}</MenuItem>
+                                                            <MenuItem className="text-capitalize" value={cat._id} key={index}
+                                                                onClick={() => selectCat(cat.name)}
+                                                            >{cat.name}</MenuItem>
                                                         )
                                                     })
                                                 }

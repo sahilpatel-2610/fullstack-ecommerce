@@ -523,7 +523,7 @@ nav .navpart2 ul li:hover .submenu {
 }
 
 .homeBannerSection .swiper {
-  overflow: inherit !important;
+  overflow: hidden !important;
 }
 
 .homeBannerSection .swiper .item {
@@ -658,15 +658,18 @@ nav .navpart2 ul li:hover .submenu {
   border: 1px solid rgba(0, 0, 0, 0.1);
   cursor: pointer;
   position: relative;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .productItem .badge {
   display: inline-block;
-  padding: 7px 10px;
+  padding: 6px 12px;
   position: absolute;
   top: 10px;
   left: 10px;
   z-index: 100%;
+  border-radius: 30px;
 }
 
 .productItem .info {
@@ -740,10 +743,54 @@ nav .navpart2 ul li:hover .submenu {
 
 .productItem .img_rapper {
   overflow: hidden;
+  position: relative;
+}
+
+.productItem .img_rapper a {
+  display: block;
 }
 
 .productItem .img_rapper img {
   transition: all 0.3s ease-in-out;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.productItem .slick-slide {
+  width: 100%;
+}
+
+.productItem .slick-dots {
+  position: absolute;
+  bottom: 5px !important;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  z-index: 10;
+  padding: 0;
+  margin: 0;
+}
+
+.productItem .slick-dots li {
+  margin: 0 2px !important;
+}
+
+.productItem .slick-dots li button {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+}
+
+.productItem .slick-dots li button:before {
+  color: #000;
+  opacity: 0.5;
+  font-size: 8px;
+}
+
+.productItem .slick-dots li.slick-active button:before {
+  color: #2bbef9;
+  opacity: 1;
 }
 
 .productItem .img_rapper:hover .actions {
@@ -785,7 +832,7 @@ nav .navpart2 ul li:hover .submenu {
 }
 
 .homeCat .swiper {
-  overflow: inherit !important;
+  overflow: hidden !important;
 }
 
 .homeCat .swiper .item {
@@ -1024,6 +1071,11 @@ footer .linksWrap ul li a:hover {
 
 .zoomSliderBig {
   width: 100% !important;
+}
+
+.productZoomBig {
+  height: 300px !important;
+  overflow: hidden;
 }
 
 .zoomSlider {
@@ -1971,4 +2023,85 @@ a:hover {
 
 .swiper-button-prev {
   left: -15px;
+}
+
+
+.filterTabWrapper {
+  flex-grow: 1;
+  max-width: 60%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.filterTabs {
+  max-width: 100%;
+}
+
+.filterTabs .MuiTabs-flexContainer {
+  gap: 15px;
+}
+
+.filterTabs .item {
+  color: #343434 !important;
+  font-weight: 700 !important;
+  text-transform: capitalize !important;
+  min-width: auto !important;
+  padding: 8px 18px !important;
+  border-radius: 40px !important;
+  font-size: 15px !important;
+  transition: all 0.3s ease;
+  min-height: auto !important;
+  opacity: 1 !important;
+  font-family: inherit !important;
+}
+
+.filterTabs .item.Mui-selected {
+  background: #e2f2ff !important;
+  color: #2bbef9 !important;
+}
+
+.filterTabs .MuiTabs-indicator {
+  display: none !important;
+}
+
+.filterTabs .MuiTabs-scrollButtons {
+  width: 35px;
+  height: 35px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  color: #2bbef9;
+  transition: all 0.3s ease;
+  margin: 0 5px;
+}
+
+.filterTabs .MuiTabs-scrollButtons:hover {
+  background: #2bbef9;
+  color: #fff;
+}
+
+.filterTabs .MuiTabs-scrollButtons.Mui-disabled {
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.homeProducts .hd {
+  font-size: 22px;
+  font-weight: 800;
+  color: #222;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.homeProducts .info p {
+  font-weight: 600;
+  font-size: 13px !important;
+  color: #555;
+}
+
+.homeProducts .container {
+  max-width: 100%;
 }

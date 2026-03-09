@@ -13,13 +13,23 @@ export const fetchDataFromApi = async (url) => {
 }
 
 export const postData = async (url, formData) => {
-    const { res } = await axios.post(BASE_URL + url, formData)
-    return res;
+    try {
+        const { data } = await axios.post(BASE_URL + url, formData)
+        return data;
+    } catch (error) {
+        console.log(error);
+        return error;
+    }
 }
 
 export const editData = async (url, updateData) => {
-    const { res } = await axios.put(`${BASE_URL}${url}`, updateData)
-    return res;
+    try {
+        const { data } = await axios.put(`${BASE_URL}${url}`, updateData)
+        return data;
+    } catch (error) {
+        console.log(error);
+        return error;
+    }
 }
 
 export const deleteData = async (url) => {

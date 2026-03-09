@@ -14,6 +14,7 @@ import ProductDrtails from "./Pages/ProductDetails";
 import Cart from "./Pages/Cart";
 import SignIn from "./Pages/SignIn";
 import SignUp from "./Pages/SignUp";
+import { fetchDataFromApi } from "./utils/api";
 
 const MyContext = createContext();
 
@@ -21,17 +22,43 @@ function App() {
 
   const [countryList, setCountryList] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState('');
-  const [isOpenProductModal, setisOpenProductModal] = useState(false);
+  const [isOpenProductModal, setisOpenProductModal] = useState({
+    id: '',
+    open: false
+  });
   const [isHeaderFooterShow, setisHeaderFooterShow] = useState(true);
   const [isLogin, setisLoin] = useState(false);
+  const [productData, setProductData] = useState();
+
+  const [categoryData, setCategoryData] = useState([]);
+  const [subCategoryData, setSubCategoryData] = useState([]);
 
   useEffect(() => {
     getCountry("https://countriesnow.space/api/v0.1/countries/");
+
+    fetchDataFromApi("/api/category").then((res) => {
+      setCategoryData(res.categoryList);
+    })
+
+    fetchDataFromApi("/api/subCat").then((res) => {
+      setSubCategoryData(res.subCategoryList);
+    })
+
   }, []);
 
 
+
+
+  useEffect(() => {
+    if (isOpenProductModal.open === true) {
+      fetchDataFromApi(`/api/products/${isOpenProductModal.id}`).then((res) => {
+        setProductData(res);
+      })
+    }
+  }, [isOpenProductModal]);
+
   const getCountry = async (url) => {
-    const response = await axios.get(url).then((res) => {
+    await axios.get(url).then((res) => {
       setCountryList(res.data.data);
       console.log(res.data.data);
     });
@@ -47,7 +74,13 @@ function App() {
     isHeaderFooterShow,
     setisHeaderFooterShow,
     isLogin,
-    setisLoin
+    setisLoin,
+    productData,
+    setProductData,
+    categoryData,
+    setCategoryData,
+    subCategoryData,
+    setSubCategoryData
   };
 
 
@@ -75,7 +108,7 @@ function App() {
 
 
         {
-          isOpenProductModal === true && <ProductModal />
+          isOpenProductModal.open === true && <ProductModal data={productData} />
         }
 
 

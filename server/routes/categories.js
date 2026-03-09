@@ -60,7 +60,8 @@ router.post(`/upload`, upload.array("images"), async (req, res) => {
         return res.status(200).json(imagesArr);
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
+        return res.status(500).json({ error: true, msg: "Images Upload Failed", details: error });
     }
 
 });
@@ -69,21 +70,24 @@ router.post(`/upload`, upload.array("images"), async (req, res) => {
 router.get(`/`, async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const perPage = 6;
-        const totalPosts = await Category.countDocuments();
-        const totalPages = Math.ceil(totalPosts / perPage);
+        const perPage = parseInt(req.query.perPage);
+        let categoryList = [];
+        let totalPages = 0;
 
-        if (page > totalPages) {
-            return res.status(404).json({ message: "No data found!" })
+        if (req.query.page !== undefined && req.query.perPage !== undefined) {
+            const totalPosts = await Category.countDocuments();
+            totalPages = Math.ceil(totalPosts / perPage);
+
+            categoryList = await Category.find()
+                .skip((page - 1) * perPage)
+                .limit(perPage)
+                .exec();
+        } else {
+            categoryList = await Category.find();
         }
 
-        const categoryList = await Category.find()
-            .skip((page - 1) * perPage)
-            .limit(perPage)
-            .exec();
-
         if (!categoryList) {
-            res.status(500).json({ success: false })
+            return res.status(500).json({ success: false })
         }
 
         return res.status(200).json({
@@ -137,29 +141,48 @@ router.delete('/deleteImage', async (req, res) => {
 });
 
 router.delete('/:id', async (req, res) => {
+    try {
+        const category = await Category.findById(req.params.id);
 
-    const category = await Category.findById(req.params.id);
-    const images = category.images;
-
-    if (images.length !== 0) {
-        for (image of images) {
-            fs.unlinkSync(`uploads/${image}`);
+        if (!category) {
+            return res.status(404).json({
+                message: 'Category not found!',
+                success: false
+            });
         }
+
+        const images = category.images;
+
+        if (images && images.length !== 0) {
+            for (let img of images) {
+                const urlArr = img.split('/');
+                const image = urlArr[urlArr.length - 1];
+                const imageName = image.split('.')[0];
+
+                if (imageName) {
+                    await cloudinary.uploader.destroy(imageName);
+                }
+            }
+        }
+
+        const deletedCategory = await Category.findByIdAndDelete(req.params.id);
+
+        if (!deletedCategory) {
+            return res.status(404).json({
+                message: 'Category not found!',
+                success: false
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Category Deleted!'
+        });
+
+    } catch (error) {
+        console.error("Delete category error:", error);
+        res.status(500).json({ success: false, error: error.message });
     }
-
-    const deletedUser = await Category.findByIdAndDelete(req.params.id);
-
-    if (!deletedUser) {
-        res.status(404).json({
-            message: 'Category not found!',
-            success: false
-        })
-    }
-
-    res.status(200).json({
-        success: true,
-        message: 'Category Deleted!'
-    })
 });
 
 
