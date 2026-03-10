@@ -616,8 +616,26 @@ nav .navpart2 ul li:hover .submenu {
 
 .homeProducts .banner {
   width: 100%;
-  border-radius: 7px;
+  border-radius: 10px;
   overflow: hidden;
+}
+
+.homeProducts .banner img {
+  width: 100%;
+  height: 160px !important;
+  object-fit: cover;
+}
+
+/* .bannerSec .banner img {
+  height: 130px !important;
+} */
+
+.col-md-3 .banner:first-child img {
+  height: 450px !important;
+}
+
+.col-md-3 .banner:last-child img {
+  height: 450px !important;
 }
 
 .homeProducts .hd {
@@ -674,11 +692,20 @@ nav .navpart2 ul li:hover .submenu {
 
 .productItem .info {
   padding: 15px;
+  text-align: left !important;
 }
 
 .productItem .info h4 {
   font-size: 15px;
   font-weight: 600;
+  margin-bottom: 8px;
+  min-height: 38px;
+  color: #000 !important;
+}
+
+.productItem .info a {
+  color: #000 !important;
+  text-decoration: none !important;
 }
 
 .info .oldPrice {
@@ -744,17 +771,29 @@ nav .navpart2 ul li:hover .submenu {
 .productItem .img_rapper {
   overflow: hidden;
   position: relative;
+  height: 240px !important;
+  width: 100%;
+  background: #f1f1f1;
+  display: block;
 }
 
 .productItem .img_rapper a {
   display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .productItem .img_rapper img {
   transition: all 0.3s ease-in-out;
-  width: 100%;
-  height: auto;
-  object-fit: contain;
+  width: 100% !important;
+  height: 240px !important;
+  object-fit: cover !important;
+}
+
+.productItem .slick-slide img {
+  width: 100% !important;
+  height: 240px !important;
+  object-fit: cover !important;
 }
 
 .productItem .slick-slide {
@@ -793,7 +832,7 @@ nav .navpart2 ul li:hover .submenu {
   opacity: 1;
 }
 
-.productItem .img_rapper:hover .actions {
+.productItem:hover .actions {
   opacity: 1;
   right: 10px;
 }
@@ -875,10 +914,10 @@ nav .navpart2 ul li:hover .submenu {
   border-right: 1px solid rgba(0, 0, 0, 0.1) !important;
 }
 
-
+/* 
 .bannerSec {
   gap: 15px;
-}
+} */
 
 .sticky {
   position: sticky;
@@ -2104,4 +2143,82 @@ a:hover {
 
 .homeProducts .container {
   max-width: 100%;
+}
+
+/* Home Banner Scroll Fix (Photo 2) */
+.homeBannerSection {
+  width: 100%;
+  position: relative;
+  padding: 20px 0;
+}
+
+.home_banner_Swiper {
+  overflow: visible !important;
+  width: 95% !important;
+  /* Forces the peek effect */
+  margin: 0 auto;
+}
+
+.home_banner_Swiper .swiper-slide {
+  transition: all 0.5s ease;
+  opacity: 0.5;
+  transform: scale(0.9);
+}
+
+.home_banner_Swiper .swiper-slide-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.homeBannerSection .item {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Circular Arrows like Photo 2 */
+.home_banner_Swiper .swiper-button-next,
+.home_banner_Swiper .swiper-button-prev {
+  width: 50px !important;
+  height: 50px !important;
+  background: #fff !important;
+  border-radius: 50% !important;
+  color: #333 !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
+  z-index: 100 !important;
+  transition: all 0.3s ease;
+}
+
+.home_banner_Swiper .swiper-button-next:hover,
+.home_banner_Swiper .swiper-button-prev:hover {
+  background: #ccc !important;
+  color: #fff !important;
+}
+
+.home_banner_Swiper .swiper-button-next {
+  right: 30px !important;
+}
+
+.home_banner_Swiper .swiper-button-prev {
+  left: 30px !important;
+}
+
+.home_banner_Swiper .swiper-button-next::after,
+.home_banner_Swiper .swiper-button-prev::after {
+  font-size: 20px !important;
+  font-weight: 800 !important;
+}
+
+.home_banner_Swiper .swiper-pagination-bullet {
+  width: 12px;
+  height: 12px;
+  background: #fff !important;
+  opacity: 0.5;
+}
+
+.home_banner_Swiper .swiper-pagination-bullet-active {
+  background: #2bbef9 !important;
+  opacity: 1;
+  width: 30px;
+  border-radius: 10px;
 }

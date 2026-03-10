@@ -128,6 +128,7 @@ import { Link } from 'react-router-dom';
 
 import Slider from 'react-slick';
 
+
 const ProductItem = (props) => {
 
     const [isHovered, setIsHovered] = useState(false);
@@ -141,7 +142,7 @@ const ProductItem = (props) => {
         slidesToShow: 1,
         slidesToScroll: 1,
         autoplay: true,
-        autoplaySpeed: 1000,
+        autoplaySpeed: 2000,
         pauseOnHover: false,
         arrows: false
     };
@@ -185,15 +186,13 @@ const ProductItem = (props) => {
                         isHovered && props?.item?.images?.length > 1 ? (
                             <Slider {...settings} ref={sliderRef}>
                                 {
-                                    props.item.images.map((img, index) => (
-                                        <div key={index}>
-                                            <img
-                                                src={img}
-                                                className='w-100'
-                                                alt="product"
-                                            />
-                                        </div>
-                                    ))
+                                    props.item.images.map((image, index) => {
+                                        return (
+                                            <div className='slick-slide' key={index}>
+                                                <img src={image} className='w-100' alt="product" />
+                                            </div>
+                                        )
+                                    })
                                 }
                             </Slider>
                         )
@@ -206,6 +205,7 @@ const ProductItem = (props) => {
                                 />
                             )
                     }
+
 
                 </Link>
 
@@ -244,12 +244,12 @@ const ProductItem = (props) => {
                     precision={0.5}
                 />
 
-                <div className="d-flex">
+                <div className="d-flex align-items-center">
                     <span className="oldPrice">
                         Rs {props?.item?.oldPrice}
                     </span>
 
-                    <span className="netPrice text-danger ml-2">
+                    <span className="netPrice text-danger ml-3">
                         Rs {props?.item?.price}
                     </span>
                 </div>

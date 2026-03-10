@@ -210,7 +210,6 @@ import { useState, useEffect, useContext } from "react";
 import { MyContext } from "../../App";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import Box from '@mui/material/Box';
 
 
 
@@ -324,7 +323,7 @@ const Home = () => {
               {/* -------- PRODUCT SLIDER -------- */}
               <Swiper
                 slidesPerView={4}
-                spaceBetween={20}
+                spaceBetween={30}
                 navigation={true}
                 modules={[Navigation]}
                 className="mySwiper"
@@ -339,7 +338,29 @@ const Home = () => {
                     )
                   })
                 }
+
               </Swiper>
+
+              <div className="bannerSec row mt-4 mb-4 g-3">
+                <div className="col-4">
+                  <div className="banner">
+                    <img src={banner3} className="w-100 cursor" alt="Banner3" />
+                  </div>
+                </div>
+
+                <div className="col-4">
+                  <div className="banner">
+                    <img src={banner4} className="w-100 cursor" alt="Banner4" />
+                  </div>
+                </div>
+
+                <div className="col-4">
+                  <div className="banner">
+                    <img src={banner4} className="w-100 cursor" alt="Banner4" />
+                  </div>
+                </div>
+              </div>
+
 
               {/* -------- NEW PRODUCTS -------- */}
               <div className="d-flex align-items-center mt-5">
@@ -357,7 +378,7 @@ const Home = () => {
 
               </div>
 
-              <div className="row mt-4 w-100 d-flex">
+              <div className="row mt-4 g-4">
 
                 {
                   productsData?.products?.length !== 0 && productsData?.products?.map((item, index) => {
@@ -385,7 +406,7 @@ const Home = () => {
               {/* -------- PRODUCT SLIDER -------- */}
               <Swiper
                 slidesPerView={4}
-                spaceBetween={20}
+                spaceBetween={30}
                 navigation={true}
                 modules={[Navigation]}
                 className="mySwiper"
@@ -403,15 +424,6 @@ const Home = () => {
               </Swiper>
 
 
-              <div className="d-flex gap-4 bannerSec">
-                <div className="banner">
-                  <img src={banner3} className="w-100 cursor" alt="Banner3" />
-                </div>
-
-                <div className="banner">
-                  <img src={banner4} className="w-100 cursor" alt="Banner4" />
-                </div>
-              </div>
 
             </div>
           </div>

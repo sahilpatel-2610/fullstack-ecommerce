@@ -32,12 +32,15 @@ function App() {
 
   const [categoryData, setCategoryData] = useState([]);
   const [subCategoryData, setSubCategoryData] = useState([]);
+  const [activeCat, setActiveCat] = useState([]);
+
 
   useEffect(() => {
     getCountry("https://countriesnow.space/api/v0.1/countries/");
 
     fetchDataFromApi("/api/category").then((res) => {
       setCategoryData(res.categoryList);
+      setActiveCat(res.categoryList[0]?.name);
     })
 
     fetchDataFromApi("/api/subCat").then((res) => {
@@ -80,7 +83,9 @@ function App() {
     categoryData,
     setCategoryData,
     subCategoryData,
-    setSubCategoryData
+    setSubCategoryData,
+    activeCat,
+    setActiveCat
   };
 
 
