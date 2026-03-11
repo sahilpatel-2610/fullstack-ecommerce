@@ -27,7 +27,7 @@ cloudinary.config({
 
 
 var imagesArr = [];
-var productEditId;
+
 
 const storage = multer.diskStorage({
 
@@ -131,6 +131,15 @@ router.get(`/`, async (req, res) => {
             }
         }
 
+        if (req.query.subCatId !== undefined) {
+            productList = await Product.find({ subCatId: req.query.subCatId }).populate('category subCat');
+        } else {
+            productList = await Product.find().populate('category subCat')
+                .skip((page - 1) * perPage)
+                .limit(perPage)
+                .exec();
+        }
+
         if (!productList) {
             return res.status(500).json({ success: false })
         }
@@ -172,6 +181,7 @@ router.post(`/create`, async (req, res) => {
         price: req.body.price,
         oldPrice: req.body.oldPrice,
         category: req.body.category,
+        subCatId: req.body.subCatId,
         catName: req.body.catName,
         countInStock: req.body.countInStock,
         rating: req.body.rating,
@@ -302,6 +312,7 @@ router.put('/:id', async (req, res) => {
                 price: req.body.price,
                 oldPrice: req.body.oldPrice,
                 category: req.body.category,
+                subCatId: req.body.subCatId,
                 catName: req.body.catName,
                 countInStock: req.body.countInStock,
                 rating: req.body.rating,

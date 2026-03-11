@@ -100,6 +100,7 @@ const EditUpload = () => {
         price: null,
         oldPrice: null,
         category: '',
+        subCatId: '',
         catName: '',
         countInStock: null,
         rating: 0,
@@ -184,6 +185,8 @@ const EditUpload = () => {
             ...formFields,
             subCat: event.target.value
         }))
+
+        formFields.subCatId = event.target.value;
     };
 
     const handleChangeisFeaturedValue = (event) => {
@@ -376,6 +379,7 @@ const EditUpload = () => {
         formdata.append('price', formFields.price);
         formdata.append('oldPrice', formFields.oldPrice);
         formdata.append('catName', formFields.catName);
+        formdata.append('subCatId', formFields.subCatId);
         formdata.append('category', formFields.category);
         formdata.append('subCat', formFields.subCat);
         formdata.append('countInStock', formFields.countInStock);

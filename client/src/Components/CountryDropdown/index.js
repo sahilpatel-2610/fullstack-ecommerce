@@ -80,7 +80,7 @@ const CountryDropdown = () => {
 
                 <ul className='countryList mt-3'>
                     {
-                        countryList?.countryList?.length !== 0 && countryList?.map((item, index) => {
+                        countryList?.length > 0 && countryList?.map((item, index) => {
                             return (
                                 <li key={index}><Button onClick={() => selectCountry(index, item.country)}
                                     className={`${selectedTab === index ? 'active' : ''}`}

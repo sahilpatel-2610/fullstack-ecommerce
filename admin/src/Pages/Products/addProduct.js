@@ -93,6 +93,7 @@ const ProductUpload = () => {
         price: null,
         oldPrice: null,
         category: '',
+        subCatId: '',
         catName: '',
         countInStock: null,
         rating: 0,
@@ -172,6 +173,8 @@ const ProductUpload = () => {
             ...formFields,
             subCat: event.target.value
         }))
+
+        formFields.subCatId = event.target.value;
     };
 
     const handleChangeisFeaturedValue = (event) => {
@@ -252,6 +255,7 @@ const ProductUpload = () => {
     const selectCat = (cat) => {
         formFields.catName = cat;
     }
+
 
     let img_arr = [];
     let uniqueArray = [];
@@ -354,6 +358,7 @@ const ProductUpload = () => {
         formdata.append('oldPrice', formFields.oldPrice);
         formdata.append('category', formFields.category);
         formdata.append('catName', formFields.catName);
+        formdata.append('subCatId', formFields.subCatId);
         formdata.append('subCat', formFields.subCat);
         formdata.append('countInStock', formFields.countInStock);
         formdata.append('rating', formFields.rating);

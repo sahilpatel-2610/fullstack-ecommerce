@@ -266,7 +266,7 @@ const Home = () => {
     <>
       <HomeBanner />
       {
-        context.categoryData?.length !== 0 && <HomeCat catData={context.categoryData} />
+        context.categoryData?.length > 0 && <HomeCat catData={context.categoryData} />
       }
 
 
@@ -330,7 +330,7 @@ const Home = () => {
               >
 
                 {
-                  filterData?.length !== 0 && filterData?.map((item, index) => {
+                  filterData?.length > 0 && filterData?.map((item, index) => {
                     return (
                       <SwiperSlide key={index}>
                         <ProductItem item={item} />
@@ -381,7 +381,7 @@ const Home = () => {
               <div className="row mt-4 g-4">
 
                 {
-                  productsData?.products?.length !== 0 && productsData?.products?.map((item, index) => {
+                  productsData?.products?.length > 0 && productsData?.products?.map((item, index) => {
                     return (
                       <div className="col-md-3 col-6 mb-4"><ProductItem key={index} item={item} /></div>
                     )
@@ -413,7 +413,7 @@ const Home = () => {
               >
 
                 {
-                  featuredProducts?.length !== 0 && Array.isArray(featuredProducts) && featuredProducts?.map((item, index) => {
+                  featuredProducts?.length > 0 && Array.isArray(featuredProducts) && featuredProducts?.map((item, index) => {
                     return (
                       <SwiperSlide key={index}>
                         <ProductItem item={item} />

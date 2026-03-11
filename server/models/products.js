@@ -31,6 +31,10 @@ const peoductSchema = mongoose.Schema({
         type: String,
         default: '',
     },
+    subCatId: {
+        type: String,
+        default: '',
+    },
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',

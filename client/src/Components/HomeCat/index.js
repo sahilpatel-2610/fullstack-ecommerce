@@ -98,8 +98,8 @@ const HomeCat = (props) => {
                 <h3 className="mb-3 hd">Featured Categories</h3>
 
                 <Swiper
-                    slidesPerView={10}
-                    spaceBetween={8}
+                    slidesPerView={8}
+                    spaceBetween={15}
                     navigation={true}
                     slidesPerGroup={3}
                     modules={[Navigation]}
@@ -107,7 +107,7 @@ const HomeCat = (props) => {
                 >
 
                     {
-                        props.catData?.length !== 0 &&
+                        props.catData?.length > 0 &&
                         props.catData?.map((cat, index) => {
                             return (
                                 <SwiperSlide key={index}>

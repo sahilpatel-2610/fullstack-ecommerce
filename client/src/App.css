@@ -444,25 +444,25 @@ nav .allCatTab .icon2 svg {
 
 nav .navpart2 ul {
   margin-bottom: 0px;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
 }
 
 nav .navpart2 ul li {
   padding-bottom: 20px;
-}
-
-nav .navpart2 ul li a {
-  text-decoration: none;
+  white-space: nowrap;
 }
 
 nav .navpart2 ul li a button {
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600 !important;
   text-decoration: none;
-  color: rgba(0, 0, 0, 0.7);
-  text-transform: uppercase;
+  color: #000 !important;
+  text-transform: uppercase !important;
   display: flex;
   align-items: center;
-  padding: 8px 15px;
+  padding: 8px 12px;
   transition: all 0.2s ease-in-out;
   border-radius: 25px;
 }
@@ -520,6 +520,7 @@ nav .navpart2 ul li:hover .submenu {
 
 .homeBannerSection {
   position: relative;
+  margin-top: 1px;
 }
 
 .homeBannerSection .swiper {
@@ -528,7 +529,7 @@ nav .navpart2 ul li:hover .submenu {
 
 .homeBannerSection .swiper .item {
   overflow: hidden;
-  border-radius: 10px;
+  border-radius: 0px;
 }
 
 .homeBannerSection * {
@@ -879,10 +880,23 @@ nav .navpart2 ul li:hover .submenu {
   width: 100%;
   height: auto;
   border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .homeCat .swiper .item img {
-  width: 80%;
+  width: 100%;
+  max-width: 65px;
+}
+
+.homeCat .item h6 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2b2b2b;
+  margin-top: 10px;
+  text-transform: capitalize;
 }
 
 .homeCat .swiper-button-prev,
@@ -1847,29 +1861,75 @@ a:hover {
 
 /* ---------- GRID VIEWS ---------- */
 
-/* 1 per row (list view) */
-.productsWrapper.one {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-}
-
+/* 1 per row (list view) - Refined to match reference photo 2 precisely */
 .productsWrapper.one .productItem {
-  flex-direction: row;
+  flex-direction: row !important;
   text-align: left;
-  align-items: center;
-  padding: 12px;
-  min-height: 140px;
+  align-items: stretch;
+  padding: 0px !important;
+  min-height: 220px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-.productsWrapper.one .card-image {
-  width: 22%;
-  height: 180px;
+.productsWrapper.one .productItem .img_rapper {
+  width: 32% !important;
+  flex: 0 0 32% !important;
+  height: auto !important;
+  min-height: 220px;
+  background: #f1f1f1;
+  padding: 0px !important;
 }
 
-.productsWrapper.one .card-content {
-  width: 100%;
-  padding-left: 20px;
+.productsWrapper.one .productItem .img_rapper img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+.productsWrapper.one .productItem .info {
+  width: 68% !important;
+  padding: 25px 35px !important;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.productsWrapper.one .productItem .info h4 {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  margin-bottom: 10px;
+  height: auto !important;
+}
+
+.productsWrapper.one .productItem .info .text-success {
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.productsWrapper.one .productItem .info .oldPrice {
+  font-size: 16px !important;
+}
+
+.productsWrapper.one .productItem .info .netPrice {
+  font-size: 18px !important;
+}
+
+/* Ensure icons slide in only on hover to match "cross over" requirement */
+.productsWrapper.one .productItem .actions {
+  position: absolute;
+  top: 15px;
+  right: -100%;
+  /* Hide off-screen */
+  opacity: 0;
+  z-index: 100;
+  transition: all 0.3s ease-in-out;
+}
+
+.productsWrapper.one .productItem:hover .actions {
+  opacity: 1;
+  right: 15px;
+  /* Slide in on hover */
 }
 
 /* 2 per row */
@@ -1893,34 +1953,28 @@ a:hover {
   gap: 20px;
 }
 
-/* responsive (optional override) */
-@media (max-width: 1200px) {
+/* responsive grid adjustments */
+@media (max-width: 1300px) {
   .productsWrapper.four {
     grid-template-columns: repeat(3, 1fr);
   }
+}
 
+@media (max-width: 992px) {
   .productsWrapper.three {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .productsWrapper.four {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 768px) {
 
-  .productsWrapper.four,
-  .productsWrapper.three {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .productsWrapper.two {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 480px) {
-
-  .productsWrapper.four,
+  .productsWrapper.two,
   .productsWrapper.three,
-  .productsWrapper.two {
+  .productsWrapper.four {
     grid-template-columns: 1fr;
   }
 }

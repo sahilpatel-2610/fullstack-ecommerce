@@ -63,7 +63,7 @@
 //                                     <MenuItem onClick={handleClose}>40</MenuItem>
 //                                     <MenuItem onClick={handleClose}>50</MenuItem>
 //                                     <MenuItem onClick={handleClose}>60</MenuItem>
-                                    
+
 //                                 </Menu>
 //                             </div>
 //                         </div>
@@ -207,14 +207,18 @@ import { TfiLayoutGrid4Alt } from "react-icons/tfi";
 import { FaAngleDown } from "react-icons/fa6";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProductItem from "../../Components/ProductItem";
 import Pagination from '@mui/material/Pagination';
+import { useParams } from "react-router-dom";
+import { fetchDataFromApi } from "../../utils/api";
+
 
 
 const Listing = () => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [productView, setProductView] = useState(`four`); // default 4-grid
+  const [productView, setProductView] = useState('four'); // default 4-grid
+  const [productData, setProductData] = useState([]);
   const openDropdown = Boolean(anchorEl);
 
   const handleClick = (event) => {
@@ -223,6 +227,15 @@ const Listing = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const { id } = useParams();
+
+  useEffect(() => {
+    fetchDataFromApi(`/api/products?subCatId=${id}`).then((res) => {
+      console.log(res.products);
+      setProductData(res.products);
+    })
+  }, [id])
 
 
   return (
@@ -246,28 +259,28 @@ const Listing = () => {
             <div className="showBy mt-3 mb-3 d-flex align-items-center">
               <div className="d-flex align-items-center btnWrapper">
                 <Button
-                  className={productView==='one' && 'act'}
+                  className={productView === 'one' ? 'act' : ''}
                   onClick={() => setProductView("one")}
                 >
                   <IoIosMenu size={20} />
                 </Button>
 
                 <Button
-                  className={productView==='tow' && 'act'}
+                  className={productView === 'two' ? 'act' : ''}
                   onClick={() => setProductView("two")}
                 >
                   <HiViewGrid size={20} />
                 </Button>
 
                 <Button
-                  className={productView==='three' && 'act'}
+                  className={productView === 'three' ? 'act' : ''}
                   onClick={() => setProductView("three")}
                 >
                   <CgMenuGridR size={20} />
                 </Button>
 
                 <Button
-                  className={productView==='four' && 'act'}
+                  className={productView === 'four' ? 'act' : ''}
                   onClick={() => setProductView("four")}
                 >
                   <TfiLayoutGrid4Alt size={20} />
@@ -295,29 +308,22 @@ const Listing = () => {
 
             {/* Product Items */}
             <div className={`productsWrapper ${productView}`}>
-              {Array.from({ length: 8 }).map((_, i) => (
-                <ProductItem key={i} itemView={productView} />
-              ))}
-              {Array.from({ length: 8 }).map((_, i) => (
-                <ProductItem key={i} itemView={productView} />
-              ))}
-              {Array.from({ length: 8 }).map((_, i) => (
-                <ProductItem key={i} itemView={productView} />
-              ))}
-              {Array.from({ length: 8 }).map((_, i) => (
-                <ProductItem key={i} itemView={productView} />
-              ))}
-              {Array.from({ length: 8 }).map((_, i) => (
-                <ProductItem key={i} itemView={productView} />
-              ))}
+              {
+                productData?.map((item, index) => {
+                  return (
+                    <ProductItem key={index} itemView={productView} item={item} />
+                  )
+                })
+              }
+
             </div>
 
 
 
 
-              <div className="d-flex align-items-center justify-content-center mt-5">
-                 <Pagination count={10} color="primary" size="large" />
-              </div>
+            <div className="d-flex align-items-center justify-content-center mt-5">
+              <Pagination count={10} color="primary" size="large" />
+            </div>
 
           </div>
         </div>

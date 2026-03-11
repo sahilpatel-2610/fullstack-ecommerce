@@ -1,5 +1,7 @@
 import { BrowserRouter, Route, Routes, } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import './App.css';
 import './responsive.css';
 import Dashboard from './Pages/Dashboard';
@@ -45,7 +47,10 @@ function App() {
   const [isHideSidebarAndHeader, setisHideSidebarAndHeader] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [isOpenNav, setIsOpenNav] = useState(false);
-  const [theme, setTheme] = useState(localStorage.getItem('theme') ? localStorage.getItem('theme') : 'light');
+  const [theme, setTheme] = useState(
+    localStorage.getItem('theme') === 'dark' ? true : false
+  );
+
   const [catData, setCatData] = useState([]);
   const [subCatData, setSubCatData] = useState([]);
 
@@ -58,26 +63,18 @@ function App() {
     open: false
   });
 
-  // const { enqueueSnackbar } = useSnackbar();
-
-
   useEffect(() => {
-
-    // const theme = localStorage.getItem('theme');
-
-
     if (theme === true) {
-      document.body.classList.remove('dark');
-      document.body.classList.add('light');
-      localStorage.setItem('theme', 'dark');
-    }
-    else {
-      document.body.classList.remove('light');
       document.body.classList.add('dark');
+      document.body.classList.remove('light');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.body.classList.add('light');
+      document.body.classList.remove('dark');
       localStorage.setItem('theme', 'light');
     }
-
   }, [theme]);
+
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {

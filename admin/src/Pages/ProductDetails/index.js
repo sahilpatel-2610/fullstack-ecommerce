@@ -51,13 +51,12 @@ const ProductDetails = () => {
       dots: false,
       infinite: false,
       speed: 500,
-      slidesToShow: 3,
+      slidesToShow: 4,
       slidesToScroll: 1
     };
 
 
     const goToSlide = (index) => {
-      productSliderBig.current.slickGoTo(index);
       productSliderBig.current.slickGoTo(index);
     }
 
@@ -85,92 +84,28 @@ const ProductDetails = () => {
                   </Breadcrumbs>
                 </div>
     
-{/* 
-
-
               <div className='card productDetailsSEction'>
                 <div className='row'>
                   <div className='col-md-5'>
-                      <div className="sliderWrapper pt-3 pb-3 pl-4 pr-4">
-                        <h6 className="mb-4">Product Gallery</h6>
-                        <div className="prodcutZoom">
-                          <div className="productZoom productZoomBig position-relative mb-3">
-                            <div className="badge badge-primary">
-                              "8"
-                              "%"
-                            </div>
-                            <div class="swiper swiper-initialized swiper-horizontal zoomSliderBig swiper-backface-hidden">
-                              <div class="swiper-wrapper" style="transform: translate3d(0px, 0px, 0px); transition-duration: 0ms; transition-delay: 0ms;">
-                                <div class="swiper-slide swiper-slide-active" style="width: 412px;">
-                                  <div class="item">
-                                    <figure class="iiz  ">
-                                      <div>
-                                        <img class="iiz__img   " src="https://api.spicezgold.com/download/file_1734529520274_eyebogler-men-s-full-sleeves-collor-neck-regular-fit-solid-dark-red-t-shirt-product-images-rvoeivrsgi-0-202211052110.webp" style="transition: opacity linear, visibility linear;" />
-                                      </div>
-                                      <span class="iiz__btn iiz__hint">
-                                      </span>
-                                    </figure>
-                                  </div>
-                                </div>
-                                  <div class="swiper-slide swiper-slide-next" style="width: 412px;">
-                                    <div class="item">
-                                      <figure class="iiz  ">
-                                        <div>
-                                          <img class="iiz__img   " src="https://api.spicezgold.com/download/file_1734529520274_eyebogler-men-s-full-sleeves-collor-neck-regular-fit-solid-dark-red-t-shirt-product-images-rvoeivrsgi-1-202211052110.webp" style="transition: opacity linear, visibility linear;" />
-                                        </div>
-                                        <span class="iiz__btn iiz__hint">
-                                          </span>
-                                      </figure>
-                                    </div>
-                                  </div>
-                                  <div class="swiper-slide" style="width: 412px;">
-                                    <div class="item">
-                                      <figure class="iiz  ">
-                                        <div>
-                                          <img class="iiz__img   " src="https://api.spicezgold.com/download/file_1734529520274_eyebogler-men-s-full-sleeves-collor-neck-regular-fit-solid-dark-red-t-shirt-product-images-rvoeivrsgi-2-202211052110.webp" style="transition: opacity linear, visibility linear;" />
-                                        </div>
-                                        <span class="iiz__btn iiz__hint">
-                                          </span>
-                                      </figure>
-                                    </div>
-                                  </div>
-                                </div>
-                                </div>
-                          </div>
-                        </div>
-
-                      </div>
-
-                  </div> */}
-              <div className='card productDetailsSEction'>
-                <div className='row'>
-                  <div className='col-md-5'>
-                      <div className="sliderWrapper pt-3 pb-3 pl-4 pr-4">
+                      <div className="sliderWrapper pt-3 pb-3">
                         <h6 className="mb-4">Product Gallery</h6>
                         <Slider {...productSliderOptions} ref={productSliderBig} className="sliderBig mb-2" >
-                          <div className="item p-4">
-                            <div className="product-main-image">
-                              <img src="https://api.spicezgold.com/download/file_1734529520274_eyebogler-men-s-full-sleeves-collor-neck-regular-fit-solid-dark-red-t-shirt-product-images-rvoeivrsgi-0-202211052110.webp" className="w-100" />
-                            </div>
-                            {/* <div className="product-main-image">
-                              <img src="https://api.spicezgold.com/download/file_1734529520274_eyebogler-men-s-full-sleeves-collor-neck-regular-fit-solid-dark-red-t-shirt-product-images-rvoeivrsgi-0-202211052110.webp" className="w-100" />
-                            </div>
-                            <div className="product-main-image">
-                              <img src="https://api.spicezgold.com/download/file_1734529520274_eyebogler-men-s-full-sleeves-collor-neck-regular-fit-solid-dark-red-t-shirt-product-images-rvoeivrsgi-0-202211052110.webp" className="w-100" />
-                            </div> */}
+                          <div className="item">
+                            <img src="https://api.spicezgold.com/download/file_1734529520274_eyebogler-men-s-full-sleeves-collor-neck-regular-fit-solid-dark-red-t-shirt-product-images-rvoeivrsgi-0-202211052110.webp" className="w-100" />
+                            <span className="badge badge-primary"></span>
                           </div>
                         </Slider>
 
                         <Slider {...productSliderSmlOptions} ref={productSliderSml} className="sliderSml mt-3" >
-                          <div className="item product-thumb p-4" onClick={() => goToSlide (1)}>
+                          <div className="item product-thumb" onClick={() => goToSlide (0)}>
                             <img src="https://api.spicezgold.com/download/file_1734529520274_eyebogler-men-s-full-sleeves-collor-neck-regular-fit-solid-dark-red-t-shirt-product-images-rvoeivrsgi-0-202211052110.webp" className="w-100" />
                           </div>
 
-                          <div className="item product-thumb p-4" onClick={() => goToSlide (2)}>
+                          <div className="item product-thumb" onClick={() => goToSlide (1)}>
                             <img src="https://api.spicezgold.com/download/file_1734529520274_eyebogler-men-s-full-sleeves-collor-neck-regular-fit-solid-dark-red-t-shirt-product-images-rvoeivrsgi-1-202211052110.webp" className="w-100" />
                           </div>
 
-                          <div className="item product-thumb p-4" onClick={() => goToSlide (3)}>
+                          <div className="item product-thumb" onClick={() => goToSlide (2)}>
                             <img src="https://api.spicezgold.com/download/file_1734529520274_eyebogler-men-s-full-sleeves-collor-neck-regular-fit-solid-dark-red-t-shirt-product-images-rvoeivrsgi-2-202211052110.webp" className="w-100" />
                           </div>
                         </Slider>

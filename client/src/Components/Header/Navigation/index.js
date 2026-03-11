@@ -155,10 +155,10 @@ const Navigation = (props) => {
                         <ul className='list list-inline ml-auto'>
                             <li className='list-inline-item'><Link to="/"><Button>Home</Button></Link></li>
                             {
-                                props.navData?.length !== 0 && props.navData?.map((item, index) => {
+                                props.navData?.length > 0 && props.navData?.map((item, index) => {
                                     return (
                                         <li className='list-inline-item'>
-                                            <Link to="/cat/1"><Button>{item?.subCat}</Button></Link>
+                                            <Link to={`/subCat/${item?._id}`}><Button>{item?.subCat}</Button></Link>
                                         </li>
                                     )
                                 })
