@@ -10,7 +10,7 @@ import { useEffect } from "react";
 import Footer from "./Components/Footer";
 import ProductModal from "./Components/ProductModal";
 import Listing from "./Pages/Listing";
-import ProductDrtails from "./Pages/ProductDetails";
+import ProductDetails from "./Pages/ProductDetails";
 import Cart from "./Pages/Cart";
 import SignIn from "./Pages/SignIn";
 import SignUp from "./Pages/SignUp";
@@ -27,7 +27,7 @@ function App() {
     open: false
   });
   const [isHeaderFooterShow, setisHeaderFooterShow] = useState(true);
-  const [isLogin, setisLoin] = useState(false);
+  const [isLogin, setisLogin] = useState(false);
   const [productData, setProductData] = useState();
 
   const [categoryData, setCategoryData] = useState([]);
@@ -39,12 +39,14 @@ function App() {
     getCountry("https://countriesnow.space/api/v0.1/countries/");
 
     fetchDataFromApi("/api/category").then((res) => {
-      setCategoryData(res.categoryList);
-      setActiveCat(res.categoryList[0]?.name);
+      setCategoryData(res?.categoryList);
+      if (res?.categoryList?.length > 0) {
+        setActiveCat(res.categoryList[0]?.name);
+      }
     })
 
     fetchDataFromApi("/api/subCat").then((res) => {
-      setSubCategoryData(res.subCategoryList);
+      setSubCategoryData(res?.subCategoryList);
     })
 
   }, []);
@@ -77,7 +79,7 @@ function App() {
     isHeaderFooterShow,
     setisHeaderFooterShow,
     isLogin,
-    setisLoin,
+    setisLogin,
     productData,
     setProductData,
     categoryData,
@@ -100,7 +102,7 @@ function App() {
         <Routes>
           <Route path="/" exact={true} element={<Home />} />
           <Route path="/subCat/:id" exact={true} element={<Listing />} />
-          <Route exact={true} path="/product/:id" element={<ProductDrtails />} />
+          <Route exact={true} path="/product/:id" element={<ProductDetails />} />
           <Route exact={true} path="/cart" element={<Cart />} />
           <Route exact={true} path="/signIn" element={<SignIn />} />
           <Route exact={true} path="/signUp" element={<SignUp />} />

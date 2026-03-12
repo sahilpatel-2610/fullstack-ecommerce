@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import Button from '@mui/material/Button';
 import { FaAngleDown } from "react-icons/fa6";
-import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
 import { IoIosSearch } from "react-icons/io";
 import { MdClose } from "react-icons/md";
@@ -37,7 +36,7 @@ const CountryDropdown = () => {
 
     useEffect(() => {
         setCountryList(context.countryList);
-    }, []);
+    }, [context.countryList]);
 
     const filterList = (e) => {
         const keyword = e.target.value.toLowerCase();

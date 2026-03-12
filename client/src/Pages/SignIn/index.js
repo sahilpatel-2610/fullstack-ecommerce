@@ -13,7 +13,10 @@ const SignIn = () => {
     
     useEffect(() => {
         context.setisHeaderFooterShow(false);
-    },[]);
+        return () => {
+            context.setisHeaderFooterShow(true);
+        }
+    }, [context]);
 
     return (
       <section className="section signInPage">
@@ -24,7 +27,7 @@ const SignIn = () => {
             <div className="container">
               <div className="box card p-3 showdow border-0">
                 <div className="text-center">
-                    <img src={Logo} />
+                    <img src={Logo} alt="logo" />
                 </div>
 
                
@@ -41,18 +44,18 @@ const SignIn = () => {
 
 
 
-                    <a className="border-effect cursor txt">Forgot Password?</a>
+                    <a href="#!" className="border-effect cursor txt">Forgot Password?</a>
 
                     <div className="d-flex align-items-center mt-3 mb-3">
                       <Button className="btn-blue col btn-lg btn-big">Sign In</Button>
-                      <Link to="/"> <Button className="btn-lg btn-big col ml-3" variant="outlined" onClick={() => context.setisHeaderFooterShow(true)}>Cancel</Button></Link>
+                      <Link to="/"> <Button className="btn-lg btn-big col ml-3" variant="outlined">Cancel</Button></Link>
                     </div>
 
                     <p className="txt">Not Registered? <Link to="/signUp" className="border-effect">Sign Up</Link></p>
 
                     <h6 className="mt-4 text-center font-weight-bold">Or continue with social account</h6>
 
-                    <Button className="loginWithGoogle mt-2" variant="outlined"><img src={GoogleImg} /> Sign In with Google</Button>
+                    <Button className="loginWithGoogle mt-2" variant="outlined"><img src={GoogleImg} alt="google" /> Sign In with Google</Button>
                     
 
                     

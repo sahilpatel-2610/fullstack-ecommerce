@@ -107,42 +107,36 @@ router.post(`/upload`, upload.array("images"), async (req, res) => {
 router.get(`/`, async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const perPage = parseInt(req.query.perPage);
-        let productList = [];
-        let totalPages = 0;
+        const perPage = parseInt(req.query.perPage) || 10;
 
-        if (req.query.page !== undefined && req.query.perPage !== undefined) {
-            const totalPosts = await Product.countDocuments();
-            totalPages = Math.ceil(totalPosts / perPage);
-
-            if (page > totalPages) {
-                return res.status(404).json({ message: "Page not found" })
-            }
-
-            productList = await Product.find().populate('category subCat')
-                .skip((page - 1) * perPage)
-                .limit(perPage)
-                .exec();
-        } else {
-            if (req.query.catName !== undefined) {
-                productList = await Product.find({ catName: req.query.catName }).populate('category subCat');
-            } else {
-                productList = await Product.find().populate('category subCat');
-            }
+        let query = {};
+        if (req.query.catName && req.query.catName !== "undefined") {
+            query.catName = req.query.catName;
         }
 
-        if (req.query.subCatId !== undefined) {
-            productList = await Product.find({ subCatId: req.query.subCatId }).populate('category subCat');
-        } else {
-            productList = await Product.find().populate('category subCat')
-                .skip((page - 1) * perPage)
-                .limit(perPage)
-                .exec();
+        if (req.query.category && req.query.category !== "undefined") {
+            query.category = req.query.category;
         }
 
-        if (!productList) {
-            return res.status(500).json({ success: false })
+        if (req.query.subCatId && req.query.subCatId !== "undefined") {
+            query.subCatId = req.query.subCatId;
         }
+
+        if (req.query.minPrice !== undefined && req.query.maxPrice !== undefined) {
+            query.price = { $gte: parseInt(req.query.minPrice), $lte: parseInt(req.query.maxPrice) };
+        }
+
+        if (req.query.rating !== undefined) {
+            query.rating = parseInt(req.query.rating);
+        }
+
+        const totalPosts = await Product.countDocuments(query);
+        const totalPages = Math.ceil(totalPosts / perPage);
+
+        let productList = await Product.find(query)
+            .populate('category subCat')
+            .skip((page - 1) * perPage)
+            .limit(perPage);
 
         return res.status(200).json({
             "products": productList,
@@ -150,7 +144,8 @@ router.get(`/`, async (req, res) => {
             "page": page
         });
     } catch (error) {
-        res.status(500).json({ success: false })
+        console.error(error);
+        return res.status(500).json({ success: false, message: error.message });
     }
 });
 

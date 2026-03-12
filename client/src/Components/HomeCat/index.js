@@ -95,7 +95,9 @@ const HomeCat = (props) => {
     return (
         <section className="homeCat">
             <div className="container">
-                <h3 className="mb-3 hd">Featured Categories</h3>
+                {
+                    props.hideTitle !== true && <h3 className="mb-3 hd">Featured Categories</h3>
+                }
 
                 <Swiper
                     slidesPerView={8}
@@ -109,16 +111,23 @@ const HomeCat = (props) => {
                     {
                         props.catData?.length > 0 &&
                         props.catData?.map((cat, index) => {
+                            const itemBg = [
+                                '#fffceb', '#ecffec', '#feefea', '#fff3eb', '#fff3ff', '#f2fce4', '#feefea', '#fffceb', '#feefea', '#ecffec'
+                            ];
                             return (
                                 <SwiperSlide key={index}>
                                     <div
-                                        className="item text-center cursor"
-                                        style={{ background: cat.color }}
+                                        className={`item text-center cursor ${props.activeIndex === index ? 'active' : ''}`}
+                                        style={{ background: cat.color ? cat.color : itemBg[index % itemBg.length] }}
+                                        onClick={() => props.onSelect(index)}
                                     >
-                                        <img
-                                            src={cat.images?.[0]}
-                                            alt={cat.name}
-                                        />
+                                        <div className="img_wrapper">
+                                            <img
+                                                src={cat.images?.[0]}
+                                                alt={cat.name}
+                                                className="w-100"
+                                            />
+                                        </div>
 
                                         <h6>{cat.name}</h6>
                                     </div>

@@ -227,13 +227,9 @@ const Home = () => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
     if (context.categoryData?.length > 0) {
-      setSelectedCat(context.categoryData[newValue].name);
+      setSelectedCat(context.categoryData?.[newValue]?.name);
     }
   };
-
-  const selectCat = (cat) => {
-    setSelectedCat(cat);
-  }
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -266,7 +262,7 @@ const Home = () => {
     <>
       <HomeBanner />
       {
-        context.categoryData?.length > 0 && <HomeCat catData={context.categoryData} />
+        context.categoryData?.length > 0 && <HomeCat catData={context.categoryData} onSelect={(index) => handleChange(null, index)} activeIndex={value} />
       }
 
 
@@ -322,6 +318,7 @@ const Home = () => {
 
               {/* -------- PRODUCT SLIDER -------- */}
               <Swiper
+                key={selectedCat}
                 slidesPerView={4}
                 spaceBetween={30}
                 navigation={true}
@@ -448,7 +445,7 @@ const Home = () => {
             </div>
 
             <div className="col-md-6">
-              <img src={newsLetterImg} />
+              <img src={newsLetterImg} alt="newsletter" />
             </div>
           </div>
         </div>

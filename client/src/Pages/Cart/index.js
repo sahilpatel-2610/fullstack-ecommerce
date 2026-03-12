@@ -37,7 +37,7 @@ const Cart = () => {
                                                     <div className="d-flex align-item-center cartItemimgWrapper">
                                                         <div className="imgWrapper">
                                                             <img src="https://wp.alithemes.com/html/nest/demo/assets/imgs/shop/product-1-1.jpg"
-                                                            className="w-100"
+                                                            className="w-100" alt="product"
                                                             />                                                 
                                                         </div>
 
@@ -64,7 +64,7 @@ const Cart = () => {
                                                     <div className="d-flex align-item-center cartItemimgWrapper">
                                                         <div className="imgWrapper">
                                                             <img src="https://wp.alithemes.com/html/nest/demo/assets/imgs/shop/product-1-1.jpg"
-                                                            className="w-100"
+                                                            className="w-100" alt="product"
                                                             />                                                 
                                                         </div>
 
@@ -91,7 +91,7 @@ const Cart = () => {
                                                     <div className="d-flex align-item-center cartItemimgWrapper">
                                                         <div className="imgWrapper">
                                                             <img src="https://wp.alithemes.com/html/nest/demo/assets/imgs/shop/product-1-1.jpg"
-                                                            className="w-100"
+                                                            className="w-100" alt="product"
                                                             />                                                 
                                                         </div>
 
@@ -118,7 +118,7 @@ const Cart = () => {
                                                     <div className="d-flex align-item-center cartItemimgWrapper">
                                                         <div className="imgWrapper">
                                                             <img src="https://wp.alithemes.com/html/nest/demo/assets/imgs/shop/product-1-1.jpg"
-                                                            className="w-100"
+                                                            className="w-100" alt="product"
                                                             />                                                 
                                                         </div>
 
@@ -145,7 +145,7 @@ const Cart = () => {
                                                     <div className="d-flex align-item-center cartItemimgWrapper">
                                                         <div className="imgWrapper">
                                                             <img src="https://wp.alithemes.com/html/nest/demo/assets/imgs/shop/product-1-1.jpg"
-                                                            className="w-100"
+                                                            className="w-100" alt="product"
                                                             />                                                 
                                                         </div>
 
@@ -172,7 +172,7 @@ const Cart = () => {
                                                     <div className="d-flex align-item-center cartItemimgWrapper">
                                                         <div className="imgWrapper">
                                                             <img src="https://wp.alithemes.com/html/nest/demo/assets/imgs/shop/product-1-1.jpg"
-                                                            className="w-100"
+                                                            className="w-100" alt="product"
                                                             />                                                 
                                                         </div>
 

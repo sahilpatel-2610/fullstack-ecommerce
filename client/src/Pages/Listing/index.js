@@ -212,30 +212,86 @@ import ProductItem from "../../Components/ProductItem";
 import Pagination from '@mui/material/Pagination';
 import { useParams } from "react-router-dom";
 import { fetchDataFromApi } from "../../utils/api";
-
+import { MyContext } from "../../App";
+import { useContext } from "react";
+import newsLetterImg from "../../assets/images/coupon.png";
+import { IoMailOutline } from "react-icons/io5";
 
 
 const Listing = () => {
+  const context = useContext(MyContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const [productView, setProductView] = useState('four'); // default 4-grid
+  const [subCatId, setSubCatId] = useState('');
+  const [filterPrice, setFilterPrice] = useState([100, 500000]);
+  const [filterRating, setFilterRating] = useState();
   const [productData, setProductData] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+  const [currentCategory, setCurrentCategory] = useState("");
+  const [currentSubCategory, setCurrentSubCategory] = useState("");
   const openDropdown = Boolean(anchorEl);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
-  const handleClose = () => {
+  const handleClose = (num) => {
     setAnchorEl(null);
+    if (typeof num === 'number') {
+      setPerPage(num);
+      setPage(1);
+    }
   };
 
   const { id } = useParams();
 
   useEffect(() => {
-    fetchDataFromApi(`/api/products?subCatId=${id}`).then((res) => {
-      console.log(res.products);
+    setSubCatId(id);
+    setPage(1);
+    setFilterPrice([100, 500000]);
+    setFilterRating(null);
+
+    // Synchronize Ribbon and Title
+    if (context.subCategoryData?.length > 0 && id) {
+      const sub = context.subCategoryData.find(item => item._id === id);
+      if (sub) {
+        setCurrentSubCategory(sub.subCat);
+        setCurrentCategory(sub.category?.name);
+      }
+    }
+  }, [id, context.categoryData, context.subCategoryData]);
+
+  useEffect(() => {
+    let url = `/api/products?subCatId=${subCatId}&page=${page}&perPage=${perPage}&minPrice=${filterPrice[0]}&maxPrice=${filterPrice[1]}`;
+    if (filterRating) {
+      url += `&rating=${filterRating}`;
+    }
+
+    fetchDataFromApi(url).then((res) => {
       setProductData(res.products);
+      setTotalPages(res.totalPages);
     })
-  }, [id])
+  }, [subCatId, page, perPage, filterPrice, filterRating]);
+
+
+  const filterByPrice = (price, subId) => {
+    setFilterPrice(price);
+    setSubCatId(subId);
+  }
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
+    window.scrollTo(0, 0);
+  }
+
+  const filterByRating = (rating, subId) => {
+    setFilterRating(rating);
+    setSubCatId(subId);
+  }
+
+
+
 
 
   return (
@@ -243,17 +299,15 @@ const Listing = () => {
       <div className="container">
         <div className="productListing d-flex">
           {/* Left Sidebar */}
-          <Sidebar />
+          <Sidebar filterByPrice={filterByPrice} filterByRating={filterByRating} />
 
           {/* Right Content */}
           <div className="content_right">
-            {/* Banner */}
-            <img
-              src="https://klbtheme.com/bacola/wp-content/uploads/2021/08/bacola-banner-18.jpg"
-              className="w-100"
-              style={{ borderRadius: "8px" }}
-              alt="banner"
-            />
+
+            <div className="listingHeader mb-4">
+              <h1 className="hd text-capitalize mb-0" style={{ fontSize: '22px' }}>{currentCategory} / {currentSubCategory}</h1>
+              <p className="text-muted text-sml">Showing {productData?.length} results for {currentSubCategory}</p>
+            </div>
 
             {/* Toolbar */}
             <div className="showBy mt-3 mb-3 d-flex align-items-center">
@@ -298,7 +352,7 @@ const Listing = () => {
                   onClose={handleClose}
                 >
                   {[10, 20, 30, 40, 50, 60].map((num) => (
-                    <MenuItem key={num} onClick={handleClose}>
+                    <MenuItem key={num} onClick={() => handleClose(num)}>
                       {num}
                     </MenuItem>
                   ))}
@@ -315,20 +369,46 @@ const Listing = () => {
                   )
                 })
               }
-
             </div>
 
-
-
-
+            {/* Bottom Pagination */}
             <div className="d-flex align-items-center justify-content-center mt-5">
-              <Pagination count={10} color="primary" size="large" />
+              <Pagination count={totalPages} page={page} color="primary" size="large" onChange={handlePageChange} />
             </div>
 
           </div>
         </div>
       </div>
+
+      <br />
+      <br />
+
+      <section className="newsLetterSection mt-3 mb-3 d-flex align-items-center">
+        <div className="container">
+          <div className="row">
+            <div className="col-md-6">
+              <p className="text-white mb-1">$20 discount for your first order</p>
+              <h3 className="text-white">Join our newsletter and get...</h3>
+              <p className="text-light">Join our email subscription now to get updates on<br /> promotions and coupons.</p>
+
+
+              <form>
+                <IoMailOutline />
+                <input type="text" placeholder="Your Email Address" />
+                <Button>Subscribe</Button>
+              </form>
+
+            </div>
+
+            <div className="col-md-6">
+              <img src={newsLetterImg} alt="newsletter" />
+            </div>
+          </div>
+        </div>
+      </section>
     </section>
+
+
   );
 };
 

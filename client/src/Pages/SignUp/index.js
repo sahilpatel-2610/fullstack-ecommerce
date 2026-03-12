@@ -57,7 +57,7 @@
 
 
 
-//                     <a className="border-effect cursor txt">Forgot Password?</a>
+//                     <a href="#!" className="border-effect cursor txt">Forgot Password?</a>
 
 //                     <div className="d-flex align-items-center mt-3 mb-3">
 //                       <Button className="btn-blue col btn-lg btn-big">Sign In</Button>
@@ -68,7 +68,7 @@
 
 //                     <h6 className="mt-4 text-center font-weight-bold">Or continue with social account</h6>
 
-//                     <Button className="loginWithGoogle mt-2" variant="outlined"><img src={GoogleImg} /> Sign In with Google</Button>
+//                     <Button className="loginWithGoogle mt-2" variant="outlined"><img src={GoogleImg} alt="google" /> Sign In with Google</Button>
                     
 
                     
@@ -100,7 +100,10 @@ const SignUp = () => {
     
     useEffect(() => {
         context.setisHeaderFooterShow(false);
-    },[]);
+        return () => {
+            context.setisHeaderFooterShow(true);
+        }
+    }, [context]);
 
     return (
       <section className="section signInPage signUpPage">
@@ -111,7 +114,7 @@ const SignUp = () => {
             <div className="container">
               <div className="box card p-3 showdow border-0">
                 <div className="text-center">
-                    <img src={Logo} />
+                    <img src={Logo} alt="logo" />
                 </div>
 
                
@@ -144,7 +147,7 @@ const SignUp = () => {
 
 
 
-                    <a className="border-effect cursor txt">Forgot Password?</a>
+                    <a href="#!" className="border-effect cursor txt">Forgot Password?</a>
 
                     <div className="d-flex align-items-center mt-3 mb-3">
                       <div className="row w-100">
@@ -153,7 +156,7 @@ const SignUp = () => {
                         </div>
 
                         <div className="col-md-6 pr-0">
-                          <Link to="/" className="d-block w-100"> <Button className="btn-lg btn-big w-100" variant="outlined" onClick={() => context.setisHeaderFooterShow(true)}>Cancel</Button></Link>
+                          <Link to="/" className="d-block w-100"> <Button className="btn-lg btn-big w-100" variant="outlined">Cancel</Button></Link>
                         </div>
                       </div>
                     </div>
@@ -162,7 +165,7 @@ const SignUp = () => {
 
                     <h6 className="mt-4 text-center font-weight-bold">Or continue with social account</h6>
 
-                    <Button className="loginWithGoogle mt-2" variant="outlined"><img src={GoogleImg} /> Sign In with Google</Button>
+                    <Button className="loginWithGoogle mt-2" variant="outlined"><img src={GoogleImg} alt="google" /> Sign In with Google</Button>
                     
 
                     

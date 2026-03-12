@@ -9,7 +9,7 @@
 // import Tooltip from '@mui/material/Tooltip';
 
 // const ProductDrtails = () => {
-    
+
 //     const [activeSize, setActiveSize] = useState(null);
 //     const [activeTabs, setActiveTabs] = useState(0);
 
@@ -45,7 +45,7 @@
 //                                     </div>
 //                                 </li>
 
-                            
+
 //                             </ul>
 
 
@@ -80,7 +80,7 @@
 //                                 <Button className="btn-blue btn-lg btn-big btn-round ml-3">
 //                                     <BsCartFill /> &nbsp; Add to cart
 //                                 </Button>
-                                
+
 //                                 <Tooltip title="Add to Wishlist" placement="top">
 //                                     <Button className="btn-blue btn-lg btn-big btn-circle ml-4">
 //                                         <FaRegHeart />
@@ -129,7 +129,7 @@
 
 //                             </ul>
 
-                            
+
 //                             <br />
 
 //                             {
@@ -319,7 +319,7 @@
 //                                                 </from>
 
 
-                                           
+
 //                                         </div>
 //                                     </div>
 //                                 </div>
@@ -346,19 +346,35 @@ import Rating from '@mui/material/Rating';
 import QuantityBox from "../../Components/QuantityBox";
 import Button from '@mui/material/Button';
 import { BsCartFill } from "react-icons/bs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaRegHeart } from "react-icons/fa";
 import { MdOutlineCompareArrows } from "react-icons/md";
 import Tooltip from '@mui/material/Tooltip';
 import RelatedProducts from "./RelatedProducts";
 
+import { useParams } from "react-router-dom";
+import { fetchDataFromApi } from "../../utils/api";
+
+
 const ProductDetails = () => {
+
   const [activeSize, setActiveSize] = useState(null);
   const [activeTabs, setActiveTabs] = useState(0);
+  const [productData, setProductData] = useState([]);
+
+  const { id } = useParams();
 
   const isActive = (index) => {
     setActiveSize(index);
   };
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+
+    fetchDataFromApi(`/api/products/${id}`).then((res) => {
+      setProductData(res);
+    })
+  }, [id])
 
   return (
     <>
@@ -367,40 +383,40 @@ const ProductDetails = () => {
           <div className="row">
             {/* Left - Product Zoom */}
             <div className="col-md-4 pl-5">
-              <ProductZoom />
+              <ProductZoom images={productData?.images} discount={productData?.discount} />
             </div>
 
             {/* Right - Product Info */}
             <div className="col-md-7 pl-5 pr-5">
               <h2 className="hd text-capitalize">
-                Seeds of Change Organic Quinoa, Brown
+                {productData?.name}
               </h2>
 
               <ul className="list list-inline d-flex align-items-center">
                 <li className="list-inline-item">
                   <div className="d-flex align-items-center">
                     <span className="text-light mr-2">Brands :</span>
-                    <span>Welch's</span>
+                    <span>{productData?.brand}</span>
                   </div>
                 </li>
 
                 <li className="list-inline-item">
                   <div className="d-flex align-items-center">
-                    <Rating name="read-only" value={4.5} precision={0.5} readOnly size="small" />
+                    <Rating name="read-only" value={parseInt(productData?.rating)} precision={0.5} readOnly size="small" />
                     <span className="text-light cursor ml-2">1 Review</span>
                   </div>
                 </li>
               </ul>
 
               <div className="d-flex info mb-3">
-                <span className="oldPrice">$20.00</span>
-                <span className="netPrice text-danger ml-2">$14.00</span>
+                <span className="oldPrice">Rs: {productData?.oldPrice}</span>
+                <span className="netPrice text-danger ml-2">Rs: {productData?.price}</span>
               </div>
 
               <span className="badge badge-success">IN STOCK</span>
 
               <p className="mt-3">
-               Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aliquam rem officia, corrupti reiciendis minima nisi modi, quasi, odio minus dolore impedit fuga eum eligendi. 
+                {productData?.description}
               </p>
 
               {/* Size Options */}
@@ -409,7 +425,7 @@ const ProductDetails = () => {
                 <ul className="list list-inline mb-0 pl-4">
                   {["50g", "100g", "200g", "300g", "500g"].map((size, i) => (
                     <li className="list-inline-item" key={i}>
-                      <a
+                      <a href="#!"
                         className={`tag ${activeSize === i ? "active" : ""}`}
                         onClick={() => isActive(i)}
                       >
@@ -506,90 +522,90 @@ const ProductDetails = () => {
                       </tbody> */}
                       <tbody>
                         <tr class="stand-up">
-                            <th>Stand Up</th>
-                            <td>
-                                <p>35″L x 24″W x 37-45″H(front to back wheel)</p>
-                            </td>
+                          <th>Stand Up</th>
+                          <td>
+                            <p>35″L x 24″W x 37-45″H(front to back wheel)</p>
+                          </td>
                         </tr>
                         <tr className="folded-wo-wheels">
-                            <th>Folded (w/o wheels)</th>
-                            <td>
-                                <p>32.5″L x 18.5″W x 16.5″H</p>
-                            </td>
+                          <th>Folded (w/o wheels)</th>
+                          <td>
+                            <p>32.5″L x 18.5″W x 16.5″H</p>
+                          </td>
                         </tr>
                         <tr className="folded-w-wheels">
-                            <th>Folded (w/ wheels)</th>
-                            <td>
-                                <p>32.5″L x 24″W x 18.5″H</p>
-                            </td>
+                          <th>Folded (w/ wheels)</th>
+                          <td>
+                            <p>32.5″L x 24″W x 18.5″H</p>
+                          </td>
                         </tr>
                         <tr class="door-pass-through">
-                            <th>Door Pass Through</th>
-                            <td>
-                                <p>24</p>
-                            </td>
+                          <th>Door Pass Through</th>
+                          <td>
+                            <p>24</p>
+                          </td>
                         </tr>
                         <tr class="frame">
-                            <th>Frame</th>
-                            <td>
-                                <p>Aluminum</p>
-                            </td>
+                          <th>Frame</th>
+                          <td>
+                            <p>Aluminum</p>
+                          </td>
                         </tr>
                         <tr class="weight-wo-wheels">
-                            <th>Weight (w/o wheels)</th>
-                            <td>
-                                <p>20 LBS</p>
-                            </td>
+                          <th>Weight (w/o wheels)</th>
+                          <td>
+                            <p>20 LBS</p>
+                          </td>
                         </tr>
                         <tr class="weight-capacity">
-                            <th>Weight Capacity</th>
-                            <td>
-                                <p>60 LBS</p>
-                            </td>
+                          <th>Weight Capacity</th>
+                          <td>
+                            <p>60 LBS</p>
+                          </td>
                         </tr>
                         <tr class="width">
-                            <th>Width</th>
-                            <td>
-                                <p>24″</p>
-                            </td>
+                          <th>Width</th>
+                          <td>
+                            <p>24″</p>
+                          </td>
                         </tr>
                         <tr class="handle-height-ground-to-handle">
-                            <th>Handle height (ground to handle)</th>
-                            <td>
-                                <p>37-45″</p>
-                            </td>
+                          <th>Handle height (ground to handle)</th>
+                          <td>
+                            <p>37-45″</p>
+                          </td>
                         </tr>
                         <tr class="wheels">
-                            <th>Wheels</th>
-                            <td>
-                                <p>12″ air / wide track slick tread</p>
-                            </td>
+                          <th>Wheels</th>
+                          <td>
+                            <p>12″ air / wide track slick tread</p>
+                          </td>
                         </tr>
                         <tr class="seat-back-height">
-                            <th>Seat back height</th>
-                            <td>
-                                <p>21.5″</p>
-                            </td>
+                          <th>Seat back height</th>
+                          <td>
+                            <p>21.5″</p>
+                          </td>
                         </tr>
                         <tr class="head-room-inside-canopy">
-                            <th>Head room (inside canopy)</th>
-                            <td>
-                                <p>25″</p>
-                            </td>
+                          <th>Head room (inside canopy)</th>
+                          <td>
+                            <p>25″</p>
+                          </td>
                         </tr>
                         <tr class="pa_color">
-                            <th>Color</th>
-                            <td>         
-                                <p>Black, Blue, Red, White</p>
-                            </td>
+                          <th>Color</th>
+                          <td>
+                            <p>Black, Blue, Red, White</p>
+                          </td>
                         </tr>
                         <tr class="pa_size">
-                            <th>Size</th>
-                            <td>
-                                <p>M, S</p>
-                            </td>
+                          <th>Size</th>
+                          <td>
+                            <p>M, S</p>
+                          </td>
                         </tr>
-                    </tbody>
+                      </tbody>
                     </table>
                   </div>
                 </div>
@@ -606,7 +622,7 @@ const ProductDetails = () => {
                         <div className="image">
                           <div className="rounded-circle">
                             {/* <img src="https://wp.alithems.com/html/nest/demo/assets/imgs/blog/author-2.png" /> */}
-                            <img src="https://images.pexels.com/photos/1567069/pexels-photo-1567069.jpeg" />
+                            <img src="https://images.pexels.com/photos/1567069/pexels-photo-1567069.jpeg" alt="author" />
                           </div>
                           <span className="text-g d-block text-center font-weight-bold">
                             Naresh Bhavnager
