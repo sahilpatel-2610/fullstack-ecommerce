@@ -66,7 +66,7 @@ button {
 }
 
 .btn-blue {
-  background: #6d4aae !important;
+  background: #53348c !important;
   color: #fff !important;
   text-transform: capitalize !important;
   font-weight: 500 !important;
@@ -74,7 +74,7 @@ button {
 }
 
 .btn-blue:hover {
-  background: #53348c !important;
+  background: #ed174a !important;
 }
 
 .btn-big {
@@ -677,8 +677,15 @@ nav .navpart2 ul li:hover .submenu {
   border: 1px solid rgba(0, 0, 0, 0.1);
   cursor: pointer;
   position: relative;
-  border-radius: 10px;
-  overflow: hidden;
+  border-radius: 15px !important;
+  overflow: hidden !important;
+  transition: all 0.3s ease-in-out;
+  background: #fff;
+  padding: 0px !important;
+}
+
+.productItem:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
 }
 
 .productItem .badge {
@@ -697,16 +704,20 @@ nav .navpart2 ul li:hover .submenu {
 }
 
 .productItem .info h4 {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
-  margin-bottom: 8px;
-  min-height: 38px;
+  margin-bottom: 5px;
+  min-height: 34px;
   color: #000 !important;
 }
 
 .productItem .info a {
   color: #000 !important;
   text-decoration: none !important;
+}
+
+.productItem .info .text-success {
+  font-size: 12px;
 }
 
 .info .oldPrice {
@@ -741,7 +752,7 @@ nav .navpart2 ul li:hover .submenu {
 }
 
 .productItem .actions button {
-  display: flex;
+  display: flex !important;
   align-items: center;
   justify-content: center;
   min-width: 40px !important;
@@ -750,8 +761,9 @@ nav .navpart2 ul li:hover .submenu {
   border: 1px solid rgba(0, 0, 0, 0.1) !important;
   border-radius: 50% !important;
   background: #fff !important;
-  box-shadow: 0 1px 3px rgba(0 0 0 / 12%) 0 1px 2px rgba(0 0 0 / 24%) !important;
-  transition: all 0.0s !important;
+  box-shadow: 0 1px 3px rgba(0 0 0 / 12%) !important;
+  transition: all 0.3s ease-in-out !important;
+  padding: 0px !important;
 }
 
 .productItem .actions button svg {
@@ -762,7 +774,7 @@ nav .navpart2 ul li:hover .submenu {
 }
 
 .productItem .actions button:hover {
-  background: #7a55c1 !important;
+  background: #ed174a !important;
 }
 
 .productItem .actions button:hover svg {
@@ -772,7 +784,7 @@ nav .navpart2 ul li:hover .submenu {
 .productItem .img_rapper {
   overflow: hidden;
   position: relative;
-  height: 240px !important;
+  height: 200px !important;
   width: 100%;
   background: #f1f1f1;
   display: block;
@@ -787,13 +799,13 @@ nav .navpart2 ul li:hover .submenu {
 .productItem .img_rapper img {
   transition: all 0.3s ease-in-out;
   width: 100% !important;
-  height: 240px !important;
+  height: 200px !important;
   object-fit: cover !important;
 }
 
 .productItem .slick-slide img {
   width: 100% !important;
-  height: 240px !important;
+  height: 200px !important;
   object-fit: cover !important;
 }
 
@@ -829,7 +841,7 @@ nav .navpart2 ul li:hover .submenu {
 }
 
 .productItem .slick-dots li.slick-active button:before {
-  color: #2bbef9;
+  color: #6c757d;
   opacity: 1;
 }
 
@@ -848,7 +860,7 @@ nav .navpart2 ul li:hover .submenu {
 }
 
 .product_row .swiper {
-  padding-right: 80px !important;
+  padding: 0px 10px !important;
 }
 
 .product_row .productItem {
@@ -1173,17 +1185,24 @@ footer .linksWrap ul li a:hover {
   border: 2px solid #3bb77e !important;
 }
 
-.zoomSlider .slick-arrow {
-  top: 55% !important;
-  zoom: 80% !important;
+.zoomSlider .swiper-button-next,
+.zoomSlider .swiper-button-prev {
+  width: 30px !important;
+  height: 30px !important;
+  top: 60% !important;
 }
 
-.zoomSlider .slick-arrow.slick-next {
-  right: -2px !important;
+.zoomSlider .swiper-button-next:after,
+.zoomSlider .swiper-button-prev:after {
+  font-size: 12px !important;
 }
 
-.zoomSlider .slick-arrow.slick-prev {
-  left: -5px !important;
+.zoomSlider .swiper-button-next {
+  right: 0px !important;
+}
+
+.zoomSlider .swiper-button-prev {
+  left: 0px !important;
 }
 
 
@@ -1867,9 +1886,10 @@ a:hover {
 .productItem {
   background: #fff;
   border: 1px solid #e6e9ef;
-  border-radius: 8px;
-  padding: 12px;
-  text-align: center;
+  border-radius: 15px !important;
+  padding: 0px !important;
+  overflow: hidden !important;
+  text-align: left;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1884,18 +1904,17 @@ a:hover {
 /* image wrapper */
 .productItem .card-image {
   width: 100%;
-  height: 200px;
+  height: 300px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px;
+  padding: 0px;
 }
 
 .productItem img {
   max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  /* ✅ full image show without cut */
+  height: auto;
+  object-fit: cover;
   display: block;
 }
 
@@ -1910,6 +1929,8 @@ a:hover {
   min-height: 220px;
   background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 15px;
+  overflow: hidden;
 }
 
 .productsWrapper.one .productItem .img_rapper {
@@ -2126,36 +2147,36 @@ a:hover {
 /* Swiper arrows override */
 .swiper-button-next,
 .swiper-button-prev {
-  width: 34px;
-  /* nanā size */
-  height: 34px;
-  border-radius: 50%;
-  /* gol shape */
-  background: #fff;
-  /* white background */
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  width: 35px !important;
+  height: 35px !important;
+  border-radius: 50% !important;
+  background: #fff !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
   color: #000 !important;
-  /* icon color black */
-  display: flex;
+  display: flex !important;
   align-items: center;
   justify-content: center;
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 1000 !important;
 }
 
 .swiper-button-next:after,
 .swiper-button-prev:after {
-  font-size: 16px !important;
+  font-size: 14px !important;
   /* arrow icon size */
   font-weight: bold;
 }
 
 /* Position adjust (optional) */
 .swiper-button-next {
-  right: -15px;
-  /* move little outside */
+  right: 0px;
+  z-index: 100;
 }
 
 .swiper-button-prev {
-  left: -15px;
+  left: 0px;
+  z-index: 100;
 }
 
 
@@ -2188,10 +2209,11 @@ a:hover {
   font-family: inherit !important;
 }
 
+/* 
 .filterTabs .item.Mui-selected {
   background: #e2f2ff !important;
-  color: #2bbef9 !important;
-}
+  color: #ccc !important;
+} */
 
 .filterTabs .MuiTabs-indicator {
   display: none !important;
@@ -2200,19 +2222,19 @@ a:hover {
 .filterTabs .MuiTabs-scrollButtons {
   width: 35px;
   height: 35px;
-  background: #fff;
+  /* background: #fff; */
   border-radius: 50%;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   display: flex !important;
   align-items: center;
   justify-content: center;
-  color: #2bbef9;
+  /* color: #ccc; */
   transition: all 0.3s ease;
   margin: 0 5px;
 }
 
 .filterTabs .MuiTabs-scrollButtons:hover {
-  background: #2bbef9;
+  background: #ccc;
   color: #fff;
 }
 

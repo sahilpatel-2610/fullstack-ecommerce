@@ -23,6 +23,7 @@ const productWeightRoutes = require('./routes/productWeight.js');
 const productRAMSRoutes = require('./routes/productRAMS.js');
 const productSIZERoutes = require('./routes/productSIZE.js');
 
+
 app.use("/uploads", express.static('uploads'));
 app.use(`/api/category`, categoryRoutes);
 app.use(`/api/subCat`, subCatSchema);
@@ -31,6 +32,7 @@ app.use(`/api/imageUpload`, imageUploadRoutes);
 app.use(`/api/productWeight`, productWeightRoutes);
 app.use(`/api/productRAMS`, productRAMSRoutes);
 app.use(`/api/productSIZE`, productSIZERoutes);
+
 
 
 //Database

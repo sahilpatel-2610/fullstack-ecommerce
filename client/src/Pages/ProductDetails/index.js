@@ -353,7 +353,7 @@ import Tooltip from '@mui/material/Tooltip';
 import RelatedProducts from "./RelatedProducts";
 
 import { useParams } from "react-router-dom";
-import { fetchDataFromApi } from "../../utils/api";
+import { fetchDataFromApi, postData } from "../../utils/api";
 
 
 const ProductDetails = () => {
@@ -361,6 +361,8 @@ const ProductDetails = () => {
   const [activeSize, setActiveSize] = useState(null);
   const [activeTabs, setActiveTabs] = useState(0);
   const [productData, setProductData] = useState([]);
+  const [relatedProductsData, setRelatedProductsData] = useState([]);
+  const [recentlyViewedProducts, setRecentlyViewedProducts] = useState([]);
 
   const { id } = useParams();
 
@@ -373,7 +375,28 @@ const ProductDetails = () => {
 
     fetchDataFromApi(`/api/products/${id}`).then((res) => {
       setProductData(res);
+      fetchDataFromApi(`/api/products?subCatId=${res?.subCatId}`).then((res) => {
+        const filterData = res?.products?.filter(item => item.id !== id);
+        setRelatedProductsData(filterData);
+      })
+
+      postData(`/api/products/recentlyViewed`, res).then((response) => {
+        fetchDataFromApi(`/api/products/recentlyViewed`).then((response) => {
+
+          const uniqueItems = Array.from(new Set(response.map(item => item.name))).map(name => {
+            return response.find(item => item.name === name);
+          });
+
+          setRecentlyViewedProducts(uniqueItems);
+        })
+      })
+
+
     })
+
+
+
+
   }, [id])
 
   return (
@@ -419,22 +442,80 @@ const ProductDetails = () => {
                 {productData?.description}
               </p>
 
-              {/* Size Options */}
-              <div className="productSize d-flex align-items-center">
-                <span>Size / Weight:</span>
-                <ul className="list list-inline mb-0 pl-4">
-                  {["50g", "100g", "200g", "300g", "500g"].map((size, i) => (
-                    <li className="list-inline-item" key={i}>
-                      <a href="#!"
-                        className={`tag ${activeSize === i ? "active" : ""}`}
-                        onClick={() => isActive(i)}
-                      >
-                        {size}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {
+                productData?.productRam?.length !== 0 &&
+                < div className="productSize d-flex align-items-center">
+                  <span>RAM:</span>
+                  <ul className="list list-inline mb-0 pl-4">
+                    {
+                      productData?.productRam?.map((item, index) => {
+                        return (
+                          <li className="list-inline-item" key={index}>
+                            <a href="#!"
+                              className={`tag ${activeSize === index ? "active" : ""}`}
+                              onClick={() => isActive(index)}
+                            >
+                              {item}
+                            </a>
+                          </li>
+                        )
+                      })
+                    }
+
+                  </ul>
+                </div>
+              }
+
+              {
+                productData?.size?.length !== 0 &&
+                < div className="productSize d-flex align-items-center">
+                  <span>SIZE:</span>
+                  <ul className="list list-inline mb-0 pl-4">
+                    {
+                      productData?.size?.map((item, index) => {
+                        return (
+                          <li className="list-inline-item" key={index}>
+                            <a href="#!"
+                              className={`tag ${activeSize === index ? "active" : ""}`}
+                              onClick={() => isActive(index)}
+                            >
+                              {item}
+                            </a>
+                          </li>
+                        )
+                      })
+                    }
+
+                  </ul>
+                </div>
+              }
+
+              {
+                productData?.productWeight?.length !== 0 &&
+                < div className="productSize d-flex align-items-center">
+                  <span>WEIGHT:</span>
+                  <ul className="list list-inline mb-0 pl-4">
+                    {
+                      productData?.productWeight?.map((item, index) => {
+                        return (
+                          <li className="list-inline-item" key={index}>
+                            <a href="#!"
+                              className={`tag ${activeSize === index ? "active" : ""}`}
+                              onClick={() => isActive(index)}
+                            >
+                              {item}
+                            </a>
+                          </li>
+                        )
+                      })
+                    }
+
+                  </ul>
+                </div>
+              }
+
+
+
 
               {/* Add to cart + wishlist */}
               <div className="d-flex align-items-center mt-3">
@@ -495,9 +576,7 @@ const ProductDetails = () => {
               {activeTabs === 0 && (
                 <div className="tabContent">
                   <p>
-                    {/* Noodles & Company is an American fast-casual restaurant that offers international
-                    and American noodle dishes and pasta in addition to soups and salads. */}
-                    Noodles & Company is an American fast-casual restaurant that offers international and American noodles dishes and pasta in addition to soups and salads. Noodles & Company was founded in 1995 by Aaron Kennedy and is headquartered in Broomfield, Colorado. The Company went public in 2013 and recorded a $457 million revenue in 2017.In late 2018, there were 460 Noodles & Company locations across 29 states and Washington, D.C.
+                    {productData?.description}
                   </p>
                 </div>
               )}
@@ -712,13 +791,17 @@ const ProductDetails = () => {
 
           <br />
 
-          <RelatedProducts title="RELATED PRODUCTS" />
+          {
+            relatedProductsData?.length !== 0 && <RelatedProducts title="RELATED PRODUCTS" data={relatedProductsData} />
+          }
 
-          <RelatedProducts title="RECENTLY VIEWED PRODUCTS" />
+          {
+            recentlyViewedProducts?.length !== 0 && <RelatedProducts title="RECENTLY VIEWED PRODUCTS" data={recentlyViewedProducts} />
+          }
 
 
         </div>
-      </section>
+      </section >
     </>
   );
 };

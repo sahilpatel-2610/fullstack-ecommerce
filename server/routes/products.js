@@ -1,4 +1,5 @@
 const { Category } = require('../models/category.js');
+const { RecentlyViewed } = require('../models/recentlyViewed.js');
 const { Product } = require('../models/products.js');
 const { ImageUpload } = require('../models/imageUpload.js');
 const express = require('express');
@@ -159,12 +160,95 @@ router.get(`/featured`, async (req, res) => {
 });
 
 
+router.get(`/recentlyViewed`, async (req, res) => {
+    let productList = [];
+    productList = await RecentlyViewed.find(req.query).populate("category subCat").sort({ dateCreated: -1 });
+
+    if (!productList) {
+        return res.status(500).json({ success: false });
+    }
+
+    return res.status(200).json(productList);
+
+});
+
+
+router.post(`/recentlyViewed`, async (req, res) => {
+
+    let findProduct = await RecentlyViewed.findOne({ name: req.body.name });
+
+    if (findProduct) {
+        findProduct.dateCreated = Date.now();
+        await findProduct.save();
+        return res.status(200).json(findProduct);
+    }
+
+    if (!findProduct) {
+        let product = new RecentlyViewed({
+            name: req.body.name,
+            subCat: req.body.subCat,
+            description: req.body.description,
+            images: req.body.images,
+            brand: req.body.brand,
+            price: req.body.price,
+            oldPrice: req.body.oldPrice,
+            category: req.body.category,
+            subCatId: req.body.subCatId,
+            catName: req.body.catName,
+            countInStock: req.body.countInStock,
+            rating: req.body.rating,
+            isFeatured: req.body.isFeatured,
+            discount: req.body.discount,
+            productRam: req.body.productRam,
+            size: req.body.size,
+            productWeight: req.body.productWeight,
+        });
+
+
+
+        try {
+            product = await product.save();
+
+            if (!product) {
+                return res.status(500).json({
+                    success: false
+                });
+            }
+
+            res.status(201).json(product);
+        } catch (err) {
+            console.error("Product creation error:", err);
+            return res.status(500).json({
+                error: err.message || err,
+                success: false
+            });
+        }
+
+
+    }
+
+
+
+
+
+});
+
 router.post(`/create`, async (req, res) => {
 
     const category = await Category.findById(req.body.category);
     if (!category) {
         return res.status(404).json({ error: true, message: "Invalid Category!", success: false });
     }
+
+    // const images_Array = [];
+    // const uploadedImages = await ImageUpload.find();
+
+    // const images_Arr = uploadedImages?.map((item) => {
+    //     item.images?.map((image) => {
+    //         images_Array.push(image);
+    //         console.log(image);
+    //     })
+    // })
 
     // Using req.body.images directly
     let product = new Product({
