@@ -4,12 +4,13 @@ import patern from '../../assets/images/pattern.webp'
 import { MyContext } from '../../App';
 import { useContext } from 'react';
 import { MdEmail } from "react-icons/md";
+import { IoMdCall } from "react-icons/io";
 import { IoMdLock } from "react-icons/io";
 import { useState } from 'react';
 import { IoMdEye } from "react-icons/io";
 import { IoMdEyeOff } from "react-icons/io";
 import Button from '@mui/material/Button';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 import { IoShieldCheckmarkSharp } from "react-icons/io5";
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -17,12 +18,28 @@ import Checkbox from '@mui/material/Checkbox';
 
 import googleicon from '../../assets/images/googleicon.png'
 import { IoMdHome } from "react-icons/io";
+import { postData } from '../../utils/api';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const SignUp = () => {
+    const history = useNavigate();
 
     const [inputIndex, setInputIndex] = useState(null);
     const [isShowPassword, setisShowPassword] = useState(false);
     const [isShowConfirmPassword, setisShowConfirmPassword] = useState(false);
+    const [isShowPhone, setisShowPhone] = useState(false);
+
+    const [isLoading, setIsLoading] = useState(false);
+
+    const [formfildes, setFormfildes] = useState({
+        name: "",
+        email: "",
+        phone: "",
+        password: "",
+        confirmPassword: "",
+        isAdmin: true,
+        terms: false
+    });
 
     const context = useContext(MyContext);
 
@@ -34,6 +51,111 @@ const SignUp = () => {
 
     const focusInput = (index) => {
         setInputIndex(index);
+    }
+
+    const onChangeInput = (e) => {
+        setFormfildes(() => ({
+            ...formfildes,
+            [e.target.name]: e.target.value
+        }));
+    }
+
+    const signUp = (e) => {
+        e.preventDefault();
+
+        if (formfildes.name === "") {
+            context.setAlertBox({
+                open: true,
+                error: true,
+                msg: "name can not be blank!",
+            })
+            return false;
+        }
+
+        if (formfildes.email === "") {
+            context.setAlertBox({
+                open: true,
+                error: true,
+                msg: "email can not be blank!",
+            })
+            return false;
+        }
+
+        if (formfildes.phone === "") {
+            context.setAlertBox({
+                open: true,
+                error: true,
+                msg: "phone can not be blank!",
+            })
+            return false;
+        }
+
+        if (formfildes.password === "") {
+            context.setAlertBox({
+                open: true,
+                error: true,
+                msg: "password can not be blank!",
+            })
+            return false;
+        }
+
+        if (formfildes.confirmPassword === "") {
+            context.setAlertBox({
+                open: true,
+                error: true,
+                msg: "confirm password can not be blank!",
+            })
+            return false;
+        }
+
+        if (formfildes.confirmPassword !== formfildes.password) {
+            context.setAlertBox({
+                open: true,
+                error: true,
+                msg: "password and confirm password are not same!",
+            })
+            return false;
+        }
+        if (formfildes.terms === false) {
+            context.setAlertBox({
+                open: true,
+                error: true,
+                msg: "Please agree to all Terms & Conditions!",
+            })
+            return false;
+        }
+
+
+        setIsLoading(true);
+        context.setProgress(30);
+
+        postData("/api/user/signup", formfildes).then((res) => {
+            if (res.error !== true) {
+                context.setAlertBox({
+                    open: true,
+                    error: false,
+                    msg: "Account Created Successfully!",
+                })
+
+                setTimeout(() => {
+                    setIsLoading(false);
+                    history("/login");
+                }, 2000);
+
+                context.setProgress(100);
+            } else {
+                setIsLoading(false);
+                context.setAlertBox({
+                    open: true,
+                    error: true,
+                    msg: res.msg || "Something went wrong!",
+                })
+                context.setProgress(100);
+            }
+
+        })
+
+
     }
 
     return (
@@ -60,20 +182,33 @@ const SignUp = () => {
                             </div>
 
                             <div className='wrapper mt-3 card border'>
-                                <form>
+                                <form onSubmit={signUp}>
                                     <div className={`form-group position-relative ${inputIndex === 0 && 'focus'}`}>
                                         <span className='icon'><FaUserCircle /></span>
-                                        <input type='text' className='form-control' placeholder='enter your name' onFocus={() => focusInput(0)} onBlur={() => setInputIndex(null)} autoFocus />
+                                        <input type='text' className='form-control' placeholder='enter your name' onFocus={() => focusInput(0)} onBlur={() => setInputIndex(null)} autoFocus name='name' onChange={onChangeInput} />
                                     </div>
 
                                     <div className={`form-group position-relative ${inputIndex === 1 && 'focus'}`}>
                                         <span className='icon'><MdEmail /></span>
-                                        <input type='text' className='form-control' placeholder='enter your email' onFocus={() => focusInput(1)} onBlur={() => setInputIndex(null)} />
+                                        <input type='text' className='form-control' placeholder='enter your email' onFocus={() => focusInput(1)} onBlur={() => setInputIndex(null)} name='email' onChange={onChangeInput} />
                                     </div>
 
                                     <div className={`form-group position-relative ${inputIndex === 2 && 'focus'}`}>
+                                        <span className='icon'><IoMdCall /></span>
+                                        <input type={`${isShowPhone === true ? 'text' : 'password'}`} className='form-control' placeholder='enter your phone' onFocus={() => focusInput(2)} onBlur={() => setInputIndex(null)} name='phone' onChange={onChangeInput} />
+
+                                        <span className='toggleShowPassword' onClick={() => setisShowPhone(!isShowPhone)}>
+                                            {
+                                                isShowPhone === true ? <IoMdEyeOff /> : <IoMdEye />
+                                            }
+
+                                        </span>
+
+                                    </div>
+
+                                    <div className={`form-group position-relative ${inputIndex === 3 && 'focus'}`}>
                                         <span className='icon'><IoMdLock /></span>
-                                        <input type={`${isShowPassword === true ? 'text' : 'password'}`} className='form-control' placeholder='enter your password' onFocus={() => focusInput(2)} onBlur={() => setInputIndex(null)} />
+                                        <input type={`${isShowPassword === true ? 'text' : 'password'}`} className='form-control' placeholder='enter your password' onFocus={() => focusInput(3)} onBlur={() => setInputIndex(null)} name='password' onChange={onChangeInput} />
 
                                         <span className='toggleShowPassword' onClick={() => setisShowPassword(!isShowPassword)}>
                                             {
@@ -84,9 +219,9 @@ const SignUp = () => {
 
                                     </div>
 
-                                    <div className={`form-group position-relative ${inputIndex === 3 && 'focus'}`}>
+                                    <div className={`form-group position-relative ${inputIndex === 4 && 'focus'}`}>
                                         <span className='icon'><IoShieldCheckmarkSharp /></span>
-                                        <input type={`${isShowConfirmPassword === true ? 'text' : 'password'}`} className='form-control' placeholder='confirm your password' onFocus={() => focusInput(3)} onBlur={() => setInputIndex(null)} />
+                                        <input type={`${isShowConfirmPassword === true ? 'text' : 'password'}`} className='form-control' placeholder='confirm your password' onFocus={() => focusInput(4)} onBlur={() => setInputIndex(null)} name='confirmPassword' onChange={onChangeInput} />
 
                                         <span className='toggleShowPassword' onClick={() => setisShowConfirmPassword(!isShowConfirmPassword)}>
                                             {
@@ -97,11 +232,15 @@ const SignUp = () => {
 
                                     </div>
 
-                                    <FormControlLabel control={<Checkbox />} label="I agree to the all Terms & Condiotions" />
+                                    <FormControlLabel control={<Checkbox checked={formfildes.terms} onChange={(e) => setFormfildes((prev) => ({ ...prev, terms: e.target.checked }))} />} label="I agree to all Terms & Conditions" />
 
 
                                     <div className='form-group'>
-                                        <Button className="btn-blue btn-lg w-100 btn-big mt-2">Sign Up</Button>
+                                        <Button type="submit" disabled={!formfildes.terms} className="btn-blue btn-lg w-100 btn-big mt-2">
+                                            {
+                                                isLoading === true ? <CircularProgress color="inherit" className="loader" /> : "Sign Up"
+                                            }
+                                        </Button>
                                     </div>
 
                                     <div className='form-group text-center mt-3 mb-0'>

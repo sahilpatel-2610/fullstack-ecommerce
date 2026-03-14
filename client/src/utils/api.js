@@ -7,8 +7,8 @@ export const fetchDataFromApi = async (url) => {
         const { data } = await axios.get(BASE_URL + url)
         return data;
     } catch (error) {
-        console.log(error);
-        return error;
+        console.error("API Fetch Error:", error);
+        return null; 
     }
 }
 
@@ -17,8 +17,8 @@ export const postData = async (url, formData) => {
         const { data } = await axios.post(BASE_URL + url, formData)
         return data;
     } catch (error) {
-        console.log(error);
-        return error;
+        console.error("API Post Error:", error);
+        return null;
     }
 }
 

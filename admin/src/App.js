@@ -43,7 +43,7 @@ const MyContext = createContext();
 function App() {
 
   const [isToggleSidebar, setISToggleSidebar] = useState(false);
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(false);
   const [isHideSidebarAndHeader, setisHideSidebarAndHeader] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [isOpenNav, setIsOpenNav] = useState(false);
@@ -53,6 +53,11 @@ function App() {
 
   const [catData, setCatData] = useState([]);
   const [subCatData, setSubCatData] = useState([]);
+  const [user, setUser] = useState({
+    name: "",
+    email: "",
+    userId: ""
+  });
 
   const [baseUrl, setBaseUrl] = useState("http://localhost:4000");
 
@@ -62,6 +67,23 @@ function App() {
     error: false,
     open: false
   });
+
+  useEffect(() => {
+
+    const token = localStorage.getItem("token");
+
+    if (token !== "" && token !== undefined && token !== null) {
+      setIsLogin(true);
+
+      const userData = JSON.parse(localStorage.getItem("user"));
+
+      setUser(userData);
+
+    } else {
+      setIsLogin(false);
+    }
+
+  }, [isLogin]);
 
   useEffect(() => {
     if (theme === true) {
@@ -167,7 +189,7 @@ function App() {
         <Snackbar open={alertBox.open} autoHideDuration={6000} onClose={handleClose}>
           <Alert
             onClose={handleClose}
-            severity={alertBox.error === true ? "success" : 'error'}
+            severity={alertBox.error === true ? "error" : 'success'}
             variant="filled"
             sx={{ width: '100%' }}
           >

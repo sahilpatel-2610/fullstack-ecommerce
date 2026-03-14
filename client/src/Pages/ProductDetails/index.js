@@ -372,31 +372,35 @@ const ProductDetails = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    setProductData(null);
+    setRelatedProductsData([]);
 
     fetchDataFromApi(`/api/products/${id}`).then((res) => {
-      setProductData(res);
-      fetchDataFromApi(`/api/products?subCatId=${res?.subCatId}`).then((res) => {
-        const filterData = res?.products?.filter(item => item.id !== id);
-        setRelatedProductsData(filterData);
-      })
-
-      postData(`/api/products/recentlyViewed`, res).then((response) => {
-        fetchDataFromApi(`/api/products/recentlyViewed`).then((response) => {
-
-          const uniqueItems = Array.from(new Set(response.map(item => item.name))).map(name => {
-            return response.find(item => item.name === name);
-          });
-
-          setRecentlyViewedProducts(uniqueItems);
+      if (res !== null) {
+        setProductData(res);
+        fetchDataFromApi(`/api/products?subCatId=${res?.subCatId}`).then((resRelated) => {
+          if (resRelated !== null) {
+            const filterData = resRelated?.products?.filter(item => (item.id || item._id) !== id);
+            setRelatedProductsData(filterData);
+          }
         })
-      })
 
+        postData(`/api/products/recentlyViewed`, res).then((response) => {
+          fetchDataFromApi(`/api/products/recentlyViewed`).then((responseViews) => {
+            if (responseViews !== null && Array.isArray(responseViews)) {
+              // Filter out legacy records that don't have a productId
+              const validViews = responseViews.filter(item => item.productId);
 
+              const uniqueItems = Array.from(new Set(validViews.map(item => item.productId))).map(id => {
+                return validViews.find(item => item.productId === id);
+              });
+
+              setRecentlyViewedProducts(uniqueItems);
+            }
+          })
+        })
+      }
     })
-
-
-
-
   }, [id])
 
   return (
@@ -425,7 +429,7 @@ const ProductDetails = () => {
 
                 <li className="list-inline-item">
                   <div className="d-flex align-items-center">
-                    <Rating name="read-only" value={parseInt(productData?.rating)} precision={0.5} readOnly size="small" />
+                    <Rating name="read-only" value={parseInt(productData?.rating) || 0} precision={0.5} readOnly size="small" />
                     <span className="text-light cursor ml-2">1 Review</span>
                   </div>
                 </li>
@@ -436,14 +440,16 @@ const ProductDetails = () => {
                 <span className="netPrice text-danger ml-2">Rs: {productData?.price}</span>
               </div>
 
-              <span className="badge badge-success">IN STOCK</span>
+              <span className={`badge ${productData?.countInStock > 0 ? 'badge-success' : 'badge-danger'}`}>
+                {productData?.countInStock > 0 ? 'IN STOCK' : 'OUT OF STOCK'}
+              </span>
 
               <p className="mt-3">
                 {productData?.description}
               </p>
 
               {
-                productData?.productRam?.length !== 0 &&
+                productData?.productRam && productData?.productRam?.length > 0 &&
                 < div className="productSize d-flex align-items-center">
                   <span>RAM:</span>
                   <ul className="list list-inline mb-0 pl-4">
@@ -467,7 +473,7 @@ const ProductDetails = () => {
               }
 
               {
-                productData?.size?.length !== 0 &&
+                productData?.size && productData?.size?.length > 0 &&
                 < div className="productSize d-flex align-items-center">
                   <span>SIZE:</span>
                   <ul className="list list-inline mb-0 pl-4">
@@ -491,7 +497,7 @@ const ProductDetails = () => {
               }
 
               {
-                productData?.productWeight?.length !== 0 &&
+                productData?.productWeight && productData?.productWeight?.length > 0 &&
                 < div className="productSize d-flex align-items-center">
                   <span>WEIGHT:</span>
                   <ul className="list list-inline mb-0 pl-4">
@@ -789,19 +795,20 @@ const ProductDetails = () => {
 
 
 
-          <br />
-
-          {
-            relatedProductsData?.length !== 0 && <RelatedProducts title="RELATED PRODUCTS" data={relatedProductsData} />
-          }
-
-          {
-            recentlyViewedProducts?.length !== 0 && <RelatedProducts title="RECENTLY VIEWED PRODUCTS" data={recentlyViewedProducts} />
-          }
-
-
         </div>
-      </section >
+      </section>
+
+      <div className="container">
+        <div className="pb-5">
+          {
+            relatedProductsData?.length > 0 && <RelatedProducts title="RELATED PRODUCTS" data={relatedProductsData} />
+          }
+
+          {
+            recentlyViewedProducts?.length > 0 && <RelatedProducts title="RECENTLY VIEWED PRODUCTS" data={recentlyViewedProducts} />
+          }
+        </div>
+      </div>
     </>
   );
 };

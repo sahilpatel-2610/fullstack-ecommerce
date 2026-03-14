@@ -82,6 +82,16 @@ button .loader {
     border-radius: 30px !important;
 }
 
+.btn-signin {
+    background: #0858f7 !important;
+    border-radius: 30px !important;
+    padding: 8px 30px !important;
+    font-weight: 600 !important;
+    text-transform: capitalize !important;
+    color: #fff !important;
+    box-shadow: 0px 4px 15px rgba(8, 88, 247, 0.3) !important;
+}
+
 .full {
     max-width: 100% !important;
     flex: 0 0 100% !important;
@@ -227,6 +237,8 @@ body.dark .searchBox svg {
     border: 1px solid #0858f7;
     padding: 2px;
     border-radius: 100%;
+    background: #0858f7 !important;
+    color: #fff !important;
 }
 
 .userImg .rounded-circle {
@@ -1408,11 +1420,11 @@ body.dark .productDetailsSEction .productInfo .row .col-sm-9 {
     padding-left: 20px;
 }
 
-.productDetailsSEction .productInfo .row .col-sm-9 > span {
+.productDetailsSEction .productInfo .row .col-sm-9>span {
     color: #1b2b4d !important;
 }
 
-body.dark .productDetailsSEction .productInfo .row .col-sm-9 > span {
+body.dark .productDetailsSEction .productInfo .row .col-sm-9>span {
     color: #ccc !important;
 }
 

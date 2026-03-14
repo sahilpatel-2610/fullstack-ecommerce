@@ -1,6 +1,6 @@
 
 import React,{ useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
 import Button from '@mui/material/Button';
 import { MdMenuOpen } from "react-icons/md";
@@ -26,6 +26,7 @@ import UserAvtarImgComponent from "../userAvtarImg";
 
 
 const Header = () => {
+  const history = useNavigate();
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [isOpennotificationDrop, setisOpennotificationDrop] = useState(false);
@@ -48,6 +49,23 @@ const Header = () => {
 
   const handleClosenotificationsDrop = () => {
     setisOpennotificationDrop(false);
+  }
+
+  const logout = () => {
+    handleCloseMyAccDrop();
+    localStorage.clear();
+    // context.setIsLogin(false);
+
+    setAnchorEl(null);
+
+    context.setAlertBox({
+      open: true,
+      error: false,
+      msg: "Logout successfull",
+    })
+
+    context.setIsLogin(false);
+    history("/login");
   }
 
   return (
@@ -295,22 +313,22 @@ const Header = () => {
 
             {
               context.isLogin !== true ? 
-              <Link to={'/login'}><Button className='btn-blue btn-lg btn-round'>Sign In</Button></Link> 
-                : 
+              <Link to={'/login'}><Button className='btn-blue btn-lg btn-round btn-signin'>Sign In</Button></Link> 
+
+              : 
               
                 <div className="myAccWrapper">
                   <Button className="myAcc d-flex align-items-center" onClick={handleOpenMyAccDrop}>
                 <div className="userImg">
                   <span className="rounded-circle">
-                    {/* <img src="https://mironcoder-hotash.netlify.app/images/avatar/01.webp" /> */}
-                    {/* <img src="https://api.spicezgold.com/download/file_1734529702603_eyebogler-solid-men-polo-neck-regular-fit-half-sleeves-ethereal-blue-melange-t-shirt-product-images-rvjbg2r4o6-0-202308021954.webp" /> */}
-                    <img src="https://images.unsplash.com/photo-1529655683826-aba9b3e77383?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" />
+                    {/* {context.user?.name?.charAt(0)} */}
+                    {JSON.parse(localStorage.getItem("user"))?.name?.charAt(0)}
                   </span>
                 </div>
 
                 <div className="userInfo res-hide">
-                  <h4>United kingdom</h4>
-                  <p className="mb-0"> &nbsp; @london7227</p>
+                  <h4>{JSON.parse(localStorage.getItem("user"))?.name}</h4>
+                  <p className="mb-0"> &nbsp; {JSON.parse(localStorage.getItem("user"))?.email}</p>
                 </div>
 
 
@@ -338,7 +356,7 @@ const Header = () => {
                       </ListItemIcon>
                       Reset Password
                     </MenuItem>
-                    <MenuItem onClick={handleCloseMyAccDrop}>
+                    <MenuItem onClick={logout}>
                       <ListItemIcon>
                         <Logout fontSize="small" />
                       </ListItemIcon>

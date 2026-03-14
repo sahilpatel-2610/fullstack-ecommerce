@@ -180,7 +180,7 @@ const ProductItem = (props) => {
         >
 
             <div className="img_rapper">
-                <Link to={`/product/${props?.item?._id}`}>
+                <Link to={`/product/${props?.item?.productId || props?.item?._id}`}>
 
                     {
                         isHovered && props?.item?.images?.length > 1 ? (
@@ -214,7 +214,7 @@ const ProductItem = (props) => {
                 </span>
 
                 <div className="actions">
-                    <Button onClick={() => viewProductDetails(props?.item?._id)} >
+                    <Button onClick={() => viewProductDetails(props?.item?.productId || props?.item?._id)} >
                         <TfiFullscreen />
                     </Button>
 
@@ -226,7 +226,7 @@ const ProductItem = (props) => {
             </div>
 
             <div className="info">
-                <Link to={`/product/${props?.item?._id}`}>
+                <Link to={`/product/${props?.item?.productId || props?.item?._id}`}>
                     <h4>
                         {props?.item?.name?.substring(0, 30)}...
                     </h4>

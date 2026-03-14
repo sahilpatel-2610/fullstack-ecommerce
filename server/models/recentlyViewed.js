@@ -5,9 +5,13 @@ const recentlyViewedSchema = mongoose.Schema({
         type: String,
         required: true,
     },
-    description: {
+    productId: {
         type: String,
         required: true,
+    },
+    description: {
+        type: String,
+        required: false,
     },
     images: [
         {

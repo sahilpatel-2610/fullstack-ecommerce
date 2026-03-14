@@ -850,6 +850,29 @@ nav .navpart2 ul li:hover .submenu {
   right: 10px;
 }
 
+.relatedProducts {
+  width: 100%;
+  padding: 30px 0px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.relatedProducts .hd {
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #333;
+  letter-spacing: 0.5px;
+}
+
+.relatedProducts .productItem {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+.relatedProducts .productItem:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12) !important;
+}
+
 .productItem .img_rapper:hover img {
   transform: scale(1.1);
 }

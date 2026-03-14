@@ -162,7 +162,7 @@ router.get(`/featured`, async (req, res) => {
 
 router.get(`/recentlyViewed`, async (req, res) => {
     let productList = [];
-    productList = await RecentlyViewed.find(req.query).populate("category subCat").sort({ dateCreated: -1 });
+    productList = await RecentlyViewed.find({ productId: { $exists: true, $ne: null } }).populate("category subCat").sort({ dateCreated: -1 });
 
     if (!productList) {
         return res.status(500).json({ success: false });
@@ -175,7 +175,17 @@ router.get(`/recentlyViewed`, async (req, res) => {
 
 router.post(`/recentlyViewed`, async (req, res) => {
 
-    let findProduct = await RecentlyViewed.findOne({ name: req.body.name });
+    if (!req.body) {
+        return res.status(400).json({ success: false, message: "Request body is missing" });
+    }
+
+    const productId = req.body.id || req.body._id;
+
+    if (!productId) {
+        return res.status(400).json({ success: false, message: "Product ID is missing in request body" });
+    }
+
+    let findProduct = await RecentlyViewed.findOne({ productId: productId });
 
     if (findProduct) {
         findProduct.dateCreated = Date.now();
@@ -186,6 +196,7 @@ router.post(`/recentlyViewed`, async (req, res) => {
     if (!findProduct) {
         let product = new RecentlyViewed({
             name: req.body.name,
+            productId: productId,
             subCat: req.body.subCat,
             description: req.body.description,
             images: req.body.images,
