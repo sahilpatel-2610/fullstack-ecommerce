@@ -107,17 +107,17 @@ const Dashboard = () => {
         <>
             <div className="right-content w-100">
                 <div className="row dashboardBoxWrapperRow">
-                    <div className="col-md-8">
+                    <div className="col-md-12">
                         <div className="dashboardBoxWrapper d-flex">
-                            <DashboardBox color={["#1da256", "#48d483"]} icon={<FaUserCircle />} grow={true} />
-                            <DashboardBox color={["#c012e2", "#eb64fe"]} icon={<IoMdCart />} />
-                            <DashboardBox color={["#2c78e5", "#60aff5"]} icon={<MdShoppingBag />} />
-                            <DashboardBox color={["#e1950e", "#f3cd29"]} icon={<GiStarsStack />} />
+                            <DashboardBox color={["#1da256", "#48d483"]} icon={<FaUserCircle />} grow={true} title="Total Users" count="8586" />
+                            <DashboardBox color={["#c012e2", "#eb64fe"]} icon={<IoMdCart />} title="Total Orders" count="430" />
+                            <DashboardBox color={["#2c78e5", "#60aff5"]} icon={<MdShoppingBag />} title="Total Products" count="105" />
+                            <DashboardBox color={["#e1950e", "#f3cd29"]} icon={<GiStarsStack />} title="Total Reviews" count="365" />
                         </div>
                     </div>
 
 
-                    <div className="col-md-4 pl-0 topPart2">
+                    {/* <div className="col-md-4 pl-0 topPart2">
                         <div className="box graphBox">
                             <div className="d-flex align-items-center w-100 bottomEle">
                                 <h6 className="text-white mb-0 mt-0">Total Sales</h6>
@@ -171,7 +171,7 @@ const Dashboard = () => {
                             />
 
                         </div>
-                    </div>
+                    </div> */}
 
                 </div>
 
@@ -269,19 +269,19 @@ const Dashboard = () => {
                                                             </div>
                                                         </div>
                                                         <div className="info pl-0">
-                                                            <h6> &nbsp; {item?.name}</h6>
-                                                            <p> &nbsp; {item?.description}
+                                                            <h6>{item?.name}</h6>
+                                                            <p>{item?.description}
                                                             </p>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td>{item?.category?.name}</td>
                                                 <td>{item?.subCat?.subCat}</td>
-                                                <td>{item?.brand}</td>
+                                                <td><span className="brand">{item?.brand}</span></td>
                                                 <td>
-                                                    <div style={{ width: '70px' }}>
+                                                    <div className="d-flex align-items-center price-wrap">
                                                         <del className="old">Rs {item?.oldPrice}</del>
-                                                        <span className="new text-danger">Rs {item?.price}</span>
+                                                        <span className="new">Rs {item?.price}</span>
                                                     </div>
                                                 </td>
                                                 <td><Rating name="read-only" defaultValue={item?.rating} precision={0.5} size="small" readOnly /></td>

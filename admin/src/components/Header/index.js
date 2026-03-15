@@ -96,8 +96,10 @@ const Header = () => {
           
 
           <div className="col-sm-7 d-flex align-items-center justify-content-end part3">
-            <Button className="rounded-circle mr-3" onClick={()=>context.setTheme(!context.theme)}>
-              <MdOutlineLightMode />
+            <Button className="rounded-circle mr-3" onClick={() => context.setTheme(!context.theme)}>
+              {
+                context.theme === true ? <MdOutlineLightMode /> : <MdDarkMode />
+              }
             </Button>
       
             

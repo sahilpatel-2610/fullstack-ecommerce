@@ -86,40 +86,47 @@ const Login = () => {
         context.setProgress(30);
 
         postData("/api/user/signin", formfildes).then((res) => {
-            if (res.error !== true) {
-                localStorage.setItem("token", res.token);
-                const user = {
-                    name: res.user?.name,
-                    email: res.user?.email,
-                    userId: res.user?.id
-                }
-                localStorage.setItem("user", JSON.stringify(user));
+            try {
 
-                context.setAlertBox({
-                    open: true,
-                    error: false,
-                    msg: "User Login Successfully!",
-                })
+                if (res.error === false) {
+                    localStorage.setItem("token", res.token);
+                    const user = {
+                        name: res.user?.name,
+                        email: res.user?.email,
+                        userId: res.user?.id
+                    }
+                    localStorage.setItem("user", JSON.stringify(user));
 
-                setTimeout(() => {
+                    context.setAlertBox({
+                        open: true,
+                        error: false,
+                        msg: "User Login Successfully!",
+                    })
+
+                    setTimeout(() => {
+                        setIsLoading(false);
+                        context.setIsLogin(true);
+                        // history("/dashboard");
+                        window.location.href = "/dashboard";
+                    }, 2000);
+
+                    context.setProgress(100);
+                } else {
                     setIsLoading(false);
-                    context.setIsLogin(true);
-                    // history("/dashboard");
-                    window.location.href = "/dashboard";
-                }, 2000);
-
-                context.setProgress(100);
-            } else {
+                    context.setAlertBox({
+                        open: true,
+                        error: true,
+                        msg: res.msg || "Something went wrong!",
+                    })
+                    context.setProgress(100);
+                }
+            } catch (error) {
                 setIsLoading(false);
-                context.setAlertBox({
-                    open: true,
-                    error: true,
-                    msg: res.msg || "Something went wrong!",
-                })
-                context.setProgress(100);
+                console.log(error);
             }
 
         })
+
 
 
     }

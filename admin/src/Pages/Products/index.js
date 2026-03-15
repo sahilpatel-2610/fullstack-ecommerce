@@ -1,7 +1,7 @@
 import { HiDotsVertical } from "react-icons/hi";
 import { FaUserCircle } from "react-icons/fa";
 import { IoMdCart } from "react-icons/io";
-import { MdShoppingBag } from "react-icons/md";
+import { MdShoppingBag, MdCategory, MdShield } from "react-icons/md";
 import { GiStarsStack } from "react-icons/gi";
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -129,13 +129,11 @@ const Products = () => {
                     </div>
 
                 </div>
-                {/* 
                 <div className="dashboardBoxWrapper d-flex">
-                    <DashboardBox color={["#1da256", "#48d483"]} icon={<FaUserCircle />} grow={true} />
-                    <DashboardBox color={["#c012e2", "#eb64fe"]} icon={<IoMdCart />} />
-                    <DashboardBox color={["#2c78e5", "#60aff5"]} icon={<MdShoppingBag />} />
-
-                </div> */}
+                    <DashboardBox color={["#1da256", "#48d483"]} icon={<MdShoppingBag />} title="Total Products" count="105" />
+                    <DashboardBox color={["#c012e2", "#eb64fe"]} icon={<MdCategory />} title="Total Categories" count="9" />
+                    <DashboardBox color={["#2c78e5", "#60aff5"]} icon={<MdShield />} title="Total Sub Category" count="14" />
+                </div>
 
 
 
@@ -241,11 +239,11 @@ const Products = () => {
                                                 </td>
                                                 <td>{item?.category?.name}</td>
                                                 <td>{item?.subCat?.subCat}</td>
-                                                <td>{item?.brand}</td>
+                                                <td><span className="brand">{item?.brand}</span></td>
                                                 <td>
-                                                    <div style={{ width: '70px' }}>
+                                                    <div className="d-flex align-items-center price-wrap">
                                                         <del className="old">Rs {item?.oldPrice}</del>
-                                                        <span className="new text-danger">Rs {item?.price}</span>
+                                                        <span className="new">Rs {item?.price}</span>
                                                     </div>
                                                 </td>
                                                 <td><Rating name="read-only" defaultValue={item?.rating} precision={0.5} size="small" readOnly /></td>

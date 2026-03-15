@@ -63,99 +63,106 @@ const SignUp = () => {
     const signUp = (e) => {
         e.preventDefault();
 
-        if (formfildes.name === "") {
-            context.setAlertBox({
-                open: true,
-                error: true,
-                msg: "name can not be blank!",
-            })
-            return false;
-        }
+        try {
 
-        if (formfildes.email === "") {
-            context.setAlertBox({
-                open: true,
-                error: true,
-                msg: "email can not be blank!",
-            })
-            return false;
-        }
-
-        if (formfildes.phone === "") {
-            context.setAlertBox({
-                open: true,
-                error: true,
-                msg: "phone can not be blank!",
-            })
-            return false;
-        }
-
-        if (formfildes.password === "") {
-            context.setAlertBox({
-                open: true,
-                error: true,
-                msg: "password can not be blank!",
-            })
-            return false;
-        }
-
-        if (formfildes.confirmPassword === "") {
-            context.setAlertBox({
-                open: true,
-                error: true,
-                msg: "confirm password can not be blank!",
-            })
-            return false;
-        }
-
-        if (formfildes.confirmPassword !== formfildes.password) {
-            context.setAlertBox({
-                open: true,
-                error: true,
-                msg: "password and confirm password are not same!",
-            })
-            return false;
-        }
-        if (formfildes.terms === false) {
-            context.setAlertBox({
-                open: true,
-                error: true,
-                msg: "Please agree to all Terms & Conditions!",
-            })
-            return false;
-        }
-
-
-        setIsLoading(true);
-        context.setProgress(30);
-
-        postData("/api/user/signup", formfildes).then((res) => {
-            if (res.error !== true) {
-                context.setAlertBox({
-                    open: true,
-                    error: false,
-                    msg: "Account Created Successfully!",
-                })
-
-                setTimeout(() => {
-                    setIsLoading(false);
-                    history("/login");
-                }, 2000);
-
-                context.setProgress(100);
-            } else {
-                setIsLoading(false);
+            if (formfildes.name === "") {
                 context.setAlertBox({
                     open: true,
                     error: true,
-                    msg: res.msg || "Something went wrong!",
+                    msg: "name can not be blank!",
                 })
-                context.setProgress(100);
+                return false;
             }
 
-        })
+            if (formfildes.email === "") {
+                context.setAlertBox({
+                    open: true,
+                    error: true,
+                    msg: "email can not be blank!",
+                })
+                return false;
+            }
+
+            if (formfildes.phone === "") {
+                context.setAlertBox({
+                    open: true,
+                    error: true,
+                    msg: "phone can not be blank!",
+                })
+                return false;
+            }
+
+            if (formfildes.password === "") {
+                context.setAlertBox({
+                    open: true,
+                    error: true,
+                    msg: "password can not be blank!",
+                })
+                return false;
+            }
+
+            if (formfildes.confirmPassword === "") {
+                context.setAlertBox({
+                    open: true,
+                    error: true,
+                    msg: "confirm password can not be blank!",
+                })
+                return false;
+            }
+
+            if (formfildes.confirmPassword !== formfildes.password) {
+                context.setAlertBox({
+                    open: true,
+                    error: true,
+                    msg: "password and confirm password are not same!",
+                })
+                return false;
+            }
+            if (formfildes.terms === false) {
+                context.setAlertBox({
+                    open: true,
+                    error: true,
+                    msg: "Please agree to all Terms & Conditions!",
+                })
+                return false;
+            }
 
 
+            setIsLoading(true);
+            context.setProgress(30);
+
+            postData("/api/user/signup", formfildes).then((res) => {
+                console.log(res);
+
+                if (res.error === false) {
+                    context.setAlertBox({
+                        open: true,
+                        error: false,
+                        msg: "Account Created Successfully!",
+                    })
+
+                    setTimeout(() => {
+                        setIsLoading(false);
+                        history("/login");
+                    }, 2000);
+
+                    context.setProgress(100);
+                } else {
+                    setIsLoading(false);
+                    context.setAlertBox({
+                        open: true,
+                        error: true,
+                        msg: res.msg || "Something went wrong!",
+                    })
+                    context.setProgress(100);
+                }
+
+            })
+
+        } catch (error) {
+            setIsLoading(false);
+            console.log(error);
+        }
     }
 
     return (
