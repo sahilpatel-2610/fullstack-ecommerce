@@ -3,6 +3,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { IoMdCart } from "react-icons/io";
 import { MdShoppingBag } from "react-icons/md";
 import { GiStarsStack } from "react-icons/gi";
+import { IoSearch } from "react-icons/io5";
 import Button from '@mui/material/Button';
 import { HiDotsVertical } from "react-icons/hi";
 import Menu from '@mui/material/Menu';
@@ -21,6 +22,7 @@ import { FaEye } from "react-icons/fa";
 import { FaPencilAlt } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import Pagination from '@mui/material/Pagination';
+import TablePagination from '@mui/material/TablePagination';
 import { useContext } from "react";
 import { MyContext } from "../../App";
 import { fetchDataFromApi } from "../../utils/api";
@@ -47,6 +49,8 @@ const Dashboard = () => {
     const [showBysetCatBy, setCatBy] = useState('');
     const [productList, setProductList] = useState([]);
     const [categoryVal, setCategoryVal] = useState('');
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const open = Boolean(anchorEl);
 
     const ITEM_HEIGHT = 48;
@@ -58,11 +62,11 @@ const Dashboard = () => {
         context.setisHideSidebarAndHeader(false);
         window.scrollTo(0, 0);
         context.setProgress(40);
-        fetchDataFromApi("/api/products").then((res) => {
+        fetchDataFromApi(`/api/products?page=${page + 1}&perPage=${rowsPerPage}`).then((res) => {
             setProductList(res);
             context.setProgress(100);
         })
-    }, []);
+    }, [page, rowsPerPage]);
 
     const deleteProduct = (id) => {
         context.setProgress(40);
@@ -83,11 +87,21 @@ const Dashboard = () => {
 
     const handleChange = (event, value) => {
         context.setProgress(40);
-        fetchDataFromApi(`/api/products?page=${value}`).then((res) => {
+        setPage(value - 1);
+        fetchDataFromApi(`/api/products?page=${value}&perPage=${rowsPerPage}`).then((res) => {
             setProductList(res);
             context.setProgress(100);
         })
     }
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
 
 
 
@@ -187,27 +201,6 @@ const Dashboard = () => {
 
                     <div className="row cardFilters mt-3">
                         <div className="col-md-3">
-                            <h4>SHOW BY</h4>
-                            <FormControl size="small" className="w-100">
-                                <Select
-                                    value={showBy}
-                                    onChange={(e) => setShowBy(e.target.value)}
-                                    displayEmpty
-                                    inputProps={{ 'aria-label': 'Without label' }}
-                                    labelId="demo-select-small-label"
-                                    className="w-100"
-                                >
-                                    <MenuItem value="">
-                                        <em>None</em>
-                                    </MenuItem>
-                                    <MenuItem value={10}>Ten</MenuItem>
-                                    <MenuItem value={20}>Twenty</MenuItem>
-                                    <MenuItem value={30}>Thirty</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </div>
-
-                        <div className="col-md-3">
                             <h4>CATEGORY BY</h4>
                             <FormControl size="small" className="w-100">
                                 <Select
@@ -218,11 +211,10 @@ const Dashboard = () => {
                                     className="w-100"
                                 >
                                     <MenuItem value="">
-                                        <em value={null}>None</em>
+                                        <em value={null}>All</em>
                                     </MenuItem>
                                     {
                                         context.catData?.categoryList?.length !== 0 && context.catData?.categoryList?.map((cat, index) => {
-                                            // catData?.categoryList?.map((cat, index) => {
                                             return (
                                                 <MenuItem className="text-capitalize" value={cat._id} key={index} >{cat.name}</MenuItem>
                                             )
@@ -232,11 +224,18 @@ const Dashboard = () => {
                                 </Select>
                             </FormControl>
                         </div>
+
+                        <div className="col-md-4 ml-auto mt-3">
+                            <div className="searchBox position-relative d-flex align-items-center">
+                                <IoSearch className="mr-2" />
+                                <input type="text" placeholder="Search here..." className="w-100" />
+                            </div>
+                        </div>
                     </div>
 
 
 
-                    <div className="table-responsive mt-3">
+                    <div className="table-responsive tableWrapper mt-3">
                         <table className="table table-bordered table-striped v-align">
                             <thead className="thead-dark">
                                 <tr>
@@ -312,15 +311,20 @@ const Dashboard = () => {
                             </tbody>
                         </table>
 
-                        {
-                            productList?.totalPages > 1 && <div className="d-flex tableFooter">
-                                <Pagination count={productList?.totalPages} color="primary" className="pagination" showFirstButton showLastButton onChange={handleChange} />
-                            </div>
-                        }
-
-
-
                     </div>
+
+                    {
+                        productList?.products?.length > 0 &&
+                        <TablePagination
+                            rowsPerPageOptions={[5, 10, 25, 50, 100]}
+                            component="div"
+                            count={productList?.totalPosts || 0}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                        />
+                    }
 
                 </div>
 

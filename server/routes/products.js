@@ -142,7 +142,8 @@ router.get(`/`, async (req, res) => {
         return res.status(200).json({
             "products": productList,
             "totalPages": totalPages,
-            "page": page
+            "page": page,
+            "totalPosts": totalPosts
         });
     } catch (error) {
         console.error(error);

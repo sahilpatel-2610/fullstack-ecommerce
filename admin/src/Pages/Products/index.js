@@ -3,6 +3,7 @@ import { FaUserCircle } from "react-icons/fa";
 import { IoMdCart } from "react-icons/io";
 import { MdShoppingBag, MdCategory, MdShield } from "react-icons/md";
 import { GiStarsStack } from "react-icons/gi";
+import { IoSearch } from "react-icons/io5";
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useState, useContext, useEffect } from "react";
@@ -19,6 +20,7 @@ import { FaEye } from "react-icons/fa";
 import { FaPencilAlt } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import Pagination from "@mui/material/Pagination";
+import TablePagination from '@mui/material/TablePagination';
 import { MyContext } from "../../App";
 
 import Rating from "@mui/material/Rating";
@@ -68,17 +70,19 @@ const Products = () => {
     const context = useContext(MyContext);
 
     const [productList, setProductList] = useState([]);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
     const ITEM_HEIGHT = 48;
 
     useEffect(() => {
         window.scrollTo(0, 0);
-        context.setProgress(40);
-        fetchDataFromApi("/api/products?page=1&perPage=10").then((res) => {
+        context.setProgress(20);
+        fetchDataFromApi(`/api/products?page=${page + 1}&perPage=${rowsPerPage}`).then((res) => {
             setProductList(res);
             context.setProgress(100);
         })
-    }, []);
+    }, [page, rowsPerPage]);
 
     const deleteProduct = (id) => {
         context.setProgress(40);
@@ -99,10 +103,21 @@ const Products = () => {
 
     const handleChange = (event, value) => {
         context.setProgress(40);
-        fetchDataFromApi(`/api/products?page=${value}&perPage=10`).then((res) => {
+        setPage(value - 1);
+        fetchDataFromApi(`/api/products?page=${value}&perPage=${rowsPerPage}`).then((res) => {
             setProductList(res);
             context.setProgress(100);
         })
+    };
+
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
     };
 
 
@@ -142,28 +157,6 @@ const Products = () => {
 
                     <div className="row cardFilters mt-3">
                         <div className="col-md-3">
-                            <h4>SHOW BY</h4>
-                            <FormControl size="small" className="w-100">
-                                <Select
-                                    value={showBy}
-                                    onChange={(e) => setShowBy(e.target.value)}
-                                    displayEmpty
-                                    inputProps={{ 'aria-label': 'Without label' }}
-                                    labelId="demo-select-small-label"
-                                    className="w-100"
-                                >
-                                    <MenuItem value="">
-                                        <em>None</em>
-                                    </MenuItem>
-                                    <MenuItem value={10}>Ten</MenuItem>
-                                    <MenuItem value={20}>Twenty</MenuItem>
-                                    <MenuItem value={30}>Thirty</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </div>
-
-
-                        <div className="col-md-3">
                             <h4>CATEGORY BY</h4>
                             <FormControl size="small" className="w-100">
                                 <Select
@@ -175,7 +168,7 @@ const Products = () => {
                                     className="w-100"
                                 >
                                     <MenuItem value="">
-                                        <em value={null}>None</em>
+                                        <em value={null}>All</em>
                                     </MenuItem>
                                     {
                                         context.catData?.categoryList?.length !== 0 && context.catData?.categoryList?.map((cat, index) => {
@@ -189,12 +182,16 @@ const Products = () => {
                             </FormControl>
                         </div>
 
-
-
+                        <div className="col-md-4 ml-auto mt-3">
+                            <div className="searchBox position-relative d-flex align-items-center">
+                                <IoSearch className="mr-2" />
+                                <input type="text" placeholder="Search here..." className="w-100" />
+                            </div>
+                        </div>
                     </div>
 
 
-                    <div className="table-responsive mt-3">
+                    <div className="table-responsive tableWrapper mt-3">
                         <table className="table table-bordered table-striped v-align">
                             <thead className="thead-dark">
                                 <tr>
@@ -205,7 +202,7 @@ const Products = () => {
                                     <th>BRAND</th>
                                     <th>PRICE</th>
                                     <th>RATING</th>
-                                    <th>DISCOUNT</th>
+                                    {/* <th>DISCOUNT</th> */}
                                     <th>PRODUCT RAMS</th>
                                     <th>PRODUCT WEIGHT</th>
                                     <th>PRODUCT SIZE</th>
@@ -231,9 +228,8 @@ const Products = () => {
                                                             </div>
                                                         </div>
                                                         <div className="info pl-0">
-                                                            <h6> &nbsp; {item?.name}</h6>
-                                                            <p> &nbsp; {item?.description}
-                                                            </p>
+                                                            <h6>{item?.name}</h6>
+                                                            <p>{item?.description}</p>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -248,7 +244,7 @@ const Products = () => {
                                                 </td>
                                                 <td><Rating name="read-only" defaultValue={item?.rating} precision={0.5} size="small" readOnly /></td>
 
-                                                <td>{item?.discount}</td>
+                                                {/* <td>{item?.discount}</td> */}
 
                                                 <td>{item?.productRam?.map((ram) => {
                                                     return (
@@ -294,15 +290,20 @@ const Products = () => {
                             </tbody>
                         </table>
 
-                        {
-                            productList?.totalPages > 1 && <div className="d-flex tableFooter">
-                                <Pagination count={productList?.totalPages} color="primary" className="pagination" showFirstButton showLastButton onChange={handleChange} />
-                            </div>
-                        }
-
-
-
                     </div>
+
+                    {
+                        productList?.products?.length > 0 &&
+                        <TablePagination
+                            rowsPerPageOptions={[5, 10, 25, 50, 100]}
+                            component="div"
+                            count={productList?.totalPosts || 0}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                        />
+                    }
 
                 </div>
 

@@ -186,7 +186,8 @@ header .part2 {
 }
 
 .searchBox {
-    width: 500px;
+    width: 100%;
+    max-width: 500px;
     height: 40px;
     background: #f0f5ff;
     border-radius: 6px;
@@ -1020,16 +1021,28 @@ body.dark .table-striped tbody tr:nth-of-type(odd) {
     font-size: 26px !important;
 }
 
+body.dark .table tbody .actions button.secondary {
+    background-color: #cb3ce7 !important;
+}
+
 body.dark .table tbody .actions button.secondary svg {
-    color: #cb3ce7 !important;
+    color: #fff !important;
+}
+
+body.dark .table tbody .actions button.success {
+    background-color: #27bf68 !important;
 }
 
 body.dark .table tbody .actions button.success svg {
-    color: #1a9f53 !important;
+    color: #fff !important;
+}
+
+body.dark .table tbody .actions button.error {
+    background-color: #ff6179 !important;
 }
 
 body.dark .table tbody .actions button.error svg {
-    color: #f11133 !important;
+    color: #fff !important;
 }
 
 table.v-align td {
@@ -1058,7 +1071,7 @@ table.v-align td {
 
 
 .brand {
-    background: #6a6e78;
+    background: #6c757d;
     color: #fff;
     padding: 3px 10px;
     border-radius: 4px;
@@ -1067,7 +1080,7 @@ table.v-align td {
 }
 
 body.dark .brand {
-    background: rgba(255, 255, 255, 0.1);
+    background: #6c757d;
 }
 
 
@@ -1079,7 +1092,7 @@ table td .imgWrapper {
 }
 
 table td .imgWrapper .img {
-    width: 75%;
+    width: 70%;
     aspect-ratio: 1/1;
     overflow: hidden;
     padding: 0px;
@@ -1125,6 +1138,30 @@ table.v-align td .productBox {
     width: 270px;
 }
 
+.tableWrapper {
+    max-height: 500px;
+    overflow-y: auto;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.dark .tableWrapper {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: #1b2b4d;
+}
+
+.tableWrapper table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #2c78e5 !important;
+    color: #fff !important;
+}
+
+/* Ensure empty stars are visible in dark mode */
+body.dark .MuiRating-iconEmpty {
+    color: #ffffffd3 !important;
+}
+
 
 
 .tableFooter {
@@ -1136,6 +1173,33 @@ table.v-align td .productBox {
     font-size: 14px;
     font-weight: 500;
 }
+
+body.dark .MuiTablePagination-root {
+    color: #ffffffd3 !important;
+    background: #122143 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    margin: 0px -16px -16px -16px !important; /* Flush with p-3 card bottom/sides */
+    border-radius: 0px 0px 8px 8px;
+    padding: 5px 0px;
+}
+
+body.dark .MuiTablePagination-selectIcon {
+    color: #ffffffd3 !important;
+}
+
+body.dark .MuiTablePagination-actions .MuiButtonBase-root {
+    color: #ffffffd3 !important;
+}
+
+body.dark .MuiTablePagination-actions .MuiButtonBase-root.Mui-disabled {
+    color: rgba(255, 255, 255, 0.3) !important;
+}
+
+body.dark .MuiTablePagination-toolbar {
+    padding-left: 20px;
+    padding-right: 10px;
+}
+/* body.dark .MuiTablePagination-spacer { display: none; } */
 
 .tableFooter .pagination {
     margin-left: auto;
@@ -1175,9 +1239,22 @@ body.dark .table th {
     border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-body.dark .table td .info h6 {
-    color: #fff !important;
+.MuiRating-iconFilled {
+    color: #faaf00 !important;
 }
+
+body.dark .MuiRating-iconFilled {
+    color: #ffffffd3 !important;
+}
+
+body.dark .MuiRating-iconEmpty {
+    color: #ffffffd3 !important;
+}
+
+body.dark .table td .info h6 {
+    color: #fffc !important;
+}
+
 
 body.dark .table td .info p {
     color: rgba(255, 255, 255, 0.7) !important;
@@ -1435,12 +1512,12 @@ body.dark .breadcrumbs_ a {
 }
 
 body.dark .breadcrumbs_ a * {
-    color: #fff !important;
+    color: #ffffffb3 !important;
 }
 
 body.dark .breadcrumbs_ li .MuiChip-filled {
     background-color: #112143 !important;
-    color: #fff !important;
+    color: #ffffffb3 !important;
 }
 
 body.dark .css-1wuw8dw-MuiBreadcrumbs-separator {
