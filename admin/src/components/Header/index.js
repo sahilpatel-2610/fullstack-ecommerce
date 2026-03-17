@@ -76,14 +76,14 @@ const Header = () => {
           <div className="col-sm-2 part1">
             <Link to={'/'} className="d-flex align-items-center logo">
               <img src={logo} />
-              <span className="ml-2">ECOMMERCE</span>
+              <span className="ms-2">ECOMMERCE</span>
             </Link>
           </div>
 
           {
               context.windowWidth > 992 && 
               <div className="col-sm-3 d-flex align-items-center part2 res-hide">
-            <Button className="rounded-circle mr-3" onClick={()=>context.setISToggleSidebar(!context.isToggleSidebar)}>
+            <Button className="rounded-circle me-3" onClick={()=>context.setISToggleSidebar(!context.isToggleSidebar)}>
               {
                 context.isToggleSidebar===false ? <MdMenuOpen /> : <MdOutlineMenu />
               }
@@ -96,7 +96,7 @@ const Header = () => {
           
 
           <div className="col-sm-7 d-flex align-items-center justify-content-end part3">
-            <Button className="rounded-circle mr-3" onClick={() => context.setTheme(!context.theme)}>
+            <Button className="rounded-circle me-3" onClick={() => context.setTheme(!context.theme)}>
               {
                 context.theme === true ? <MdOutlineLightMode /> : <MdDarkMode />
               }
@@ -107,9 +107,9 @@ const Header = () => {
             
 
             <div className="dropdownWrapper position-relative">
-              <Button className="rounded-circle mr-3" onClick={handleOpennotificationsDrop}><FaRegBell /></Button>
+              <Button className="rounded-circle me-3" onClick={handleOpennotificationsDrop}><FaRegBell /></Button>
 
-              <Button className="rounded-circle mr-3" onClick={() => context.openNav()}><IoMenu /></Button>
+              <Button className="rounded-circle me-3" onClick={() => context.openNav()}><IoMenu /></Button>
 
 
               <Menu
@@ -303,7 +303,7 @@ const Header = () => {
                   
                 </div>
  
-                <div className='pl-3 pr-3 w-100 pt-2 pb-1'>
+                 <div className='ps-3 pe-3 w-100 pt-2 pb-1'>
                    <Button className='btn-blue w-100'>View all notifications</Button>
                 </div> 
        

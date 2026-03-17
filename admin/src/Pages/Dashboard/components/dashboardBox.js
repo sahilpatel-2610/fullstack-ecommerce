@@ -37,7 +37,7 @@ const DashboardBox = (props) => {
 
                 {
                     props.icon ?
-                        <span className="icon ml-auto">
+                        <span className="icon ms-auto">
                             {props.icon ? props.icon : ''}
                         </span>
 

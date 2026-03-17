@@ -96,7 +96,7 @@ const SubCategory = () => {
                         />
                     </Breadcrumbs>
 
-                    <Link to="/subCategory/add"><Button className="btn-blue ml-3 pl-3 pr-3">Add Sub Category</Button></Link>
+                    <Link to="/subCategory/add"><Button className="btn-blue ms-3 ps-3 pe-3">Add Sub Category</Button></Link>
                 </div>
 
 

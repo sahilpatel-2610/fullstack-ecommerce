@@ -1178,7 +1178,8 @@ body.dark .MuiTablePagination-root {
     color: #ffffffd3 !important;
     background: #122143 !important;
     border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
-    margin: 0px -16px -16px -16px !important; /* Flush with p-3 card bottom/sides */
+    margin: 0px -16px -16px -16px !important;
+    /* Flush with p-3 card bottom/sides */
     border-radius: 0px 0px 8px 8px;
     padding: 5px 0px;
 }
@@ -1199,6 +1200,7 @@ body.dark .MuiTablePagination-toolbar {
     padding-left: 20px;
     padding-right: 10px;
 }
+
 /* body.dark .MuiTablePagination-spacer { display: none; } */
 
 .tableFooter .pagination {

@@ -155,7 +155,7 @@ const Products = () => {
                 <div className="card shadow border-0 p-3 mt-4">
                     <h3 className="hd">Best Selling Products</h3>
 
-                    <div className="row cardFilters mt-3">
+                    <div className="row cardFilters mt-3 align-items-center">
                         <div className="col-md-3">
                             <h4>CATEGORY BY</h4>
                             <FormControl size="small" className="w-100">
@@ -182,9 +182,9 @@ const Products = () => {
                             </FormControl>
                         </div>
 
-                        <div className="col-md-4 ml-auto mt-3">
-                            <div className="searchBox position-relative d-flex align-items-center">
-                                <IoSearch className="mr-2" />
+                        <div className="col-md-4 ms-auto">
+                            <div className="searchBox ms-auto position-relative d-flex align-items-center">
+                                <IoSearch className="me-2" />
                                 <input type="text" placeholder="Search here..." className="w-100" />
                             </div>
                         </div>

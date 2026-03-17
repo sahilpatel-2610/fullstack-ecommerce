@@ -199,7 +199,7 @@ const Dashboard = () => {
 
 
 
-                    <div className="row cardFilters mt-3">
+                    <div className="row cardFilters mt-3 align-items-center">
                         <div className="col-md-3">
                             <h4>CATEGORY BY</h4>
                             <FormControl size="small" className="w-100">
@@ -225,10 +225,10 @@ const Dashboard = () => {
                             </FormControl>
                         </div>
 
-                        <div className="col-md-4 ml-auto mt-3">
-                            <div className="searchBox position-relative d-flex align-items-center">
-                                <IoSearch className="mr-2" />
-                                <input type="text" placeholder="Search here..." className="w-100" />
+                        <div className="col-md-4 ms-auto">
+                            <div className="searchBox ms-auto position-relative d-flex align-items-center">
+                                <IoSearch className="me-2" />
+                                <input type="text" placeholder="Search here..." />
                             </div>
                         </div>
                     </div>
