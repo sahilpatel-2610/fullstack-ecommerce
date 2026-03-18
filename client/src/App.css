@@ -32,6 +32,15 @@ body {
   }
 }
 
+button .MuiCircularProgress-root {
+  width: 30px !important;
+  height: 30px !important;
+}
+
+button svg {
+  color: #fff;
+}
+
 
 .badge {
   display: inline-block;
@@ -193,6 +202,7 @@ button {
 
 .headerWrapper .header .part2 .countryDrop span.ml-auto svg {
   opacity: 0.7;
+  color: #000 !important;
 }
 
 .headerSearch {
@@ -234,6 +244,7 @@ button {
 
 .headerSearch button svg {
   font-size: 25px;
+  color: #000 !important;
 }
 
 header .part3 .circle {
@@ -244,13 +255,24 @@ header .part3 .circle {
   width: 45px !important;
   border-radius: 45% !important;
   border: 1px solid rgba(0, 0, 0, 0.1) !important;
-  color: #000;
+  color: #000 !;
 }
 
 header .part3 .circle svg {
   font-size: 22px;
   opacity: 0.8;
+  color: #000 !important;
 }
+
+#accDrop ul li svg {
+  font-size: 15px !important;
+}
+
+#accDrop ul li {
+  font-size: 16px !important;
+  padding: 7px 15px !important;
+}
+
 
 
 .cartTab .price {
@@ -1437,14 +1459,9 @@ footer .linksWrap ul li a:hover {
   color: #000;
 }
 
-.product_Listing_Page .productListing .content_right .showBy .btnWrapper button svg {
-  color: #000;
-  font-size: 18px !important;
-  opacity: 0.3;
-}
-
-.product_Listing_Page .productListing .content_right .showBy .btnWrapper button svg.act svg {
+.product_Listing_Page .productListing .content_right .showBy .btnWrapper button.act svg {
   opacity: 1 !important;
+  color: #6d4aae !important;
 }
 
 .product_Listing_Page .productListing .content_right .showBy .btnWrapper button:hover svg {
@@ -2518,4 +2535,39 @@ a:hover {
 
 .homeCat .item.active .img_wrapper {
   transform: scale(1.1);
+}
+
+.myAcc {
+  cursor: pointer;
+}
+
+.myAcc .info {
+  display: flex;
+  flex-direction: column;
+}
+
+.myAcc .info h6 {
+  margin-bottom: 0px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 14px;
+}
+
+.myAcc .info p {
+  margin-bottom: 0px;
+  font-size: 11px;
+  opacity: 0.7;
+  line-height: normal;
+}
+
+.myAcc .info .txt {
+  font-size: 12px;
+  color: #6d4aae;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.TopLoader {
+  height: 3px !important;
 }

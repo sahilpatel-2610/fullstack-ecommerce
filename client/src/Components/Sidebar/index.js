@@ -34,7 +34,7 @@ const Sidebar = ({ filterByPrice, filterByRating, categoryId }) => {
     const handleChange = (event) => {
         setFilterSubCat(event.target.value);
         setSubCatId(event.target.value);
-        navigate(`/subCat/${event.target.value}`);
+        navigate(`/products/subCat/${event.target.value}`);
     };
 
 

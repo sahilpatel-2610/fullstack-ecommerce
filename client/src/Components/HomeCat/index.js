@@ -89,6 +89,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import { Navigation } from 'swiper/modules';
+import { Link } from "react-router-dom";
 
 const HomeCat = (props) => {
 
@@ -116,21 +117,23 @@ const HomeCat = (props) => {
                             ];
                             return (
                                 <SwiperSlide key={index}>
-                                    <div
-                                        className={`item text-center cursor ${props.activeIndex === index ? 'active' : ''}`}
-                                        style={{ background: cat.color ? cat.color : itemBg[index % itemBg.length] }}
-                                        onClick={() => props.onSelect(index)}
-                                    >
-                                        <div className="img_wrapper">
-                                            <img
-                                                src={cat.images?.[0]}
-                                                alt={cat.name}
-                                                className="w-100"
-                                            />
-                                        </div>
+                                    <Link to={`/products/category/${cat._id}`}>
+                                        <div
+                                            className={`item text-center cursor ${props.activeIndex === index ? 'active' : ''}`}
+                                            style={{ background: cat.color ? cat.color : itemBg[index % itemBg.length] }}
+                                            onClick={() => props.onSelect(index)}
+                                        >
+                                            <div className="img_wrapper">
+                                                <img
+                                                    src={cat.images?.[0]}
+                                                    alt={cat.name}
+                                                    className="w-100"
+                                                />
+                                            </div>
 
-                                        <h6>{cat.name}</h6>
-                                    </div>
+                                            <h6>{cat.name}</h6>
+                                        </div>
+                                    </Link>
                                 </SwiperSlide>
                             )
                         })

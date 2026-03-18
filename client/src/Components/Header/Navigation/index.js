@@ -158,7 +158,7 @@ const Navigation = (props) => {
                                 props.navData?.length > 0 && props.navData?.map((item, index) => {
                                     return (
                                         <li className='list-inline-item'>
-                                            <Link to={`/subCat/${item?._id}`}><Button>{item?.subCat}</Button></Link>
+                                            <Link to={`/products/subCat/${item?._id}`}><Button>{item?.subCat}</Button></Link>
                                         </li>
                                     )
                                 })

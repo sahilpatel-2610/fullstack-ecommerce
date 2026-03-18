@@ -8,17 +8,31 @@ export const fetchDataFromApi = async (url) => {
         return data;
     } catch (error) {
         console.error("API Fetch Error:", error);
-        return null; 
+        return null;
     }
 }
 
 export const postData = async (url, formData) => {
     try {
-        const { data } = await axios.post(BASE_URL + url, formData)
-        return data;
+        const response = await fetch(BASE_URL + url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            return data;
+        } else {
+            const errorData = await response.json();
+            return errorData;
+        }
+
     } catch (error) {
-        console.error("API Post Error:", error);
-        return null;
+        console.error("Error:", error);
+        return { error: true, msg: error.message };
     }
 }
 

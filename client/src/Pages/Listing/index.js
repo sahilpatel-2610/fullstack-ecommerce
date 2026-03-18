@@ -210,9 +210,10 @@ import MenuItem from "@mui/material/MenuItem";
 import { useEffect, useState } from "react";
 import ProductItem from "../../Components/ProductItem";
 import Pagination from '@mui/material/Pagination';
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { fetchDataFromApi } from "../../utils/api";
 import { MyContext } from "../../App";
+import CircularProgress from '@mui/material/CircularProgress';
 import { useContext } from "react";
 import newsLetterImg from "../../assets/images/coupon.png";
 import { IoMailOutline } from "react-icons/io5";
@@ -222,7 +223,6 @@ const Listing = () => {
   const context = useContext(MyContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const [productView, setProductView] = useState('four'); // default 4-grid
-  const [subCatId, setSubCatId] = useState('');
   const [filterPrice, setFilterPrice] = useState([100, 500000]);
   const [filterRating, setFilterRating] = useState();
   const [productData, setProductData] = useState([]);
@@ -231,7 +231,10 @@ const Listing = () => {
   const [perPage, setPerPage] = useState(10);
   const [currentCategory, setCurrentCategory] = useState("");
   const [currentSubCategory, setCurrentSubCategory] = useState("");
+  const [isLoading, setisLoading] = useState(false);
+  const [type, setType] = useState("");
   const openDropdown = Boolean(anchorEl);
+  const location = useLocation();
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -247,37 +250,68 @@ const Listing = () => {
   const { id } = useParams();
 
   useEffect(() => {
-    setSubCatId(id);
+    window.scrollTo(0, 0);
     setPage(1);
     setFilterPrice([100, 500000]);
     setFilterRating(null);
 
+    if (location.pathname.includes("category")) {
+      setType("category");
+    } else {
+      setType("subCat");
+    }
+
     // Synchronize Ribbon and Title
-    if (context.subCategoryData?.length > 0 && id) {
-      const sub = context.subCategoryData.find(item => item._id === id);
-      if (sub) {
-        setCurrentSubCategory(sub.subCat);
-        setCurrentCategory(sub.category?.name);
+    if (location.pathname.includes("category")) {
+      if (context.categoryData?.length > 0) {
+        const cat = context.categoryData.find(item => item._id === id || item.id === id);
+        if (cat) {
+          setCurrentCategory(cat.name);
+          setCurrentSubCategory(""); // Clear subcategory on category page
+          if (cat.name?.toLowerCase() === "facial" || cat.name?.toLowerCase() === "wellness") {
+            setProductView('three');
+          }
+        }
+      }
+    } else {
+      if (context.subCategoryData?.length > 0) {
+        const sub = context.subCategoryData.find(item => item._id === id || item.id === id);
+        if (sub) {
+          setCurrentSubCategory(sub.subCat);
+          setCurrentCategory(sub.category?.name);
+          if (sub.subCat?.toLowerCase() === "facial" || sub.category?.name?.toLowerCase() === "facial" || sub.subCat?.toLowerCase() === "wellness" || sub.category?.name?.toLowerCase() === "wellness") {
+            setProductView('three');
+          }
+        }
       }
     }
-  }, [id, context.categoryData, context.subCategoryData]);
+  }, [id, location.pathname, context.categoryData, context.subCategoryData]);
+
 
   useEffect(() => {
-    let url = `/api/products?subCatId=${subCatId}&page=${page}&perPage=${perPage}&minPrice=${filterPrice[0]}&maxPrice=${filterPrice[1]}`;
-    if (filterRating) {
-      url += `&rating=${filterRating}`;
+    setisLoading(true);
+
+    let apiEndPoint = "";
+    if (type === "category") {
+      apiEndPoint = `/api/products?category=${id}&page=${page}&perPage=${perPage}&minPrice=${filterPrice[0]}&maxPrice=${filterPrice[1]}`;
+    } else {
+      apiEndPoint = `/api/products?subCatId=${id}&page=${page}&perPage=${perPage}&minPrice=${filterPrice[0]}&maxPrice=${filterPrice[1]}`;
     }
 
-    fetchDataFromApi(url).then((res) => {
+    if (filterRating) {
+      apiEndPoint += `&rating=${filterRating}`;
+    }
+
+    fetchDataFromApi(apiEndPoint).then((res) => {
       setProductData(res.products);
       setTotalPages(res.totalPages);
-    })
-  }, [subCatId, page, perPage, filterPrice, filterRating]);
+      setisLoading(false);
+    });
+  }, [id, type, page, perPage, filterPrice, filterRating]);
 
 
   const filterByPrice = (price, subId) => {
     setFilterPrice(price);
-    setSubCatId(subId);
   }
 
   const handlePageChange = (event, value) => {
@@ -287,7 +321,6 @@ const Listing = () => {
 
   const filterByRating = (rating, subId) => {
     setFilterRating(rating);
-    setSubCatId(subId);
   }
 
 
@@ -299,7 +332,7 @@ const Listing = () => {
       <div className="container">
         <div className="productListing d-flex">
           {/* Left Sidebar */}
-          <Sidebar filterByPrice={filterByPrice} filterByRating={filterByRating} />
+          <Sidebar filterByPrice={filterByPrice} filterByRating={filterByRating} categoryId={type === 'category' ? id : (context.subCategoryData.find(item => item._id === id || item.id === id)?.category?._id)} />
 
           {/* Right Content */}
           <div className="content_right">
@@ -363,11 +396,17 @@ const Listing = () => {
             {/* Product Items */}
             <div className={`productsWrapper ${productView}`}>
               {
-                productData?.map((item, index) => {
-                  return (
-                    <ProductItem key={index} itemView={productView} item={item} />
-                  )
-                })
+                isLoading === true ? (
+                  <div className="d-flex align-items-center justify-content-center w-100" style={{ minHeight: '300px' }}>
+                    <CircularProgress />
+                  </div>
+                ) : (
+                  productData?.map((item, index) => {
+                    return (
+                      <ProductItem key={index} itemView={productView} item={item} />
+                    )
+                  })
+                )
               }
             </div>
 

@@ -21,6 +21,10 @@ router.post(`/signup`, async (req, res) => {
             return res.status(400).json({ error: true, msg: "user already exist by phone!" });
         }
 
+        if (!password) {
+            return res.status(400).json({ error: true, msg: "password is required!" });
+        }
+
         const hashPassword = await bcrypt.hash(password, 10);
 
         const result = await User.create({

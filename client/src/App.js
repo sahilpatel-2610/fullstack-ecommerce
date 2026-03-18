@@ -15,6 +15,11 @@ import Cart from "./Pages/Cart";
 import SignIn from "./Pages/SignIn";
 import SignUp from "./Pages/SignUp";
 import { fetchDataFromApi } from "./utils/api";
+import LoadingBar from 'react-top-loading-bar';
+
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+
 
 const MyContext = createContext();
 
@@ -33,6 +38,18 @@ function App() {
   const [categoryData, setCategoryData] = useState([]);
   const [subCategoryData, setSubCategoryData] = useState([]);
   const [activeCat, setActiveCat] = useState([]);
+  const [alertBox, setAlertBox] = useState({
+    msg: '',
+    error: false,
+    open: false
+  });
+  const [progress, setProgress] = useState(0);
+  const [user, setUser] = useState({
+    name: "",
+    email: "",
+    userId: ""
+  })
+
 
 
   useEffect(() => {
@@ -49,8 +66,32 @@ function App() {
       setSubCategoryData(res?.subCategoryList);
     })
 
+    const token = localStorage.getItem("token");
+    if (token !== "" && token !== undefined && token !== null) {
+      setisLogin(true);
+      const userData = JSON.parse(localStorage.getItem("user"));
+      setUser(userData);
+    }
+
   }, []);
 
+
+  useEffect(() => {
+
+    const token = localStorage.getItem("token");
+
+    if (token !== "" && token !== undefined && token !== null) {
+      setisLogin(true);
+
+      const userData = JSON.parse(localStorage.getItem("user"));
+
+      setUser(userData);
+
+    } else {
+      setisLogin(false);
+    }
+
+  }, [isLogin]);
 
 
 
@@ -68,6 +109,17 @@ function App() {
       console.log(res.data.data);
     });
   };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setAlertBox({
+      open: false
+    });
+  };
+
 
 
   const values = {
@@ -87,7 +139,12 @@ function App() {
     subCategoryData,
     setSubCategoryData,
     activeCat,
-    setActiveCat
+    setActiveCat,
+    alertBox,
+    setAlertBox,
+    setProgress,
+    user,
+    setUser
   };
 
 
@@ -95,13 +152,32 @@ function App() {
   return (
     <Router>
       <MyContext.Provider value={values}>
+        <LoadingBar
+          color='#6d4aae'
+          progress={progress}
+          onLoaderFinished={() => setProgress(0)}
+          className='topLoadingBar'
+        />
         {
           isHeaderFooterShow === true && <Header />
         }
 
+
+        <Snackbar open={alertBox.open} autoHideDuration={6000} onClose={handleClose}>
+          <Alert
+            onClose={handleClose}
+            severity={alertBox.error === true ? "error" : 'success'}
+            variant="filled"
+            sx={{ width: '100%' }}
+          >
+            {alertBox.msg}
+          </Alert>
+        </Snackbar>
+
         <Routes>
           <Route path="/" exact={true} element={<Home />} />
-          <Route path="/subCat/:id" exact={true} element={<Listing />} />
+          <Route path="/products/category/:id" exact={true} element={<Listing />} />
+          <Route path="/products/subCat/:id" exact={true} element={<Listing />} />
           <Route exact={true} path="/product/:id" element={<ProductDetails />} />
           <Route exact={true} path="/cart" element={<Cart />} />
           <Route exact={true} path="/signIn" element={<SignIn />} />

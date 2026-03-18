@@ -1,3 +1,4 @@
+import React from 'react';
 import Logo from '../../assets/images/logo.jpg';
 import { Link } from 'react-router-dom';
 import Button from '@mui/material/Button';
@@ -9,7 +10,27 @@ import Navigation from './Navigation';
 import { MyContext } from '../../App';
 import { useContext } from 'react';
 
+import Avatar from '@mui/material/Avatar';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Divider from '@mui/material/Divider';
+import { useState } from 'react';
+import { FaUser } from "react-icons/fa";
+import { FaClipboardCheck } from "react-icons/fa";
+import { FaHeart } from "react-icons/fa";
+import { RiLogoutCircleRFill } from "react-icons/ri";
+
 const Header = () => {
+
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
     const context = useContext(MyContext);
 
@@ -37,7 +58,46 @@ const Header = () => {
 
                                 <div className='part3 d-flex align-items-center ml-auto'>
                                     {
-                                        context.isLogin !== true ? <Link to="/signIn"><Button className="btn-blue btn-round mr-3">Sign In</Button></Link> : <Button className='circle mr-3'><FiUser /></Button>
+                                        context.isLogin !== true ? <Link to="/signIn"><Button className="btn-blue btn-round mr-3">Sign In</Button></Link> :
+                                            <>
+                                                <Button className='circle mr-3' onClick={handleClick}><FiUser /></Button>
+                                                <Menu
+                                                    anchorEl={anchorEl}
+                                                    id="accDrop"
+                                                    open={open}
+                                                    onClose={handleClose}
+                                                    onClick={handleClose}
+
+                                                    transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                                                    anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                                                >
+                                                    <MenuItem onClick={handleClose}>
+                                                        <ListItemIcon>
+                                                            <FaUser fontSize="small" />
+                                                        </ListItemIcon>
+                                                        My Account
+                                                    </MenuItem>
+                                                    <MenuItem onClick={handleClose}>
+                                                        <ListItemIcon>
+                                                            <FaClipboardCheck fontSize="small" />
+                                                        </ListItemIcon>
+                                                        Orders
+                                                    </MenuItem>
+                                                    <MenuItem onClick={handleClose}>
+                                                        <ListItemIcon>
+                                                            <FaHeart fontSize="small" />
+                                                        </ListItemIcon>
+                                                        My List
+                                                    </MenuItem>
+                                                    <MenuItem onClick={handleClose}>
+                                                        <ListItemIcon>
+                                                            <RiLogoutCircleRFill fontSize="small" />
+                                                        </ListItemIcon>
+                                                        Logout
+                                                    </MenuItem>
+                                                </Menu>
+                                            </>
+
                                     }
 
                                     <div className='ml-auto cartTab d-flex align-items-center'>

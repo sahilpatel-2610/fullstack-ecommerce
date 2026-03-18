@@ -10,7 +10,7 @@
 // const SignUp = () => {
 
 //     const context = useContext(MyContext);
-    
+
 //     useEffect(() => {
 //         context.setisHeaderFooterShow(false);
 //     },[]);
@@ -27,7 +27,7 @@
 //                     <img src={Logo} />
 //                 </div>
 
-               
+
 
 //                 <form className="mt-3">
 //                   <h2 className="mb-4">Sign Up</h2>
@@ -69,10 +69,10 @@
 //                     <h6 className="mt-4 text-center font-weight-bold">Or continue with social account</h6>
 
 //                     <Button className="loginWithGoogle mt-2" variant="outlined"><img src={GoogleImg} alt="google" /> Sign In with Google</Button>
-                    
 
-                    
-                                                                
+
+
+
 
 //                 </form>
 
@@ -85,98 +85,205 @@
 // export default SignUp;
 
 
-import { useContext, useEffect } from "react";
-import { MyContext } from "../../App"; 
+import { useContext, useEffect, useState } from "react";
+import { MyContext } from "../../App";
 import Logo from '../../assets/images/logo.jpg';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import GoogleImg from '../../assets/images/googleimg.png';
+import { postData } from "../../utils/api";
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 const SignUp = () => {
 
-    const context = useContext(MyContext);
-    
-    useEffect(() => {
-        context.setisHeaderFooterShow(false);
-        return () => {
-            context.setisHeaderFooterShow(true);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [formfildes, setFormfildes] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    isAdmin: false,
+  });
+
+  const history = useNavigate();
+
+
+  const context = useContext(MyContext);
+
+
+  const onChangeInput = (e) => {
+    setFormfildes(() => ({
+      ...formfildes,
+      [e.target.name]: e.target.value
+    }));
+  }
+
+  useEffect(() => {
+    context.setisHeaderFooterShow(false);
+    return () => {
+      context.setisHeaderFooterShow(true);
+    }
+  }, [context]);
+
+
+
+  const register = (e) => {
+    e.preventDefault();
+
+    try {
+
+      if (formfildes.name === "") {
+        context.setAlertBox({
+          open: true,
+          error: true,
+          msg: "name can not be blank!",
+        })
+        return false;
+      }
+
+      if (formfildes.email === "") {
+        context.setAlertBox({
+          open: true,
+          error: true,
+          msg: "email can not be blank!",
+        })
+        return false;
+      }
+
+      if (formfildes.phone === "") {
+        context.setAlertBox({
+          open: true,
+          error: true,
+          msg: "phone can not be blank!",
+        })
+        return false;
+      }
+
+      if (formfildes.password === "") {
+        context.setAlertBox({
+          open: true,
+          error: true,
+          msg: "password can not be blank!",
+        })
+        return false;
+      }
+
+      setIsLoading(true);
+      context.setProgress(30);
+
+      postData("/api/user/signup", formfildes).then((res) => {
+        console.log(res);
+
+        if (res.error === false) {
+          context.setAlertBox({
+            open: true,
+            error: false,
+            msg: "Account Created Successfully!",
+          })
+
+          setTimeout(() => {
+            setIsLoading(false);
+            history("/signIn");
+          }, 2000);
+
+          context.setProgress(100);
+        } else {
+          setIsLoading(false);
+          context.setAlertBox({
+            open: true,
+            error: true,
+            msg: res.msg || "Something went wrong!",
+          })
+          context.setProgress(100);
         }
-    }, [context]);
 
-    return (
-      <section className="section signInPage signUpPage">
-        <div className="shape-bottom"> <svg fill="#fff" id="Layer_1" x="0px" y="0px" viewBox="0 0 1921 819.8" 
-        style={{enableBackground: 'new 0 0 1921 819.8'}} > <path className="st0" d="M1921,413.1v406.7H0V0.5h0.4l228.1,598.3c30,74.4,80.8,130.6,152.5,168.6c107.6,57,212.1,40.7,245.7,34.4 c22.4-4.2,54.9-13.1,97.5-26.6L1921,400.5V413.1z"></path> </svg> 
-        </div>
+      })
 
-            <div className="container">
-              <div className="box card p-3 showdow border-0">
-                <div className="text-center">
-                    <img src={Logo} alt="logo" />
+    } catch (error) {
+      setIsLoading(false);
+      console.log(error);
+    }
+  }
+
+  return (
+    <section className="section signInPage signUpPage">
+      <div className="shape-bottom"> <svg fill="#fff" id="Layer_1" x="0px" y="0px" viewBox="0 0 1921 819.8"
+        style={{ enableBackground: 'new 0 0 1921 819.8' }} > <path className="st0" d="M1921,413.1v406.7H0V0.5h0.4l228.1,598.3c30,74.4,80.8,130.6,152.5,168.6c107.6,57,212.1,40.7,245.7,34.4 c22.4-4.2,54.9-13.1,97.5-26.6L1921,400.5V413.1z"></path> </svg>
+      </div>
+
+      <div className="container">
+        <div className="box card p-3 showdow border-0">
+          <div className="text-center">
+            <img src={Logo} alt="logo" />
+          </div>
+
+
+
+          <form className="mt-2" onSubmit={register}>
+            <h2 className="mb-3">Sign Up</h2>
+
+
+            <div className="row">
+              <div className="col-md-6">
+                <div className="form-group">
+                  <TextField label="Name" onChange={onChangeInput} name="name" type="text" variant="standard" className="w-100" />
                 </div>
+              </div>
 
-               
-
-                <form className="mt-2">
-                <h2 className="mb-3">Sign Up</h2>
-
-
-                    <div className="row">
-                      <div className="col-md-6">
-                        <div className="form-group">
-                          <TextField label="Name" type="text" required variant="standard" className="w-100" />
-                        </div>
-                      </div>
-
-                      <div className="col-md-6">
-                          <div className="form-group">
-                            <TextField label="Phone No." type="text" required variant="standard" className="w-100" />
-                          </div>
-                      </div>
-                    </div>
-
-                    <div className="form-group">
-                        <TextField id="standard-basic" label="Email" type="email" required variant="standard" className="w-100" />
-                    </div>
-                    <div className="form-group">
-                        <TextField id="standard-basic" label="Password" type="password" required variant="standard" className="w-100" />
-                    </div>
-
-
-
-
-                    <a href="#!" className="border-effect cursor txt">Forgot Password?</a>
-
-                    <div className="d-flex align-items-center mt-3 mb-3">
-                      <div className="row w-100">
-                        <div className="col-md-6">
-                          <Button className="btn-blue w-100 btn-lg btn-big">Sign In</Button>
-                        </div>
-
-                        <div className="col-md-6 pr-0">
-                          <Link to="/" className="d-block w-100"> <Button className="btn-lg btn-big w-100" variant="outlined">Cancel</Button></Link>
-                        </div>
-                      </div>
-                    </div>
-
-                    <p className="txt">Not Registered? <Link to="/signIn" className="border-effect">Sign In</Link></p>
-
-                    <h6 className="mt-4 text-center font-weight-bold">Or continue with social account</h6>
-
-                    <Button className="loginWithGoogle mt-2" variant="outlined"><img src={GoogleImg} alt="google" /> Sign In with Google</Button>
-                    
-
-                    
-                                                                
-
-                </form>
-
+              <div className="col-md-6">
+                <div className="form-group">
+                  <TextField label="Phone No." onChange={onChangeInput} name="phone" type="text" variant="standard" className="w-100" />
+                </div>
               </div>
             </div>
-      </section>
-    )
+
+            <div className="form-group">
+              <TextField id="standard-basic" label="Email" onChange={onChangeInput} name="email" type="email" variant="standard" className="w-100" />
+            </div>
+            <div className="form-group">
+              <TextField id="standard-basic" label="Password" onChange={onChangeInput} name="password" type="password" variant="standard" className="w-100" />
+            </div>
+
+
+
+
+            <a href="#!" className="border-effect cursor txt">Forgot Password?</a>
+
+            <div className="d-flex align-items-center mt-3 mb-3">
+              <div className="row w-100">
+                <div className="col-md-6">
+                  <Button className="btn-blue w-100 btn-lg btn-big" type="submit" disabled={isLoading === true ? true : false}>
+                    {
+                      isLoading === true ? <CircularProgress color="inherit" className="loader" /> : "Sign Up"
+                    }
+                  </Button>
+                </div>
+
+                <div className="col-md-6 pr-0">
+                  <Link to="/" className="d-block w-100"> <Button className="btn-lg btn-big w-100" variant="outlined">Cancel</Button></Link>
+                </div>
+              </div>
+            </div>
+
+            <p className="txt">Already have an account? <Link to="/signIn" className="border-effect">Sign In</Link></p>
+
+            <h6 className="mt-4 text-center font-weight-bold">Or continue with social account</h6>
+
+            <Button className="loginWithGoogle mt-2" variant="outlined"><img src={GoogleImg} alt="google" /> Sign In with Google</Button>
+
+
+
+
+
+          </form>
+
+        </div>
+      </div>
+    </section>
+  )
 }
 
 export default SignUp;

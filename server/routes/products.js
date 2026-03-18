@@ -134,10 +134,19 @@ router.get(`/`, async (req, res) => {
         const totalPosts = await Product.countDocuments(query);
         const totalPages = Math.ceil(totalPosts / perPage);
 
-        let productList = await Product.find(query)
+        if (page > totalPages && totalPages !== 0) {
+            // Optional: handle page out of bounds
+        }
+
+        const productList = await Product.find(query)
             .populate('category subCat')
             .skip((page - 1) * perPage)
-            .limit(perPage);
+            .limit(perPage)
+            .exec();
+
+        if (!productList) {
+            return res.status(500).json({ success: false });
+        }
 
         return res.status(200).json({
             "products": productList,
