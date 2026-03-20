@@ -4,7 +4,12 @@ const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:4000";
 
 export const fetchDataFromApi = async (url) => {
     try {
-        const { data } = await axios.get(BASE_URL + url)
+        const token = localStorage.getItem("token");
+        const { data } = await axios.get(BASE_URL + url, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        })
         return data;
     } catch (error) {
         console.error("API Fetch Error:", error);
@@ -14,10 +19,12 @@ export const fetchDataFromApi = async (url) => {
 
 export const postData = async (url, formData) => {
     try {
+        const token = localStorage.getItem("token");
         const response = await fetch(BASE_URL + url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
             },
             body: JSON.stringify(formData),
         });
@@ -38,7 +45,12 @@ export const postData = async (url, formData) => {
 
 export const editData = async (url, updateData) => {
     try {
-        const { data } = await axios.put(`${BASE_URL}${url}`, updateData)
+        const token = localStorage.getItem("token");
+        const { data } = await axios.put(`${BASE_URL}${url}`, updateData, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        })
         return data;
     } catch (error) {
         console.log(error);
@@ -47,6 +59,11 @@ export const editData = async (url, updateData) => {
 }
 
 export const deleteData = async (url) => {
-    const { res } = await axios.delete(`${BASE_URL}${url}`);
-    return res;
+    const token = localStorage.getItem("token");
+    const { data } = await axios.delete(`${BASE_URL}${url}`, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    });
+    return data;
 };

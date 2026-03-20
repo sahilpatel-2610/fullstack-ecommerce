@@ -354,27 +354,51 @@ import RelatedProducts from "./RelatedProducts";
 
 import { useParams } from "react-router-dom";
 import { fetchDataFromApi, postData } from "../../utils/api";
+import { MyContext } from "../../App";
+import { useContext } from "react";
 
 
 const ProductDetails = () => {
 
   const [activeSize, setActiveSize] = useState(null);
+  const [activeRam, setActiveRam] = useState(null);
+  const [activeWeight, setActiveWeight] = useState(null);
   const [activeTabs, setActiveTabs] = useState(0);
   const [productData, setProductData] = useState([]);
   const [relatedProductsData, setRelatedProductsData] = useState([]);
   const [recentlyViewedProducts, setRecentlyViewedProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+
+  let [cartFields, setCartFields] = useState({});
+  let [productQuantity, setProductQuantity] = useState();
+  const [tabError, setTabError] = useState(false);
 
   const { id } = useParams();
 
-  const isActive = (index) => {
+  const context = useContext(MyContext);
+
+  const isActiveSize = (index) => {
     setActiveSize(index);
+    setTabError(false);
+  };
+
+  const isActiveRam = (index) => {
+    setActiveRam(index);
+    setTabError(false);
+  };
+
+  const isActiveWeight = (index) => {
+    setActiveWeight(index);
+    setTabError(false);
   };
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    setActiveSize(null);
     setProductData(null);
     setRelatedProductsData([]);
-
+    setIsLoading(true);
     fetchDataFromApi(`/api/products/${id}`).then((res) => {
       if (res !== null) {
         setProductData(res);
@@ -402,6 +426,55 @@ const ProductDetails = () => {
       }
     })
   }, [id])
+
+  const quantity = (val) => {
+    setProductQuantity(val);
+  }
+
+  const addtoCart = (data) => {
+
+    if (context.isLogin !== true) {
+      context.setAlertBox({
+        open: true,
+        error: true,
+        msg: "Please login to add products to cart"
+      })
+      return;
+    }
+
+    if (
+      (productData?.productRam?.length > 0 && activeRam === null) ||
+      (productData?.size?.length > 0 && activeSize === null) ||
+      (productData?.productWeight?.length > 0 && activeWeight === null)
+    ) {
+      setTabError(true);
+      return;
+    }
+
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    cartFields.productTitle = productData?.name;
+    cartFields.images = productData?.images[0];
+    cartFields.rating = productData?.rating;
+    cartFields.price = productData?.price;
+    cartFields.quantity = productQuantity;
+    cartFields.subTotal = parseInt(productData?.price * productQuantity);
+    cartFields.productId = productData?._id;
+    cartFields.userId = user?._id;
+
+    cartFields.ram = productData?.productRam?.length > 0 ? productData?.productRam[activeRam] : "";
+    cartFields.size = productData?.size?.length > 0 ? productData?.size[activeSize] : "";
+    cartFields.weight = productData?.productWeight?.length > 0 ? productData?.productWeight[activeWeight] : "";
+
+
+    context.addtoCart(cartFields);
+  }
+
+  const selectedItem = (item, quantity) => {
+
+  }
+
+
 
   return (
     <>
@@ -452,14 +525,14 @@ const ProductDetails = () => {
                 productData?.productRam && productData?.productRam?.length > 0 &&
                 < div className="productSize d-flex align-items-center">
                   <span>RAM:</span>
-                  <ul className="list list-inline mb-0 pl-4">
+                  <ul className={`list list-inline mb-0 pl-4 ${tabError === true && "error"}`}>
                     {
                       productData?.productRam?.map((item, index) => {
                         return (
                           <li className="list-inline-item" key={index}>
                             <a href="#!"
-                              className={`tag ${activeSize === index ? "active" : ""}`}
-                              onClick={() => isActive(index)}
+                              className={`tag ${activeRam === index ? "active" : ""}`}
+                              onClick={() => isActiveRam(index)}
                             >
                               {item}
                             </a>
@@ -476,14 +549,14 @@ const ProductDetails = () => {
                 productData?.size && productData?.size?.length > 0 &&
                 < div className="productSize d-flex align-items-center">
                   <span>SIZE:</span>
-                  <ul className="list list-inline mb-0 pl-4">
+                  <ul className={`list list-inline mb-0 pl-4 ${tabError === true && "error"}`}>
                     {
                       productData?.size?.map((item, index) => {
                         return (
                           <li className="list-inline-item" key={index}>
                             <a href="#!"
                               className={`tag ${activeSize === index ? "active" : ""}`}
-                              onClick={() => isActive(index)}
+                              onClick={() => isActiveSize(index)}
                             >
                               {item}
                             </a>
@@ -500,14 +573,14 @@ const ProductDetails = () => {
                 productData?.productWeight && productData?.productWeight?.length > 0 &&
                 < div className="productSize d-flex align-items-center">
                   <span>WEIGHT:</span>
-                  <ul className="list list-inline mb-0 pl-4">
+                  <ul className={`list list-inline mb-0 pl-4 ${tabError === true && "error"}`}>
                     {
                       productData?.productWeight?.map((item, index) => {
                         return (
                           <li className="list-inline-item" key={index}>
                             <a href="#!"
-                              className={`tag ${activeSize === index ? "active" : ""}`}
-                              onClick={() => isActive(index)}
+                              className={`tag ${activeWeight === index ? "active" : ""}`}
+                              onClick={() => isActiveWeight(index)}
                             >
                               {item}
                             </a>
@@ -525,9 +598,12 @@ const ProductDetails = () => {
 
               {/* Add to cart + wishlist */}
               <div className="d-flex align-items-center mt-3">
-                <QuantityBox />
-                <Button className="btn-blue btn-lg btn-big btn-round ml-3">
-                  <BsCartFill /> &nbsp; Add to cart
+                <QuantityBox quantity={quantity} selectedItem={selectedItem} />
+                <Button className="btn-blue btn-lg btn-big btn-round ml-3" onClick={() => addtoCart()}>
+                  <BsCartFill /> &nbsp;
+                  {
+                    context.addingInCart === true ? "adding..." : "Add to cart"
+                  }
                 </Button>
 
                 <Tooltip title="Add to Wishlist" placement="top">

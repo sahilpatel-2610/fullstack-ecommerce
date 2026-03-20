@@ -10,13 +10,11 @@ import Navigation from './Navigation';
 import { MyContext } from '../../App';
 import { useContext } from 'react';
 
-import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import Divider from '@mui/material/Divider';
 import { useState } from 'react';
-import { FaUser } from "react-icons/fa";
+import { FaUserAlt } from "react-icons/fa";
 import { FaClipboardCheck } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa";
 import { RiLogoutCircleRFill } from "react-icons/ri";
@@ -24,6 +22,7 @@ import { RiLogoutCircleRFill } from "react-icons/ri";
 const Header = () => {
 
     const [anchorEl, setAnchorEl] = useState(null);
+    const context = useContext(MyContext);
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -32,7 +31,11 @@ const Header = () => {
         setAnchorEl(null);
     };
 
-    const context = useContext(MyContext);
+    const logout = () => {
+        setAnchorEl(null);
+        localStorage.clear();
+        context.setisLogin(false);
+    }
 
     return (
         <>
@@ -73,7 +76,7 @@ const Header = () => {
                                                 >
                                                     <MenuItem onClick={handleClose}>
                                                         <ListItemIcon>
-                                                            <FaUser fontSize="small" />
+                                                            <FaUserAlt fontSize="small" />
                                                         </ListItemIcon>
                                                         My Account
                                                     </MenuItem>
@@ -89,7 +92,7 @@ const Header = () => {
                                                         </ListItemIcon>
                                                         My List
                                                     </MenuItem>
-                                                    <MenuItem onClick={handleClose}>
+                                                    <MenuItem onClick={logout}>
                                                         <ListItemIcon>
                                                             <RiLogoutCircleRFill fontSize="small" />
                                                         </ListItemIcon>
@@ -100,13 +103,29 @@ const Header = () => {
 
                                     }
 
-                                    <div className='ml-auto cartTab d-flex align-items-center'>
-                                        <span className='price'>$3.29</span>
-                                        <div className='position-relative ml-2'>
-                                            <Button className='circle'><IoBagOutline /></Button>
-                                            <span className='count d-flex align-items-center justify-content-center'>1</span>
+                                    <Link to="/cart">
+                                        <div className='ml-auto cartTab d-flex align-items-center'>
+
+                                            {
+                                                context.cartData?.length !== 0 ?
+                                                    <span className='price'>
+                                                        Rs.
+                                                        {
+                                                            context.cartData?.map(item => parseInt(item.price) * item.quantity).reduce((total, value) => total + value, 0)
+                                                        }
+                                                    </span>
+                                                    :
+                                                    <span className='price'>
+                                                        Rs. 0
+                                                    </span>
+                                            }
+
+                                            <div className='position-relative ml-2'>
+                                                <Button className='circle'><IoBagOutline /></Button>
+                                                <span className='count d-flex align-items-center justify-content-center'>{context.cartData?.length}</span>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </Link>
                                 </div>
 
                             </div>

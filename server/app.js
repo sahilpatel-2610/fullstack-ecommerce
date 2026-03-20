@@ -25,6 +25,8 @@ const productWeightRoutes = require('./routes/productWeight.js');
 const productRAMSRoutes = require('./routes/productRAMS.js');
 const productSIZERoutes = require('./routes/productSIZE.js');
 const userRoutes = require('./routes/user');
+// const productReviews = require('./routes/productReviews.js');
+const cart = require('./routes/cart.js');
 
 
 app.use("/uploads", express.static('uploads'));
@@ -36,6 +38,8 @@ app.use(`/api/productWeight`, productWeightRoutes);
 app.use(`/api/productRAMS`, productRAMSRoutes);
 app.use(`/api/productSIZE`, productSIZERoutes);
 app.use(`/api/user`, userRoutes);
+// app.use(`/api/productReviews`, productReviews);
+app.use(`/api/cart`, cart);
 
 // Error Handler
 app.use((err, req, res, next) => {

@@ -14,7 +14,7 @@ import ProductDetails from "./Pages/ProductDetails";
 import Cart from "./Pages/Cart";
 import SignIn from "./Pages/SignIn";
 import SignUp from "./Pages/SignUp";
-import { fetchDataFromApi } from "./utils/api";
+import { fetchDataFromApi, postData, deleteData, editData } from "./utils/api";
 import LoadingBar from 'react-top-loading-bar';
 
 import Snackbar from '@mui/material/Snackbar';
@@ -37,18 +37,27 @@ function App() {
 
   const [categoryData, setCategoryData] = useState([]);
   const [subCategoryData, setSubCategoryData] = useState([]);
+
+  const [addingInCart, setAddingInCart] = useState(false);
+
   const [activeCat, setActiveCat] = useState([]);
+
   const [alertBox, setAlertBox] = useState({
     msg: '',
     error: false,
     open: false
   });
+
   const [progress, setProgress] = useState(0);
+
   const [user, setUser] = useState({
     name: "",
     email: "",
     userId: ""
   })
+
+  const [cartData, setCartData] = useState([]);
+
 
 
 
@@ -67,13 +76,36 @@ function App() {
     })
 
     const token = localStorage.getItem("token");
+
     if (token !== "" && token !== undefined && token !== null) {
       setisLogin(true);
       const userData = JSON.parse(localStorage.getItem("user"));
       setUser(userData);
     }
 
+    fetchDataFromApi(`/api/count`).then((res) => {
+      setCartData(res);
+    })
+
   }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token !== "" && token !== undefined && token !== null) {
+      const userData = JSON.parse(localStorage.getItem("user"));
+      fetchDataFromApi(`/api/cart?userId=${userData?._id}`).then((res) => {
+        setCartData(res);
+      })
+    }
+  }, [isLogin]);
+
+  const getCartData = () => {
+    const userData = JSON.parse(localStorage.getItem("user"));
+    fetchDataFromApi(`/api/cart?userId=${userData?._id}`).then((res) => {
+      setCartData(res);
+    })
+  }
+
 
 
   useEffect(() => {
@@ -120,7 +152,62 @@ function App() {
     });
   };
 
+  const addtoCart = (data) => {
+    if (isLogin !== true) {
+      setAlertBox({
+        open: true,
+        error: true,
+        msg: "Please login to add products to cart"
+      })
+      return;
+    }
 
+    setAddingInCart(true);
+
+    postData(`/api/cart/add`, data).then((res) => {
+      if (res.status !== false && res.status !== "false" && res.success !== false && res.success !== "false") {
+        setAlertBox({
+          open: true,
+          error: false,
+          msg: "Item is added in the cart"
+
+        })
+
+        getCartData();
+
+      } else {
+        setAlertBox({
+          open: true,
+          error: true,
+          msg: res.msg || res.error || "Failed to add item"
+
+        })
+      }
+
+      setTimeout(() => {
+        setAddingInCart(false);
+      }, 1000);
+    })
+  }
+
+
+  const updateCartItem = (id, data) => {
+    editData(`/api/cart/${id}`, data).then((res) => {
+      getCartData();
+    })
+  }
+
+  const removeItemsFromCart = (id) => {
+    deleteData(`/api/cart/${id}`).then((res) => {
+      setAlertBox({
+        open: true,
+        error: false,
+        msg: "Item is removed from the cart"
+
+      })
+      getCartData();
+    })
+  }
 
   const values = {
     countryList,
@@ -144,7 +231,15 @@ function App() {
     setAlertBox,
     setProgress,
     user,
-    setUser
+    setUser,
+    addtoCart,
+    addingInCart,
+    setAddingInCart,
+    cartData,
+    setCartData,
+    getCartData,
+    removeItemsFromCart,
+    updateCartItem
   };
 
 
@@ -158,10 +253,6 @@ function App() {
           onLoaderFinished={() => setProgress(0)}
           className='topLoadingBar'
         />
-        {
-          isHeaderFooterShow === true && <Header />
-        }
-
 
         <Snackbar open={alertBox.open} autoHideDuration={6000} onClose={handleClose}>
           <Alert
@@ -173,6 +264,13 @@ function App() {
             {alertBox.msg}
           </Alert>
         </Snackbar>
+
+        {
+          isHeaderFooterShow === true && <Header />
+        }
+
+
+
 
         <Routes>
           <Route path="/" exact={true} element={<Home />} />

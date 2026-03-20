@@ -160,6 +160,9 @@ router.get(`/`, async (req, res) => {
     }
 });
 
+
+
+
 router.get(`/featured`, async (req, res) => {
     const productList = await Product.find({ isFeatured: true });
     if (!productList) {
@@ -443,7 +446,6 @@ router.put('/:id', async (req, res) => {
         });
     }
 });
-
 
 
 

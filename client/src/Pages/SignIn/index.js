@@ -68,7 +68,7 @@ const SignIn = () => {
                 context.setAlertBox({
                     open: true,
                     error: false,
-                    msg: "Login Successfully!",
+                    msg: "User Login Successfully!",
                 })
 
                 setTimeout(() => {
