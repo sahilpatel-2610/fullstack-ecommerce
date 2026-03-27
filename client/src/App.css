@@ -42,7 +42,7 @@ button .MuiCircularProgress-root {
 }
 
 button svg {
-  color: #fff;
+  color: rgba(0, 0, 0, 0.60);
 }
 
 
@@ -148,12 +148,13 @@ button {
 
 
 ::-webkit-scrollbar {
-  width: 8px !important;
-  height: 8px !important;
+  width: 6px !important;
+  height: 6px !important;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #ccc !important;
+  background: #d1d1d1 !important;
+  border-radius: 10px !important;
 }
 
 ::-webkit-scrollbar-track {
@@ -161,7 +162,12 @@ button {
 }
 
 .headerWrapper {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0px;
+  background: #fff;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  /* Subtle shadow instead of border */
 }
 
 .headerWrapper .top-strip {
@@ -190,10 +196,12 @@ button {
   height: 60px;
   min-width: 170px;
   color: #000 !important;
-  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  /* Lighter border */
   border-radius: 7px !important;
   padding: 10px 15px;
-  background: #f1f1f1;
+  background: #f8f9fa !important;
+  /* Lighter background */
 }
 
 .headerWrapper .header .part2 .countryDrop {
@@ -224,7 +232,8 @@ button {
 .headerSearch {
   width: 55%;
   height: 50px;
-  background: #e7e7e7;
+  background: #f8f9fa !important;
+  /* Much lighter search bar */
   padding: 5px;
   position: relative;
   border-radius: 5px;
@@ -558,16 +567,26 @@ nav .navpart2 ul li:hover .submenu {
 
 .homeBannerSection {
   position: relative;
-  margin-top: 1px;
+  margin-top: 25px;
+  cursor: pointer;
 }
 
 .homeBannerSection .swiper {
   overflow: hidden !important;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 .homeBannerSection .swiper .item {
   overflow: hidden;
-  border-radius: 0px;
+  border-radius: 10px;
+  height: 350px;
+}
+
+.homeBannerSection .swiper .item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .homeBannerSection * {
@@ -577,37 +596,37 @@ nav .navpart2 ul li:hover .submenu {
 
 
 .swiper-button-next {
-  right: 3% !important;
+  right: 10% !important;
   position: absolute;
   top: 45%;
   z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 45px !important;
-  height: 45px !important;
+  width: 40px !important;
+  height: 40px !important;
   background: #fff;
   border-radius: 100%;
   font-family: FontAwesome !important;
   font-weight: bold;
-  box-shadow: 0 1px 3px rgba(0 0 0 / 12%) 0 1px 2px rgba(0 0 0 / 24%) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24) !important;
 }
 
 .swiper-button-prev {
-  left: 3% !important;
+  left: 10% !important;
   position: absolute;
   top: 45%;
   z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 45px !important;
-  height: 45px !important;
+  width: 40px !important;
+  height: 40px !important;
   background: #fff;
   border-radius: 100%;
   font-family: FontAwesome !important;
   font-weight: bold;
-  box-shadow: 0 1px 3px rgba(0 0 0 / 12%) 0 1px 2px rgba(0 0 0 / 24%) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24) !important;
 }
 
 .homeBannerSection .slick-arrow.slick-next {
@@ -618,19 +637,18 @@ nav .navpart2 ul li:hover .submenu {
   left: 35px !important;
 }
 
-.slick-next:before,
-.slick-prev:before {
-  color: #000 !important;
-  font-family: FontAwesome !important;
-  opacity: 0.8;
+.swiper-pagination-bullet {
+  width: 10px !important;
+  height: 10px !important;
+  background-color: rgba(255, 255, 255, 0.5) !important;
+  opacity: 1 !important;
+  transition: all 0.3s ease-in-out;
 }
 
-.slick-next::before {
-  content: "\f105" !important;
-}
-
-.slick-prev::before {
-  content: "\f104" !important;
+.swiper-pagination-bullet-active {
+  width: 35px !important;
+  border-radius: 10px !important;
+  background-color: #2bbef9 !important;
 }
 
 .homeBannerSection {
@@ -654,14 +672,15 @@ nav .navpart2 ul li:hover .submenu {
 }
 
 .homeProducts .banner {
-  width: 100%;
+  width: 80%;
   border-radius: 10px;
   overflow: hidden;
+  margin: 0 auto 20px auto;
 }
 
 .homeProducts .banner img {
-  width: 100%;
-  height: 160px !important;
+  width: 80%;
+  height: auto;
   object-fit: cover;
 }
 
@@ -670,11 +689,11 @@ nav .navpart2 ul li:hover .submenu {
 } */
 
 .col-md-3 .banner:first-child img {
-  height: 450px !important;
+  height: 380px !important;
 }
 
 .col-md-3 .banner:last-child img {
-  height: 450px !important;
+  height: 380px !important;
 }
 
 .homeProducts .hd {
@@ -1105,14 +1124,14 @@ nav .navpart2 ul li:hover .submenu {
 
 footer {
   width: 100%;
-  height: 500px;
+  height: auto;
   margin: auto;
-  background: #fff;
-  padding: 25px 0px;
+  background: #f8f9fa;
+  padding: 60px 0px;
 }
 
 footer .topInfo {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   padding-bottom: 20px;
 }
 
@@ -1193,14 +1212,13 @@ footer .linksWrap ul li a:hover {
   color: rgba(0, 0, 0, 0.8) !important;
 }
 
-
-
 .productZoom {
   width: 100% !important;
   height: auto;
   padding: 0px;
   overflow: hidden;
   border-radius: 15px;
+  background: #f1f3ff;
 }
 
 .productZoom .badge {
@@ -1211,7 +1229,20 @@ footer .linksWrap ul li a:hover {
 }
 
 .productDetails .productZoomBig {
-  height: 450px !important;
+  aspect-ratio: 1 / 1.1;
+  height: auto !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f3ff;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.productDetails .productZoomBig img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
 }
 
 .zoomSliderBig {
@@ -1291,15 +1322,22 @@ footer .linksWrap ul li a:hover {
 /* Thumbnail default style */
 .zoomSlider .thumb_item {
   border: 2px solid transparent;
-  border-radius: 15px;
+  border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
   transition: all 0.3s ease;
-  padding: 2px;
+  padding: 3px;
+  background: #f1f3ff;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .zoomSlider .thumb_item img {
   width: 100%;
+  height: 100%;
+  object-fit: contain;
   display: block;
   border-radius: 6px;
 }

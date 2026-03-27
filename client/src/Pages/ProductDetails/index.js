@@ -10,330 +10,330 @@
 
 // const ProductDrtails = () => {
 
-//     const [activeSize, setActiveSize] = useState(null);
-//     const [activeTabs, setActiveTabs] = useState(0);
+//   const [activeSize, setActiveSize] = useState(null);
+//   const [activeTabs, setActiveTabs] = useState(0);
 
-//     const isActive = (index) => {
-//         setActiveSize(index);
-//     }
-
-
-//     return (
-//         <>
-//            <section className="productDetails section">
-//                 <div className="container">
-//                    <div className="row">
-//                         <div className="col-md-4 pl-5">
-//                             <ProductZoom/>
-//                         </div>
-
-//                         <div className="col-md-7 pl-5 pr-5">
-//                             <h2 className="hd text-capitalize">All Natural Italin-Style Chicken Meatballs</h2>
-//                             <ul className="list list-inline d-flex align-items-center">
-//                                 <li className="list-inline-item">
-//                                     <div className="d-flex align-items-center">
-//                                         <span className="text-light mr-2">Brands :</span>
-//                                         <span>Welch's</span>
-//                                     </div>
-//                                 </li>
-
-//                                 <li className="list-inline-item">
-//                                     <div className="d-flex align-items-center">
-//                                         <Rating name="read-only" value={4.5} precision={0.5} readOnly size="small" />
-
-//                                     <span className="text-light cursor ml-2">1 Review</span>    
-//                                     </div>
-//                                 </li>
+//   const isActive = (index) => {
+//     setActiveSize(index);
+//   }
 
 
-//                             </ul>
+//   return (
+//     <>
+//       <section className="productDetails section">
+//         <div className="container">
+//           <div className="row">
+//             <div className="col-md-4 pl-5">
+//               <ProductZoom />
+//             </div>
+
+//             <div className="col-md-7 pl-5 pr-5">
+//               <h2 className="hd text-capitalize">All Natural Italin-Style Chicken Meatballs</h2>
+//               <ul className="list list-inline d-flex align-items-center">
+//                 <li className="list-inline-item">
+//                   <div className="d-flex align-items-center">
+//                     <span className="text-light mr-2">Brands :</span>
+//                     <span>Welch's</span>
+//                   </div>
+//                 </li>
+
+//                 <li className="list-inline-item">
+//                   <div className="d-flex align-items-center">
+//                     <Rating name="read-only" value={4.5} precision={0.5} readOnly size="small" />
+
+//                     <span className="text-light cursor ml-2">1 Review</span>
+//                   </div>
+//                 </li>
 
 
-//                             <div class="d-flex info mb-3">
-//                                 <span class="oldPrice">$20.00</span>
-//                                 <span class="netPrice text-danger ml-2">$14.00</span>
-//                             </div>
-
-//                             <span className="badge badge-success">IN STOCK</span>
-
-//                             <p className="mt-3">Vivamus adipiscing nisl ut dolor dignissim semper. Nulla luctus malesuada tincidunt. Class aptent taciti sociosqu ad litora torquent</p>
+//               </ul>
 
 
-//                             <div className='productSize d-flex align-items-center'>
-//                                 <span>Size / Weight:</span>
-//                                 <ul className='list list-inline mb-0 pl-4'>
-//                                     <li className='list-inline-item'><a
-//                                     className={`tag ${activeSize === 0 ? 'active' : ''}`} onClick={() => isActive(0)}>50g</a></li>
-//                                     <li className='list-inline-item'><a
-//                                     className={`tag ${activeSize === 1 ? 'active' : ''}`} onClick={() => isActive(1)}>100g</a></li>
-//                                      <li className='list-inline-item'><a
-//                                     className={`tag ${activeSize === 2 ? 'active' : ''}`} onClick={() => isActive(2)}>200g</a></li>
-//                                      <li className='list-inline-item'><a
-//                                     className={`tag ${activeSize === 3 ? 'active' : ''}`} onClick={() => isActive(3)}>300g</a></li>
-//                                      <li className='list-inline-item'><a
-//                                     className={`tag ${activeSize === 4 ? 'active' : ''}`} onClick={() => isActive(4)}>500g</a></li>
-//                                 </ul>
-//                             </div>
+//               <div class="d-flex info mb-3">
+//                 <span class="oldPrice">$20.00</span>
+//                 <span class="netPrice text-danger ml-2">$14.00</span>
+//               </div>
 
-//                             <div className="d-flex align-items-center mt-3">
-//                                 <QuantityBox/>
-//                                 <Button className="btn-blue btn-lg btn-big btn-round ml-3">
-//                                     <BsCartFill /> &nbsp; Add to cart
-//                                 </Button>
+//               <span className="badge badge-success">IN STOCK</span>
 
-//                                 <Tooltip title="Add to Wishlist" placement="top">
-//                                     <Button className="btn-blue btn-lg btn-big btn-circle ml-4">
-//                                         <FaRegHeart />
-//                                     </Button>
-//                                 </Tooltip>
-
-//                                 <Tooltip title="Add to Compare" placement="top">
-//                                     <Button className="btn-blue btn-lg btn-big btn-circle ml-2">
-//                                         <MdOutlineCompareArrows />
-//                                     </Button>
-//                                 </Tooltip>
-//                             </div>
-
-//                         </div>
-//                    </div>
+//               <p className="mt-3">Vivamus adipiscing nisl ut dolor dignissim semper. Nulla luctus malesuada tincidunt. Class aptent taciti sociosqu ad litora torquent</p>
 
 
+//               <div className='productSize d-flex align-items-center'>
+//                 <span>Size / Weight:</span>
+//                 <ul className='list list-inline mb-0 pl-4'>
+//                   <li className='list-inline-item'><a
+//                     className={`tag ${activeSize === 0 ? 'active' : ''}`} onClick={() => isActive(0)}>50g</a></li>
+//                   <li className='list-inline-item'><a
+//                     className={`tag ${activeSize === 1 ? 'active' : ''}`} onClick={() => isActive(1)}>100g</a></li>
+//                   <li className='list-inline-item'><a
+//                     className={`tag ${activeSize === 2 ? 'active' : ''}`} onClick={() => isActive(2)}>200g</a></li>
+//                   <li className='list-inline-item'><a
+//                     className={`tag ${activeSize === 3 ? 'active' : ''}`} onClick={() => isActive(3)}>300g</a></li>
+//                   <li className='list-inline-item'><a
+//                     className={`tag ${activeSize === 4 ? 'active' : ''}`} onClick={() => isActive(4)}>500g</a></li>
+//                 </ul>
+//               </div>
 
-//                    <br/>
+//               <div className="d-flex align-items-center mt-3">
+//                 <QuantityBox />
+//                 <Button className="btn-blue btn-lg btn-big btn-round ml-3">
+//                   <BsCartFill /> &nbsp; Add to cart
+//                 </Button>
 
-//                    <div className='card mt-5 p-5 detailsPageTabs'>
-//                         <div className='customTabs'>
-//                             <ul className='list list-inline'>
-//                                 <li className='list list-item'>
-//                                     <Button className={`${activeTabs === 0 && 'active'}`}
-//                                         onClick={() => {
-//                                             setActiveTabs(0)
-//                                         }}
-//                                     >Description</Button>
-//                                 </li>
-//                                 <li className='list-inline-item'>
-//                                     <Button className={`${activeTabs === 1 && 'active'}`}
-//                                         onClick={() => {
-//                                             setActiveTabs(1)      
-//                                         }}
-//                                     >Additional info</Button>
-//                                 </li>
-//                                 <li className='list-inline-item'>
-//                                     <Button className={`${activeTabs === 2 && 'active'}`}
-//                                         onClick={() => {
-//                                             setActiveTabs(2)
-//                                             // showReviews()
-//                                         }}
-//                                     >Reviews (3)</Button>
-//                                 </li>
+//                 <Tooltip title="Add to Wishlist" placement="top">
+//                   <Button className="btn-blue btn-lg btn-big btn-circle ml-4">
+//                     <FaRegHeart />
+//                   </Button>
+//                 </Tooltip>
 
-//                             </ul>
+//                 <Tooltip title="Add to Compare" placement="top">
+//                   <Button className="btn-blue btn-lg btn-big btn-circle ml-2">
+//                     <MdOutlineCompareArrows />
+//                   </Button>
+//                 </Tooltip>
+//               </div>
 
-
-//                             <br />
-
-//                             {
-//                                 activeTabs === 0 &&
-//                                 <div className='tabContent'>
-//                                     <p>Noodles & Company is an American fast-casual restaurant that offers international and American noodles dishes and pasta in addition to soups and salads. Noodles & Company was founded in 1995 by Aaron Kennedy and is headquartered in Broomfield, Colorado. The Company went public in 2013 and recorded a $457 million revenue in 2017.In late 2018, there were 460 Noodles & Company locations across 29 states and Washington, D.C.</p>
-//                                 </div>
-//                             }
-
-
-//                             {
-//                                 activeTabs === 1 &&
-//                                 <div className='tabContent'>
-//                                     <div className='table-responsive'>
-//                                         <table className='table table-bordered'>
-//                                             <tbody>
-//                                                 <tr class="stand-up">
-//                                                     <th>Stand Up</th>
-//                                                     <td>
-//                                                         <p>35″L x 24″W x 37-45″H(front to back wheel)</p>
-//                                                     </td>
-//                                                 </tr>
-//                                                 <tr className="folded-wo-wheels">
-//                                                     <th>Folded (w/o wheels)</th>
-//                                                     <td>
-//                                                         <p>32.5″L x 18.5″W x 16.5″H</p>
-//                                                     </td>
-//                                                 </tr>
-//                                                 <tr className="folded-w-wheels">
-//                                                     <th>Folded (w/ wheels)</th>
-//                                                     <td>
-//                                                         <p>32.5″L x 24″W x 18.5″H</p>
-//                                                     </td>
-//                                                 </tr>
-//                                                 <tr class="door-pass-through">
-//                                                     <th>Door Pass Through</th>
-//                                                     <td>
-//                                                         <p>24</p>
-//                                                     </td>
-//                                                 </tr>
-//                                                 <tr class="frame">
-//                                                     <th>Frame</th>
-//                                                     <td>
-//                                                         <p>Aluminum</p>
-//                                                     </td>
-//                                                 </tr>
-//                                                 <tr class="weight-wo-wheels">
-//                                                     <th>Weight (w/o wheels)</th>
-//                                                     <td>
-//                                                         <p>20 LBS</p>
-//                                                     </td>
-//                                                 </tr>
-//                                                 <tr class="weight-capacity">
-//                                                     <th>Weight Capacity</th>
-//                                                     <td>
-//                                                         <p>60 LBS</p>
-//                                                     </td>
-//                                                 </tr>
-//                                                 <tr class="width">
-//                                                     <th>Width</th>
-//                                                     <td>
-//                                                         <p>24″</p>
-//                                                     </td>
-//                                                 </tr>
-//                                                 <tr class="handle-height-ground-to-handle">
-//                                                     <th>Handle height (ground to handle)</th>
-//                                                     <td>
-//                                                         <p>37-45″</p>
-//                                                     </td>
-//                                                 </tr>
-//                                                 <tr class="wheels">
-//                                                     <th>Wheels</th>
-//                                                     <td>
-//                                                         <p>12″ air / wide track slick tread</p>
-//                                                     </td>
-//                                                 </tr>
-//                                                 <tr class="seat-back-height">
-//                                                     <th>Seat back height</th>
-//                                                     <td>
-//                                                         <p>21.5″</p>
-//                                                     </td>
-//                                                 </tr>
-//                                                 <tr class="head-room-inside-canopy">
-//                                                     <th>Head room (inside canopy)</th>
-//                                                     <td>
-//                                                         <p>25″</p>
-//                                                     </td>
-//                                                 </tr>
-//                                                 <tr class="pa_color">
-//                                                     <th>Color</th>
-//                                                     <td>
-//                                                         <p>Black, Blue, Red, White</p>
-//                                                     </td>
-//                                                 </tr>
-//                                                 <tr class="pa_size">
-//                                                     <th>Size</th>
-//                                                     <td>
-//                                                         <p>M, S</p>
-//                                                     </td>
-//                                                 </tr>
-//                                             </tbody>
-//                                         </table>
-//                                     </div>
-//                                 </div>
-//                             }
+//             </div>
+//           </div>
 
 
 
-//                             {
-//                                 activeTabs === 2 &&
+//           <br />
 
-//                                 <div className='tabContent'>
-//                                     <div className='row'>
-//                                         <div className='col-md-8'>
-//                                             <h3>Customer qustions & answers</h3>
-//                                             <br />
+//           <div className='card mt-5 p-5 detailsPageTabs'>
+//             <div className='customTabs'>
+//               <ul className='list list-inline'>
+//                 <li className='list list-item'>
+//                   <Button className={`${activeTabs === 0 && 'active'}`}
+//                     onClick={() => {
+//                       setActiveTabs(0)
+//                     }}
+//                   >Description</Button>
+//                 </li>
+//                 <li className='list-inline-item'>
+//                   <Button className={`${activeTabs === 1 && 'active'}`}
+//                     onClick={() => {
+//                       setActiveTabs(1)
+//                     }}
+//                   >Additional info</Button>
+//                 </li>
+//                 <li className='list-inline-item'>
+//                   <Button className={`${activeTabs === 2 && 'active'}`}
+//                     onClick={() => {
+//                       setActiveTabs(2)
+//                       // showReviews()
+//                     }}
+//                   >Reviews (3)</Button>
+//                 </li>
 
-
-
-//                                             <div className='card p-4 reviewsCard flex-row'>
-//                                                 <div className='image'>
-//                                                     <div className='rounded-circle'>
-//                                                         <img src='https://wp.alithems.com/html/nest/demo/assets/imgs/blog/author-2.png' />
-//                                                     </div>
-//                                                         <span className='text-g d-block text-center font-weight-bold'>Naresh Bhavnager</span>
-//                                                 </div>
-
-
-//                                                 <div className='info pl-5'>
-//                                                     <div className='d=-flex align-items-center w-100'>
-//                                                         <h5 className='text-light'>27-07-1999</h5>
-//                                                             <div className='ml-auto'>
-//                                                                 <Rating name="half-rating-read"
-//                                                                     value={4.5}
-//                                                                     precision={0.5} readOnly
-//                                                                 />
-//                                                             </div>
-//                                                     </div>
-
-//                                                         <p>Noodles & Company is an American fast-casual restaurant that offers international and American noodles dishes and pasta in addition to soups and salads. Noodles & Company was founded in 1995 by Aaron Kennedy and is headquartered in Broomfield, Colorado. The Company went public in 2013 and recorded a $457 million revenue in 2017.In late 2018, there were 460 Noodles & Company locations across 29 states and Washington, D.C. </p>
-//                                                     </div>
-
-//                                                 </div>
+//               </ul>
 
 
-//                                                 <br className='res-hide' />
+//               <br />
 
-//                                                 <br className='res-hide' />
-
-
-
-
-//                                                 <from className='reviewFrom'>
-//                                                     <h4>Add a review</h4> <br />
-//                                                     <div className='form-group'>
-//                                                         <textarea className='from-control'
-//                                                         placeholder='Write a Review'
-//                                                         name='rewiew'></textarea>
-//                                                     </div>
-
-//                                                     <div className='row'>
-//                                                         <div className='col-md-6'>
-//                                                             <div className='form-group'>
-//                                                                 <input type='text'
-//                                                                 className='from-control'
-//                                                                 placeholder='Name'
-//                                                                 name='userName' />
-//                                                             </div>
-//                                                         </div>
-
-//                                                         <div className='col-md-6'>
-//                                                             <div className='form-group'>
-//                                                                 <Rating name="rating" value={4.5}
-//                                                                 precision={0.5} />
-//                                                             </div>
-//                                                         </div>
-
-//                                                     </div>
-
-
-
-//                                                     <br />
-//                                                     <div className='form-group'>
-//                                                         <Button type='submit' className='btn-g btn-lg'>Submit Review</Button>
-//                                                     </div>
-
-//                                                 </from>
-
-
-
-//                                         </div>
-//                                     </div>
-//                                 </div>
-//                             }
-
-//                         </div>
-//                    </div>
-
-
-
+//               {
+//                 activeTabs === 0 &&
+//                 <div className='tabContent'>
+//                   <p>Noodles & Company is an American fast-casual restaurant that offers international and American noodles dishes and pasta in addition to soups and salads. Noodles & Company was founded in 1995 by Aaron Kennedy and is headquartered in Broomfield, Colorado. The Company went public in 2013 and recorded a $457 million revenue in 2017.In late 2018, there were 460 Noodles & Company locations across 29 states and Washington, D.C.</p>
 //                 </div>
-//            </section>
-//         </>
-//     )
+//               }
+
+
+//               {
+//                 activeTabs === 1 &&
+//                 <div className='tabContent'>
+//                   <div className='table-responsive'>
+//                     <table className='table table-bordered'>
+//                       <tbody>
+//                         <tr class="stand-up">
+//                           <th>Stand Up</th>
+//                           <td>
+//                             <p>35″L x 24″W x 37-45″H(front to back wheel)</p>
+//                           </td>
+//                         </tr>
+//                         <tr className="folded-wo-wheels">
+//                           <th>Folded (w/o wheels)</th>
+//                           <td>
+//                             <p>32.5″L x 18.5″W x 16.5″H</p>
+//                           </td>
+//                         </tr>
+//                         <tr className="folded-w-wheels">
+//                           <th>Folded (w/ wheels)</th>
+//                           <td>
+//                             <p>32.5″L x 24″W x 18.5″H</p>
+//                           </td>
+//                         </tr>
+//                         <tr class="door-pass-through">
+//                           <th>Door Pass Through</th>
+//                           <td>
+//                             <p>24</p>
+//                           </td>
+//                         </tr>
+//                         <tr class="frame">
+//                           <th>Frame</th>
+//                           <td>
+//                             <p>Aluminum</p>
+//                           </td>
+//                         </tr>
+//                         <tr class="weight-wo-wheels">
+//                           <th>Weight (w/o wheels)</th>
+//                           <td>
+//                             <p>20 LBS</p>
+//                           </td>
+//                         </tr>
+//                         <tr class="weight-capacity">
+//                           <th>Weight Capacity</th>
+//                           <td>
+//                             <p>60 LBS</p>
+//                           </td>
+//                         </tr>
+//                         <tr class="width">
+//                           <th>Width</th>
+//                           <td>
+//                             <p>24″</p>
+//                           </td>
+//                         </tr>
+//                         <tr class="handle-height-ground-to-handle">
+//                           <th>Handle height (ground to handle)</th>
+//                           <td>
+//                             <p>37-45″</p>
+//                           </td>
+//                         </tr>
+//                         <tr class="wheels">
+//                           <th>Wheels</th>
+//                           <td>
+//                             <p>12″ air / wide track slick tread</p>
+//                           </td>
+//                         </tr>
+//                         <tr class="seat-back-height">
+//                           <th>Seat back height</th>
+//                           <td>
+//                             <p>21.5″</p>
+//                           </td>
+//                         </tr>
+//                         <tr class="head-room-inside-canopy">
+//                           <th>Head room (inside canopy)</th>
+//                           <td>
+//                             <p>25″</p>
+//                           </td>
+//                         </tr>
+//                         <tr class="pa_color">
+//                           <th>Color</th>
+//                           <td>
+//                             <p>Black, Blue, Red, White</p>
+//                           </td>
+//                         </tr>
+//                         <tr class="pa_size">
+//                           <th>Size</th>
+//                           <td>
+//                             <p>M, S</p>
+//                           </td>
+//                         </tr>
+//                       </tbody>
+//                     </table>
+//                   </div>
+//                 </div>
+//               }
+
+
+
+//               {
+//                 activeTabs === 2 &&
+
+//                 <div className='tabContent'>
+//                   <div className='row'>
+//                     <div className='col-md-8'>
+//                       <h3>Customer qustions & answers</h3>
+//                       <br />
+
+
+
+//                       <div className='card p-4 reviewsCard flex-row'>
+//                         <div className='image'>
+//                           <div className='rounded-circle'>
+//                             <img src='https://wp.alithems.com/html/nest/demo/assets/imgs/blog/author-2.png' />
+//                           </div>
+//                           <span className='text-g d-block text-center font-weight-bold'>Naresh Bhavnager</span>
+//                         </div>
+
+
+//                         <div className='info pl-5'>
+//                           <div className='d=-flex align-items-center w-100'>
+//                             <h5 className='text-light'>27-07-1999</h5>
+//                             <div className='ml-auto'>
+//                               <Rating name="half-rating-read"
+//                                 value={4.5}
+//                                 precision={0.5} readOnly
+//                               />
+//                             </div>
+//                           </div>
+
+//                           <p>Noodles & Company is an American fast-casual restaurant that offers international and American noodles dishes and pasta in addition to soups and salads. Noodles & Company was founded in 1995 by Aaron Kennedy and is headquartered in Broomfield, Colorado. The Company went public in 2013 and recorded a $457 million revenue in 2017.In late 2018, there were 460 Noodles & Company locations across 29 states and Washington, D.C. </p>
+//                         </div>
+
+//                       </div>
+
+
+//                       <br className='res-hide' />
+
+//                       <br className='res-hide' />
+
+
+
+
+//                       <from className='reviewFrom'>
+//                         <h4>Add a review</h4> <br />
+//                         <div className='form-group'>
+//                           <textarea className='from-control'
+//                             placeholder='Write a Review'
+//                             name='rewiew'></textarea>
+//                         </div>
+
+//                         <div className='row'>
+//                           <div className='col-md-6'>
+//                             <div className='form-group'>
+//                               <input type='text'
+//                                 className='from-control'
+//                                 placeholder='Name'
+//                                 name='userName' />
+//                             </div>
+//                           </div>
+
+//                           <div className='col-md-6'>
+//                             <div className='form-group'>
+//                               <Rating name="rating" value={4.5}
+//                                 precision={0.5} />
+//                             </div>
+//                           </div>
+
+//                         </div>
+
+
+
+//                         <br />
+//                         <div className='form-group'>
+//                           <Button type='submit' className='btn-g btn-lg'>Submit Review</Button>
+//                         </div>
+
+//                       </from>
+
+
+
+//                     </div>
+//                   </div>
+//                 </div>
+//               }
+
+//             </div>
+//           </div>
+
+
+
+//         </div>
+//       </section>
+//     </>
+//   )
 // }
 
 // export default ProductDrtails;
@@ -356,6 +356,7 @@ import { useParams } from "react-router-dom";
 import { fetchDataFromApi, postData } from "../../utils/api";
 import { MyContext } from "../../App";
 import { useContext } from "react";
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 const ProductDetails = () => {
@@ -368,6 +369,7 @@ const ProductDetails = () => {
   const [relatedProductsData, setRelatedProductsData] = useState([]);
   const [recentlyViewedProducts, setRecentlyViewedProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [reviewsData, setReviewsData] = useState([]);
 
 
   let [cartFields, setCartFields] = useState({});
@@ -425,7 +427,20 @@ const ProductDetails = () => {
         })
       }
     })
-  }, [id])
+
+
+    fetchDataFromApi(`/api/productReviews?productId=${id}`).then((res) => {
+      setReviewsData(res);
+    })
+
+    if (context.isLogin === true) {
+      setReviews(prev => ({
+        ...prev,
+        customerName: context.user?.name
+      }));
+    }
+
+  }, [id, context.isLogin, context.user])
 
   const quantity = (val) => {
     setProductQuantity(val);
@@ -475,6 +490,100 @@ const ProductDetails = () => {
   }
 
 
+  const [rating, setRating] = useState(1);
+  const [reviews, setReviews] = useState({
+    productId: "",
+    customerName: "",
+    customerId: "",
+    review: "",
+    customerRating: 0
+  });
+
+
+  const onChangeInput = (e) => {
+    setReviews(() => ({
+      ...reviews,
+      [e.target.name]: e.target.value
+    }));
+  }
+
+  const changeRating = (e) => {
+    setRating(e.target.value);
+    setReviews((prev) => ({
+      ...prev,
+      customerRating: e.target.value
+    }));
+  }
+
+  const addReview = (e) => {
+    e.preventDefault();
+
+    if (context.isLogin !== true) {
+      context.setAlertBox({
+        open: true,
+        error: true,
+        msg: "Please login to add a review"
+      });
+      return;
+    }
+
+    if (reviews.review === "") {
+      context.setAlertBox({
+        open: true,
+        error: true,
+        msg: "Please write a review"
+      });
+      return;
+    }
+
+    if (reviews.customerName === "") {
+      context.setAlertBox({
+        open: true,
+        error: true,
+        msg: "Please provide your name"
+      });
+      return;
+    }
+
+    const reviewData = {
+      productId: id,
+      customerName: reviews.customerName,
+      customerId: context.user?._id,
+      review: reviews.review,
+      customerRating: rating
+    };
+
+    setIsLoading(true);
+
+    postData("/api/productReviews/add", reviewData).then((res) => {
+      setIsLoading(false);
+      if (res !== undefined && res.error !== true && res.success !== false) {
+        context.setAlertBox({
+          open: true,
+          error: false,
+          msg: "Review submitted successfully!"
+        });
+        setReviews({
+          review: "",
+          customerName: context.user?.name || "",
+          customerRating: 1
+        });
+        setRating(1);
+        fetchDataFromApi(`/api/productReviews?productId=${id}`).then((res) => {
+          setReviewsData(res);
+        })
+      } else {
+        context.setAlertBox({
+          open: true,
+          error: true,
+          msg: res.msg || "Failed to submit review"
+        });
+      }
+    })
+
+  }
+
+
 
   return (
     <>
@@ -482,12 +591,12 @@ const ProductDetails = () => {
         <div className="container">
           <div className="row">
             {/* Left - Product Zoom */}
-            <div className="col-md-4 pl-5">
+            <div className="col-md-4">
               <ProductZoom images={productData?.images} discount={productData?.discount} />
             </div>
 
             {/* Right - Product Info */}
-            <div className="col-md-7 pl-5 pr-5">
+            <div className="col-md-7 pl-5">
               <h2 className="hd text-capitalize">
                 {productData?.name}
               </h2>
@@ -648,7 +757,7 @@ const ProductDetails = () => {
                     className={`${activeTabs === 2 ? "active" : ""}`}
                     onClick={() => setActiveTabs(2)}
                   >
-                    Reviews (3)
+                    Reviews ({reviewsData?.length})
                   </Button>
                 </li>
               </ul>
@@ -779,66 +888,64 @@ const ProductDetails = () => {
                       <h3>Customer questions & answers</h3>
                       <br />
 
-                      <div className="card p-4 reviewCard flex-row">
-                        <div className="image">
-                          <div className="rounded-circle">
-                            {/* <img src="https://wp.alithems.com/html/nest/demo/assets/imgs/blog/author-2.png" /> */}
-                            <img src="https://images.pexels.com/photos/1567069/pexels-photo-1567069.jpeg" alt="author" />
-                          </div>
-                          <span className="text-g d-block text-center font-weight-bold">
-                            Naresh Bhavnager
-                          </span>
-                        </div>
+                      {
+                        reviewsData?.length > 0 && reviewsData?.slice(0)?.reverse()?.map((item, index) => {
+                          return (
+                            <div className="card p-4 reviewCard flex-row shadow" key={index}>
+                              <div className="info">
+                                <div className="d-flex align-items-center w-100">
+                                  <h5>{item?.customerName}</h5>
+                                  <div className="ml-auto">
+                                    <Rating name="half-rating-read"
+                                      value={item?.customerRating}
+                                      readOnly
+                                      size="small" />
+                                  </div>
+                                </div>
 
-                        <div className="info pl-5">
-                          <div className="d-flex align-items-center w-100">
-                            <h5 className="text-light">27-07-1999</h5>
-                            <div className="ml-auto">
-                              <Rating name="half-rating-read" value={4.5} precision={0.5} readOnly size="small" />
+                                <h6 className="text-light">{item?.dateCreated}</h6>
+
+                                <p>
+                                  {item?.review}
+                                </p>
+                              </div>
                             </div>
-                          </div>
 
-                          <p>
-                            {/* Noodles & Company is an American fast-casual restaurant that offers
-                            international and American noodle dishes and pasta. */}
-                            Noodles & Company is an American fast-casual restaurant that offers international and American noodles dishes and pasta in addition to soups and salads. Noodles & Company was founded in 1995 by Aaron Kennedy and is headquartered in Broomfield, Colorado. The Company went public in 2013 and recorded a $457 million revenue in 2017.In late 2018, there were 460 Noodles & Company locations across 29 states and Washington, D.C.
-                          </p>
-                        </div>
-                      </div>
+                          )
+                        })
+                      }
 
-                      <form className="reviewForm">
+
+                      <br className="res-hide" />
+
+
+
+                      <form className="reviewForm" onSubmit={addReview}>
+
                         <h4>Add a review</h4>
                         <div className="form-group">
                           <textarea
-                            className="form-control"
+                            className="form-control shadow"
                             placeholder="Write a Review"
                             name="review"
+                            value={reviews.review}
+                            onChange={onChangeInput}
                           ></textarea>
                         </div>
 
                         <div className="row">
-                          <div className="col-md-6">
-                            <div className="form-group">
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Name"
-                                name="userName"
-                              />
-                            </div>
-                          </div>
 
                           <div className="col-md-6">
                             <div className="form-group">
-                              <Rating name="rating" value={4.5} precision={0.5} />
+                              <Rating name="rating" value={rating} precision={0.5} onChange={changeRating} />
                             </div>
                           </div>
                         </div>
 
                         <br />
                         <div className="form-group">
-                          <Button type="submit" className="btn-blue btn-lg btn-big btn-round">
-                            Submit Review
+                          <Button type="submit" className="btn-blue btn-lg btn-big" >
+                            {isLoading === true ? <CircularProgress color="inherit" className="loader" /> : 'Submit Review'}
                           </Button>
                         </div>
                       </form>
@@ -866,6 +973,7 @@ const ProductDetails = () => {
                   </div>
                 </div>
               )}
+
             </div>
           </div>
 

@@ -12,6 +12,7 @@ import ProductModal from "./Components/ProductModal";
 import Listing from "./Pages/Listing";
 import ProductDetails from "./Pages/ProductDetails";
 import Cart from "./Pages/Cart";
+import MyList from "./Pages/MyList";
 import SignIn from "./Pages/SignIn";
 import SignUp from "./Pages/SignUp";
 import { fetchDataFromApi, postData, deleteData, editData } from "./utils/api";
@@ -57,6 +58,7 @@ function App() {
   })
 
   const [cartData, setCartData] = useState([]);
+  const [myListData, setMyListData] = useState([]);
 
 
 
@@ -83,9 +85,9 @@ function App() {
       setUser(userData);
     }
 
-    fetchDataFromApi(`/api/count`).then((res) => {
-      setCartData(res);
-    })
+    // fetchDataFromApi(`/api/count`).then((res) => {
+    //   setCartData(res);
+    // })
 
   }, []);
 
@@ -94,7 +96,11 @@ function App() {
     if (token !== "" && token !== undefined && token !== null) {
       const userData = JSON.parse(localStorage.getItem("user"));
       fetchDataFromApi(`/api/cart?userId=${userData?._id}`).then((res) => {
-        setCartData(res);
+        if (res !== undefined && !res.error) {
+          setCartData(res);
+        } else {
+          setCartData([]);
+        }
       })
     }
   }, [isLogin]);
@@ -102,7 +108,22 @@ function App() {
   const getCartData = () => {
     const userData = JSON.parse(localStorage.getItem("user"));
     fetchDataFromApi(`/api/cart?userId=${userData?._id}`).then((res) => {
-      setCartData(res);
+      if (res !== undefined && !res.error) {
+        setCartData(res);
+      } else {
+        setCartData([]);
+      }
+    })
+  }
+
+  const getMyListData = () => {
+    const userData = JSON.parse(localStorage.getItem("user"));
+    fetchDataFromApi(`/api/my-list?userId=${userData?._id}`).then((res) => {
+      if (res !== undefined && !res.error) {
+        setMyListData(res);
+      } else {
+        setMyListData([]);
+      }
     })
   }
 
@@ -239,7 +260,10 @@ function App() {
     setCartData,
     getCartData,
     removeItemsFromCart,
-    updateCartItem
+    updateCartItem,
+    myListData,
+    setMyListData,
+    getMyListData
   };
 
 
@@ -278,6 +302,7 @@ function App() {
           <Route path="/products/subCat/:id" exact={true} element={<Listing />} />
           <Route exact={true} path="/product/:id" element={<ProductDetails />} />
           <Route exact={true} path="/cart" element={<Cart />} />
+          <Route exact={true} path="/my-list" element={<MyList />} />
           <Route exact={true} path="/signIn" element={<SignIn />} />
           <Route exact={true} path="/signUp" element={<SignUp />} />
         </Routes>

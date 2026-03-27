@@ -7,8 +7,9 @@ import { IoBagCheckOutline } from "react-icons/io5";
 import { useContext } from "react";
 import { MyContext } from "../../App";
 import { useEffect } from "react";
-import { deleteData, editData, fetchDataFromApi } from "../../utils/api";
+import { deleteData, editData, fetchDataFromApi, postData } from "../../utils/api";
 import { useState } from "react";
+import { loadStripe } from "@stripe/stripe-js";
 
 const Cart = () => {
 
@@ -23,8 +24,12 @@ const Cart = () => {
 
     useEffect(() => {
         fetchDataFromApi(`/api/cart`).then((res) => {
-            setCartData(res);
-            setSelectedQuantity(res?.quantity);
+            if (res !== undefined && !res.error) {
+                setCartData(res);
+                setSelectedQuantity(res?.quantity);
+            } else {
+                setCartData([]);
+            }
         })
     }, []);
 
@@ -52,11 +57,26 @@ const Cart = () => {
             }
 
             editData(`/api/cart/${item?._id}`, cartFields).then((res) => {
-                setTimeout(() => {
+                if (res !== undefined && res.error !== true) {
+                    setTimeout(() => {
+                        setIsLoading(false);
+                        context.getCartData();
+                    }, 1000)
+                } else {
                     setIsLoading(false);
-                    context.getCartData();
-                }, 1000)
-
+                    context.setAlertBox({
+                        open: true,
+                        error: true,
+                        msg: res?.msg || "Failed to update quantity!"
+                    })
+                }
+            }).catch((err) => {
+                setIsLoading(false);
+                context.setAlertBox({
+                    open: true,
+                    error: true,
+                    msg: "An unexpected error occurred!"
+                })
             })
         }
     }
@@ -64,13 +84,68 @@ const Cart = () => {
     const removeItem = (id) => {
         setIsLoading(true);
         deleteData(`/api/cart/${id}`).then((res) => {
+            if (res !== undefined && res.error !== true) {
+                context.setAlertBox({
+                    open: true,
+                    error: false,
+                    msg: "Item removed from cart!"
+                })
+                context.getCartData();
+            } else {
+                context.setAlertBox({
+                    open: true,
+                    error: true,
+                    msg: res?.msg || "Failed to remove item from cart!"
+                })
+            }
+            setIsLoading(false);
+        }).catch((err) => {
             context.setAlertBox({
                 open: true,
-                error: false,
-                msg: "Item removed from cart!"
+                error: true,
+                msg: "An unexpected error occurred!"
             })
-            context.getCartData();
             setIsLoading(false);
+        })
+    }
+
+    const checkout = async () => {
+        const stripe = await loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
+
+        const cartProducts = cartData.map((product) => {
+            return {
+                price: product?.price,
+                quantity: product?.quantity,
+                productTitle: product?.productTitle,
+                images: product?.images,
+                productId: product?.productId,
+                userId: product?.userId,
+                ram: product?.ram,
+                size: product?.size,
+                weight: product?.weight
+            }
+        })
+
+        const userData = JSON.parse(localStorage.getItem("user"));
+
+        const body = {
+            products: cartProducts,
+            userId: userData?._id,
+            email: userData?.email
+        }
+
+        postData(`/api/checkout`, body).then((res) => {
+            if (res !== undefined && !res.error) {
+                stripe.redirectToCheckout({
+                    sessionId: res.id
+                })
+            } else {
+                context.setAlertBox({
+                    open: true,
+                    error: true,
+                    msg: "Checkout failed, please try again!"
+                })
+            }
         })
     }
 
@@ -184,7 +259,7 @@ const Cart = () => {
                                         </div>
 
                                         <br />
-                                        <Button className="btn-red btn-lg btn-big"><IoBagCheckOutline /> &nbsp; Checkout</Button>
+                                        <Button className="btn-red btn-lg btn-big" onClick={checkout}><IoBagCheckOutline /> &nbsp; Checkout</Button>
 
 
                                     </div>

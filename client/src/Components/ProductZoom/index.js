@@ -59,9 +59,9 @@ const ProductZoom = (props) => {
 
       {/* Thumbnail Swiper */}
       <Swiper
-        slidesPerView={4}
+        slidesPerView={5}
         spaceBetween={10}
-        navigation={true}
+        navigation={false}
         slidesPerGroup={1}
         modules={[Navigation]}
         className="zoomSlider"

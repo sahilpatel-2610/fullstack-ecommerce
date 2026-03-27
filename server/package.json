@@ -24,6 +24,7 @@
     "package-name": "^0.1.0",
     "require": "^2.4.20",
     "route": "^0.2.5",
+    "stripe": "^21.0.1",
     "uuid": "^13.0.0"
   },
   "devDependencies": {

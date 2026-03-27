@@ -12,8 +12,8 @@ const HomeBanner = () => {
     <div className="container-fluid mt-1">
       <div className="homeBannerSection">
         <Swiper
-          slidesPerView={1}
-          spaceBetween={10}
+          slidesPerView={1.15}
+          spaceBetween={20}
           navigation={true}
           loop={true}
           centeredSlides={true}
@@ -28,7 +28,7 @@ const HomeBanner = () => {
           <SwiperSlide>
             <div className="item">
               <img
-                src="https://api.spicezgold.com/download/file_1734525002307_1723967638078_slideBanner1.6bbeed1a0c8ffb494f7c.jpg"
+                src="https://rukminim2.flixcart.com/fk-p-flap/896/328/image/c3336cf30f31dd74.jpg"
                 className="w-100"
                 alt="Banner 1"
               />
@@ -38,7 +38,7 @@ const HomeBanner = () => {
           <SwiperSlide>
             <div className="item">
               <img
-                src="https://api.spicezgold.com/download/file_1734525014348_NewProject(7).jpg"
+                src="https://rukminim2.flixcart.com/fk-p-flap/3240/1580/image/c4231c2fd445bee9.jpg"
                 className="w-100"
                 alt="Banner 2"
               />
@@ -48,7 +48,7 @@ const HomeBanner = () => {
           <SwiperSlide>
             <div className="item">
               <img
-                src="https://api.spicezgold.com/download/file_1734524878924_1721277298204_banner.jpg"
+                src="https://rukminim2.flixcart.com/fk-p-flap/3240/1580/image/40c1f1d377852711.jpg"
                 className="w-100"
                 alt="Banner 3"
               />
@@ -58,7 +58,7 @@ const HomeBanner = () => {
           <SwiperSlide>
             <div className="item">
               <img
-                src="https://api.spicezgold.com/download/file_1734524930884_NewProject(6).jpg"
+                src="https://rukminim2.flixcart.com/fk-p-flap/3240/1580/image/acb6e95035d3cef4.jpg"
                 className="w-100"
                 alt="Banner 4"
               />
@@ -68,7 +68,7 @@ const HomeBanner = () => {
           <SwiperSlide>
             <div className="item">
               <img
-                src="https://api.spicezgold.com/download/file_1734524971122_NewProject(8).jpg"
+                src="https://rukminim2.flixcart.com/fk-p-flap/3240/1580/image/304757a221f5d965.jpg"
                 className="w-100"
                 alt="Banner 5"
               />
@@ -78,7 +78,7 @@ const HomeBanner = () => {
           <SwiperSlide>
             <div className="item">
               <img
-                src="https://api.spicezgold.com/download/file_1734524985581_NewProject(11).jpg"
+                src="https://rukminim2.flixcart.com/fk-p-flap/3240/1580/image/c83fba569519c8e5.jpg"
                 className="w-100"
                 alt="Banner 6"
               />
