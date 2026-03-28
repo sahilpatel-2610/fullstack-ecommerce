@@ -351,7 +351,7 @@ import { FaRegHeart } from "react-icons/fa";
 import { MdOutlineCompareArrows } from "react-icons/md";
 import Tooltip from '@mui/material/Tooltip';
 import RelatedProducts from "./RelatedProducts";
-
+import { FaHeart } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import { fetchDataFromApi, postData } from "../../utils/api";
 import { MyContext } from "../../App";
@@ -359,7 +359,7 @@ import { useContext } from "react";
 import CircularProgress from '@mui/material/CircularProgress';
 
 
-const ProductDetails = () => {
+const ProductDetails = (props) => {
 
   const [activeSize, setActiveSize] = useState(null);
   const [activeRam, setActiveRam] = useState(null);
@@ -370,6 +370,7 @@ const ProductDetails = () => {
   const [recentlyViewedProducts, setRecentlyViewedProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [reviewsData, setReviewsData] = useState([]);
+  const [isAddedToMyList, setIsAddedToMyList] = useState(false);
 
 
   let [cartFields, setCartFields] = useState({});
@@ -439,6 +440,14 @@ const ProductDetails = () => {
         customerName: context.user?.name
       }));
     }
+
+    const userData = JSON.parse(localStorage.getItem("user"));
+
+    fetchDataFromApi(`/api/my-list?productId=${id}&userId=${userData?._id}`).then((res) => {
+      if (res.length !== 0) {
+        setIsAddedToMyList(true);
+      }
+    })
 
   }, [id, context.isLogin, context.user])
 
@@ -583,6 +592,59 @@ const ProductDetails = () => {
 
   }
 
+  const addToMyList = (id) => {
+    if (context.isLogin !== true) {
+      context.setAlertBox({
+        open: true,
+        error: true,
+        msg: "Please login to add products to your wishlist"
+      })
+      return;
+    }
+
+    const userData = JSON.parse(localStorage.getItem("user"));
+    const data = {
+      productTitle: productData?.name,
+      images: productData?.images[0],
+      rating: productData?.rating,
+      price: productData?.price,
+      productId: id,
+      userId: userData?._id
+    }
+
+    postData("/api/my-list/add", data).then((res) => {
+      if (res !== undefined && res.status === true) {
+        context.setAlertBox({
+          open: true,
+          error: false,
+          msg: "Item added to My List!"
+        })
+        context.getMyListData();
+
+        fetchDataFromApi(`/api/my-list?productId=${id}&userId=${userData?._id}`).then((res) => {
+          if (res.length !== 0) {
+            setIsAddedToMyList(true);
+          }
+        })
+
+      } else {
+        context.setAlertBox({
+          open: true,
+          error: true,
+          msg: res?.msg || "Failed to add item to My List!"
+        })
+      }
+    }).catch((err) => {
+      context.setAlertBox({
+        open: true,
+        error: true,
+        msg: "An unexpected error occurred!"
+      })
+    })
+  }
+
+
+
 
 
   return (
@@ -708,16 +770,22 @@ const ProductDetails = () => {
               {/* Add to cart + wishlist */}
               <div className="d-flex align-items-center mt-3">
                 <QuantityBox quantity={quantity} selectedItem={selectedItem} />
-                <Button className="btn-blue btn-lg btn-big btn-round ml-3" onClick={() => addtoCart()}>
+                <Button className={"btn-blue btn-lg btn-big btn-round ml-3"} onClick={() => addtoCart()}>
                   <BsCartFill /> &nbsp;
                   {
                     context.addingInCart === true ? "adding..." : "Add to cart"
                   }
                 </Button>
 
-                <Tooltip title="Add to Wishlist" placement="top">
-                  <Button className="btn-blue btn-lg btn-big btn-circle ml-4">
-                    <FaRegHeart />
+                <Tooltip title={`${isAddedToMyList === true ? 'Added to Wishlist' : 'Add to Wishlist'}`} placement="top">
+                  <Button className="btn-blue btn-lg btn-big btn-circle ml-4" onClick={() => addToMyList(id)}>
+                    {
+                      isAddedToMyList === true ? <FaHeart className="text-danger" />
+                        :
+                        <>
+                          <FaRegHeart />
+                        </>
+                    }
                   </Button>
                 </Tooltip>
 

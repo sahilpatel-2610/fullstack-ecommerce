@@ -7,12 +7,16 @@ import { MyContext } from '../../App';
 import { Link } from 'react-router-dom';
 import Slider from 'react-slick';
 import Skeleton from '@mui/material/Skeleton';
-import { postData } from '../../utils/api';
+import { fetchDataFromApi, postData } from '../../utils/api';
+import { FaHeart } from "react-icons/fa";
 
 const ProductItem = (props) => {
     const [isHovered, setIsHovered] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [isAddedToMyList, setIsAddedToMyList] = useState(false);
+
     const context = useContext(MyContext);
+
     const sliderRef = useRef();
 
     const settings = {
@@ -32,13 +36,21 @@ const ProductItem = (props) => {
         });
     }
 
-    const handleMouseEnter = () => {
+    const handleMouseEnter = (id) => {
         setIsHovered(true);
         setTimeout(() => {
             if (sliderRef.current) {
                 sliderRef.current.slickPlay();
             }
         }, 20);
+
+        const userData = JSON.parse(localStorage.getItem("user"));
+
+        fetchDataFromApi(`/api/my-list?productId=${id}&userId=${userData?._id}`).then((res) => {
+            if (res.length !== 0) {
+                setIsAddedToMyList(true);
+            }
+        })
     }
 
     const handleMouseLeave = () => {
@@ -57,19 +69,40 @@ const ProductItem = (props) => {
     }, [])
 
     const addToMyList = (id) => {
+        if (context.isLogin !== true) {
+            context.setAlertBox({
+                open: true,
+                error: true,
+                msg: "Please login to add products to your wishlist"
+            })
+            return;
+        }
+
         const userData = JSON.parse(localStorage.getItem("user"));
         const data = {
-            userId: userData?._id,
-            productId: id
+            productTitle: props?.item?.name,
+            images: props?.item?.images[0],
+            rating: props?.item?.rating,
+            price: props?.item?.price,
+            productId: id,
+            userId: userData?._id
         }
 
         postData("/api/my-list/add", data).then((res) => {
-            if (res !== undefined && res.status !== false) {
+            if (res !== undefined && res.status === true) {
                 context.setAlertBox({
                     open: true,
                     error: false,
                     msg: "Item added to My List!"
                 })
+                context.getMyListData();
+
+                fetchDataFromApi(`/api/my-list?productId=${id}&userId=${userData?._id}`).then((res) => {
+                    if (res.length !== 0) {
+                        setIsAddedToMyList(true);
+                    }
+                })
+
             } else {
                 context.setAlertBox({
                     open: true,
@@ -88,7 +121,9 @@ const ProductItem = (props) => {
 
     return (
         <>
-            <div className={`productItem ${props.itemView}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+            <div className={`productItem ${props.itemView}`}
+                onMouseEnter={() => handleMouseEnter(props?.itemView === 'recentlyView' ? props.item?.productId : props.item?._id)}
+                onMouseLeave={handleMouseLeave}>
                 <div className="img_rapper">
                     <Link to={`/product/${props?.itemView === 'recentlyView' ? props.item?.productId : props.item?._id}`}>
                         <div className='sliderWrapper'>
@@ -110,12 +145,14 @@ const ProductItem = (props) => {
                         </div>
 
                         {
-                            isLoading === true ?
-                                <Skeleton variant='rectangular' width="100%" height={200} >
-                                    <IoIosImages />
-                                </Skeleton>
-                                :
-                                <img src={props?.item?.images[0]} className='w-100' alt="product" />
+                            isHovered === false ? (
+                                isLoading === true ?
+                                    <Skeleton variant='rectangular' width="100%" height={200} >
+                                        <IoIosImages />
+                                    </Skeleton>
+                                    :
+                                    <img src={props?.item?.images[0]} className='w-100' alt="product" />
+                            ) : null
                         }
                     </Link>
 
@@ -123,7 +160,14 @@ const ProductItem = (props) => {
 
                     <div className="actions">
                         <Button onClick={() => viewProductDetails(props?.itemView === 'recentlyView' ? props.item?.productId : props.item?._id)}><TfiFullscreen /></Button>
-                        <Button onClick={() => addToMyList(props?.itemView === 'recentlyView' ? props.item?.productId : props.item?._id)}><IoMdHeartEmpty style={{ fontSize: '20px' }} /></Button>
+                        <Button className={isAddedToMyList === true && 'active'} onClick={() => addToMyList(props?.itemView === 'recentlyView' ? props.item?.productId : props.item?._id)}>
+                            {
+                                isAddedToMyList === true ?
+                                    <FaHeart style={{ fontSize: '20px' }} />
+                                    :
+                                    <IoMdHeartEmpty style={{ fontSize: '20px' }} />
+                            }
+                        </Button>
                     </div>
                 </div>
 
@@ -139,7 +183,7 @@ const ProductItem = (props) => {
                         <span className="netPrice text-danger ml-2">Rs {props?.item?.price}</span>
                     </div>
                 </div>
-            </div>
+            </div >
         </>
     )
 }

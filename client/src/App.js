@@ -15,6 +15,7 @@ import Cart from "./Pages/Cart";
 import MyList from "./Pages/MyList";
 import SignIn from "./Pages/SignIn";
 import SignUp from "./Pages/SignUp";
+import Checkout from "./Pages/Checkout";
 import { fetchDataFromApi, postData, deleteData, editData } from "./utils/api";
 import LoadingBar from 'react-top-loading-bar';
 
@@ -139,7 +140,7 @@ function App() {
       const userData = JSON.parse(localStorage.getItem("user"));
 
       setUser(userData);
-
+      getMyListData();
     } else {
       setisLogin(false);
     }
@@ -157,10 +158,13 @@ function App() {
   }, [isOpenProductModal]);
 
   const getCountry = async (url) => {
-    await axios.get(url).then((res) => {
+    try {
+      const res = await axios.get(url);
       setCountryList(res.data.data);
       console.log(res.data.data);
-    });
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
   const handleClose = (event, reason) => {
@@ -305,6 +309,7 @@ function App() {
           <Route exact={true} path="/my-list" element={<MyList />} />
           <Route exact={true} path="/signIn" element={<SignIn />} />
           <Route exact={true} path="/signUp" element={<SignUp />} />
+          <Route exact={true} path="/checkout" element={<Checkout />} />
         </Routes>
         {
           isHeaderFooterShow === true && <Footer />

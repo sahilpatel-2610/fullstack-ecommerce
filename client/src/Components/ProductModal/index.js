@@ -159,21 +159,81 @@ import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
 import { MdClose } from "react-icons/md";
 import Rating from '@mui/material/Rating';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 
 
 import QuantityBox from '../QuantityBox';
 import { IoIosHeartEmpty } from "react-icons/io";
+import { FaHeart } from "react-icons/fa";
 import { MdOutlineCompareArrows } from "react-icons/md";
 import { MyContext } from '../../App';
 import ProductZoom from '../ProductZoom';
 import { IoCartSharp } from "react-icons/io5";
+import { postData, fetchDataFromApi } from '../../utils/api';
+import { useEffect } from 'react';
 
 
 const ProductModal = (props) => {
 
 
   const context = useContext(MyContext);
+  const [isAddedToMyList, setIsAddedToMyList] = useState(false);
+
+  const addToMyList = (id) => {
+    if (context.isLogin !== true) {
+      context.setAlertBox({
+        open: true,
+        error: true,
+        msg: "Please login to add products to your wishlist"
+      })
+      return;
+    }
+
+    const userData = JSON.parse(localStorage.getItem("user"));
+    const data = {
+      productTitle: props?.data?.name,
+      images: props?.data?.images[0],
+      rating: props?.data?.rating,
+      price: props?.data?.price,
+      productId: id,
+      userId: userData?._id
+    }
+
+    postData("/api/my-list/add", data).then((res) => {
+      if (res !== undefined && res.status === true) {
+        context.setAlertBox({
+          open: true,
+          error: false,
+          msg: "Item added to My List!"
+        })
+        context.getMyListData();
+      } else {
+        context.setAlertBox({
+          open: true,
+          error: true,
+          msg: res?.msg || "Failed to add item to My List!"
+        })
+      }
+    }).catch((err) => {
+      context.setAlertBox({
+        open: true,
+        error: true,
+        msg: "An unexpected error occurred!"
+      })
+    })
+  }
+
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("user"));
+
+    fetchDataFromApi(`/api/my-list?productId=${props?.data?._id}&userId=${userData?._id}`).then((res) => {
+      if (res.length !== 0) {
+        setIsAddedToMyList(true);
+      }
+    })
+  }, []);
+
+
 
 
   return (
@@ -219,12 +279,24 @@ const ProductModal = (props) => {
 
           <div className="d-flex align-items-center">
             <QuantityBox />
-            <Button className="btn-blue btn-lg btn-big btn-round ml-3"><IoCartSharp />Add to Cart</Button>
+            <Button className="btn-blue btn-lg btn-big btn-round ml-3"><IoCartSharp /> &nbsp; Add to Cart</Button>
           </div>
 
           <div className="d-flex align-items-center mt-5 actions">
-            <Button className="btn-round btn-sml" variant="outlined">
-              <IoIosHeartEmpty /> &nbsp; ADD TO WISHLIST
+            <Button className="btn-round btn-sml" variant="outlined" onClick={() => addToMyList(props?.data?._id)}>
+              {
+                isAddedToMyList === true ?
+                  <>
+                    <FaHeart className='text-danger' /> &nbsp; ADDED TO WISHLIST
+                  </>
+
+                  :
+
+                  <>
+                    <IoIosHeartEmpty /> &nbsp; ADD TO WISHLIST
+                  </>
+
+              }
             </Button>
             <Button className="btn-round btn-sml ml-3" variant="outlined">
               <MdOutlineCompareArrows /> &nbsp; COMPARE

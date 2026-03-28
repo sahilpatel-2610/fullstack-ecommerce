@@ -26,8 +26,12 @@ const QuantityBox = (props) => {
   }
 
   useEffect(() => {
-    props.quantity(inputVal);
-    props.selectedItem(props.item, inputVal);
+    if (typeof props.quantity === 'function') {
+      props.quantity(inputVal);
+    }
+    if (typeof props.selectedItem === 'function') {
+      props.selectedItem(props.item, inputVal);
+    }
   }, [inputVal]);
 
 

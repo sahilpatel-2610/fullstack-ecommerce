@@ -62,7 +62,7 @@ app.use((err, req, res, next) => {
 })
 
 //Database
-mongoose.connect(process.env.CONNECTION_STRING)
+mongoose.connect(process.env.CONNECTION_STRING, { family: 4 })
     .then(() => {
         console.log('Database Connection is ready...');
         //server

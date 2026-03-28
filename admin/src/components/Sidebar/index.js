@@ -113,24 +113,6 @@ const Sidebar = () => {
                             </Button>
                         </Link>
                     </li>
-                    <li>
-                        <Link to="/">
-                            <Button className={`w-100 ${activeTab === 7 ? 'active' : ''}`} onClick={() => isOpenSubmenu(7)}>
-                                <span className='icon'><FaUser /></span>
-                                Login
-                                <span className='arrow'></span>
-                            </Button>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to="/">
-                            <Button className={`w-100 ${activeTab === 8 ? 'active' : ''}`} onClick={() => isOpenSubmenu(8)}>
-                                <span className='icon'><FaUser /></span>
-                                Sign Up
-                                <span className='arrow'></span>
-                            </Button>
-                        </Link>
-                    </li>
                 </ul>
 
 

@@ -36,13 +36,15 @@ a {
   }
 }
 
+
+
 button .MuiCircularProgress-root {
   width: 30px !important;
   height: 30px !important;
 }
 
 button svg {
-  color: rgba(0, 0, 0, 0.60);
+  color: #f8f9fa;
 }
 
 
@@ -84,10 +86,13 @@ button {
   text-transform: capitalize !important;
   font-weight: 500 !important;
   padding: 5px 20px !important;
+  transition: all 0.3s ease-in-out !important;
 }
 
 .btn-blue:hover {
   background: #ed174a !important;
+  transform: translateY(-2px) scale(1.05) !important;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2) !important;
 }
 
 .btn-red {
@@ -96,10 +101,13 @@ button {
   text-transform: capitalize !important;
   font-weight: 500 !important;
   padding: 5px 20px !important;
+  transition: all 0.3s ease-in-out !important;
 }
 
 .btn-red:hover {
   background: #53348c !important;
+  transform: translateY(-2px) scale(1.05) !important;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2) !important;
 }
 
 .btn-big {
@@ -189,19 +197,30 @@ button {
 
 .logoWrapper img {
   width: 100%;
+  transition: all 0.3s ease-in-out;
+}
+
+.logoWrapper:hover img {
+  transform: scale(1.05);
 }
 
 .headerWrapper .header .part2 .countryDrop {
   width: 170px;
-  height: 60px;
+  height: 50px;
   min-width: 170px;
   color: #000 !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
-  /* Lighter border */
-  border-radius: 7px !important;
-  padding: 10px 15px;
-  background: #f8f9fa !important;
-  /* Lighter background */
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-radius: 5px !important;
+  padding: 5px 15px;
+  background: #fff !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04) !important;
+  transition: all 0.2s ease-in-out;
+}
+
+.headerWrapper .header .part2 .countryDrop:hover {
+  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+  background: #fdfdfd !important;
 }
 
 .headerWrapper .header .part2 .countryDrop {
@@ -238,6 +257,13 @@ button {
   position: relative;
   border-radius: 5px;
   border: 1px solid rgba(0, 0, 0, 0.050);
+  transition: all 0.3s ease-in-out;
+}
+
+.headerSearch:hover {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: #fff !important;
 }
 
 .headerSearch input {
@@ -257,19 +283,28 @@ button {
 
 .headerSearch button {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 5px;
+  right: 5px;
   z-index: 100;
-  min-width: 45px !important;
+  min-width: 40px !important;
   height: 40px !important;
-  width: 45px !important;
+  width: 40px !important;
   border-radius: 50% !important;
   color: #000;
 }
 
 .headerSearch button svg {
-  font-size: 25px;
+  font-size: 22px;
   color: #000 !important;
+}
+
+header .part3 .btn-blue {
+  border-radius: 20px !important;
+  white-space: nowrap !important;
+  padding: 7px 30px !important;
+  height: 40px !important;
+  font-size: 14px !important;
+  line-height: normal !important;
 }
 
 header .part3 .circle {
@@ -278,9 +313,16 @@ header .part3 .circle {
   min-width: 45px !important;
   height: 45px !important;
   width: 45px !important;
-  border-radius: 45% !important;
+  border-radius: 50% !important;
   border: 1px solid rgba(0, 0, 0, 0.1) !important;
-  color: #000 !;
+  color: #000 !important;
+  transition: all 0.3s ease-in-out;
+}
+
+header .part3 .circle:hover {
+  background: #fdfdfd;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: scale(1.05);
 }
 
 header .part3 .circle svg {
@@ -293,17 +335,32 @@ header .part3 .circle svg {
   font-size: 15px !important;
 }
 
+#accDrop ul a {
+  color: inherit !important;
+}
+
 #accDrop ul li {
   font-size: 16px !important;
   padding: 7px 15px !important;
+  transition: all 0.2s ease-in-out;
+}
+
+#accDrop ul li:hover {
+  background: #f1f1f1 !important;
+  color: #ed174a !important;
+}
+
+#accDrop ul li:hover svg {
+  color: #ed174a !important;
 }
 
 
 
 .cartTab .price {
-  font-size: 18px;
-  color: rgba(0, 0, 0, 0.8);
-  font-weight: 700;
+  font-size: 16px !important;
+  color: rgba(0, 0, 0, 1) !important;
+  font-weight: 700 !important;
+  white-space: nowrap !important;
 }
 
 .cartTab button {
@@ -376,7 +433,12 @@ header .part3 .circle svg {
 
 .close_ svg {
   font-size: 22px;
+  color: #000 !important;
 }
+
+
+
+
 
 nav .navpart1 {
   max-width: 20%;
@@ -467,8 +529,9 @@ nav .navpart1 .catWrapper .sidebarNav ul li:hover .submenu button {
 
 nav .allCatTab {
   background: #6d4aae !important;
-  padding: 10px 12px !important;
+  padding: 6px 16px !important;
   border-radius: 30px !important;
+  transition: all 0.3s ease-in-out !important;
 }
 
 nav .allCatTab * {
@@ -476,17 +539,22 @@ nav .allCatTab * {
 }
 
 nav .allCatTab:hover {
-  background: #2bbef9;
+  background: #ed174a !important;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15) !important;
+  transform: scale(1.03) !important;
 }
 
-/* nav .allCatTab .text{font-weight: 600;} */
+nav .allCatTab .text {
+  font-weight: 600;
+  font-size: 11px;
+}
 
 nav .allCatTab .icon1 svg {
-  font: 20px !important;
+  font-size: 20px !important;
 }
 
 nav .allCatTab .icon2 svg {
-  font: 15px !important;
+  font-size: 10px !important;
 }
 
 nav .navpart2 ul {
@@ -509,20 +577,20 @@ nav .navpart2 ul li a button {
   text-transform: uppercase !important;
   display: flex;
   align-items: center;
-  padding: 8px 12px;
+  padding: 5px 10px;
   transition: all 0.2s ease-in-out;
-  border-radius: 25px;
+  border-radius: 20px;
 }
 
 nav .navpart2 ul li a svg {
   font-size: 20px;
 }
 
-
-
-nav .navpart2 ul li a:hover {
-  background: #f0faff;
-  color: #2bbef9;
+nav .navpart2 ul li a:hover button {
+  /* background: #ed174a !important;
+  color: #f0faff !important; */
+  transform: scale(1.05) !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
 }
 
 nav .navpart2 ul li {
@@ -605,11 +673,12 @@ nav .navpart2 ul li:hover .submenu {
   justify-content: center;
   width: 40px !important;
   height: 40px !important;
-  background: #fff;
+  background: #fff !important;
   border-radius: 100%;
   font-family: FontAwesome !important;
   font-weight: bold;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24) !important;
+  transition: all 0.3s ease-in-out;
 }
 
 .swiper-button-prev {
@@ -622,11 +691,27 @@ nav .navpart2 ul li:hover .submenu {
   justify-content: center;
   width: 40px !important;
   height: 40px !important;
-  background: #fff;
+  background: #fff !important;
   border-radius: 100%;
   font-family: FontAwesome !important;
   font-weight: bold;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24) !important;
+  transition: all 0.3s ease-in-out;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background: #ed174a !important;
+  color: #fff !important;
+  transform: scale(1.1) !important;
+}
+
+.homeBannerSection .swiper .item img {
+  transition: all 0.3s ease-in-out;
+}
+
+.homeBannerSection .swiper .item:hover img {
+  transform: scale(1.05);
 }
 
 .homeBannerSection .slick-arrow.slick-next {
@@ -706,6 +791,18 @@ nav .navpart2 ul li:hover .submenu {
   color: #555;
 }
 
+.filterTabs .item {
+  transition: all 0.3s ease-in-out !important;
+  border-radius: 30px !important;
+}
+
+.filterTabs .item:hover {
+  background: #fff !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+  /* color: #ed174a !important; */
+  transform: scale(1.05) !important;
+}
+
 .hd {
   font-size: 20px;
   font-weight: 600;
@@ -765,12 +862,21 @@ nav .navpart2 ul li:hover .submenu {
   font-weight: 600;
   margin-bottom: 5px;
   min-height: 34px;
-  color: #000 !important;
+  /* color: #000 !important; */
 }
 
 .productItem .info a {
-  color: #000 !important;
+  /* color: #000 !important; */
   text-decoration: none !important;
+}
+
+.productItem .info h4 {
+  color: #343434;
+  font-weight: bold;
+}
+
+.productItem .info h4:hover {
+  color: #ed174a !important;
 }
 
 .productItem .info .text-success {
@@ -832,6 +938,17 @@ nav .navpart2 ul li:hover .submenu {
 
 .productItem .actions button:hover {
   background: #ed174a !important;
+  border: 1px solid #ed174a !important;
+}
+
+.productItem .actions button.active {
+  background: #ed174a !important;
+  border: 1px solid #ed174a !important;
+}
+
+.productItem .actions button.active svg {
+  color: #fff !important;
+  opacity: 1 !important;
 }
 
 .productItem .actions button:hover svg {
@@ -1184,21 +1301,34 @@ footer .linksWrap ul li a:hover {
   height: 35px;
   border-radius: 50%;
   border: 1px solid rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
 }
 
 .socials li a svg {
   font-size: 16px;
   color: #7a55c1;
+  transition: all 0.3s ease-in-out;
 }
 
 .socials li a:hover {
   background: #6d4aae !important;
+  transform: scale(1.1) !important;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1) !important;
+  border-color: #6d4aae !important;
 }
 
 .socials li a:hover svg {
   color: #fff !important;
 }
 
+.productModal .actions button {
+  opacity: 1 !important;
+}
+
+.productModal .actions button svg.text-danger {
+  color: #ed174a !important;
+  opacity: 1 !important;
+}
 
 .productModal .MuiPaper-elevation {
   padding: 25px;
@@ -1387,6 +1517,10 @@ footer .linksWrap ul li a:hover {
 }
 
 .productModal .actions button svg {
+  color: #000 !important;
+}
+
+.productModal .actions button svg {
   font-size: 15px !important;
 }
 
@@ -1518,6 +1652,10 @@ footer .linksWrap ul li a:hover {
   color: #6d4aae !important;
 }
 
+.product_Listing_Page .productListing .content_right .showBy .btnWrapper button svg {
+  color: #343a40 !important;
+}
+
 .product_Listing_Page .productListing .content_right .showBy .btnWrapper button:hover svg {
   opacity: 1;
 }
@@ -1621,6 +1759,7 @@ footer .linksWrap ul li a:hover {
 }
 
 
+
 .productDetails .btn-circle svg {
   color: #000 !important;
   opacity: 0.8;
@@ -1631,8 +1770,10 @@ footer .linksWrap ul li a:hover {
   background: #ccc !important;
 }
 
-
-
+.productDetails .btn-circle svg.text-danger {
+  color: #ed174a !important;
+  opacity: 1 !important;
+}
 
 .detailsPageTabs {
   border-radius: 25px !important;
@@ -2538,6 +2679,13 @@ a:hover {
   margin-top: 30px;
   display: flex;
   align-items: center;
+  transition: all 0.3s ease-in-out;
+}
+
+.newsLetterSection form:hover,
+.newsLetterSection form:focus-within {
+  transform: scale(1.02);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
 }
 
 .newsLetterSection form svg {
@@ -2547,6 +2695,13 @@ a:hover {
   font-size: 25px;
   opacity: 0.3;
   color: #000;
+  transition: all 0.3s ease-in-out;
+}
+
+.newsLetterSection form:hover svg,
+.newsLetterSection form:focus-within svg {
+  color: #5d3ebc !important;
+  opacity: 1 !important;
 }
 
 .newsLetterSection form input {
@@ -2650,4 +2805,41 @@ a:hover {
   z-index: 10000;
   cursor: wait;
   background: rgba(255, 255, 255, 0.7);
+}
+
+.myListTableWrapper {
+  width: 70%;
+  margin: auto;
+}
+
+.myListTable .cartItemimgWrapper {
+  width: 450px !important;
+}
+
+.myListTable .cartItemimgWrapper .imgWrapper {
+  width: 100px !important;
+  height: 100px !important;
+  border-radius: 7px !important;
+}
+
+.myListTable .cartItemimgWrapper .info {
+  padding-left: 15px !important;
+}
+
+.checkoutForm .form-group {
+  margin-bottom: 20px;
+}
+
+.checkoutForm .form-group .MuiOutlinedInput-input {
+  background: #f1f1f1 !important;
+}
+
+.orderInfo {
+  background: #fafafa !important;
+  padding: 25px;
+}
+
+.orderInfo thead {
+  border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
 }

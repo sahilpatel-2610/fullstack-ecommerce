@@ -1,6 +1,20 @@
 const mongoose = require('mongoose');
 
 const myListSchema = mongoose.Schema({
+    productTitle: {
+        type: String,
+        required: true
+    },
+    images: {
+        type: String,
+        required: true
+    },
+    rating: {
+        type: Number,
+    },
+    price: {
+        type: Number,
+    },
     productId: {
         type: String,
         required: true

@@ -23,12 +23,19 @@ router.get(`/`, async (req, res) => {
 
 router.post('/add', async (req, res) => {
     try {
-        const item = await MyList.find({
+        if (!req.body.userId || !req.body.productId) {
+            return res.status(400).json({
+                status: false,
+                msg: "Authentication required to add items to My List!"
+            });
+        }
+
+        const item = await MyList.findOne({
             productId: req.body.productId,
             userId: req.body.userId
         });
 
-        if (item.length === 0) {
+        if (!item) {
             let list = new MyList({
                 productTitle: req.body.productTitle,
                 images: req.body.images,
@@ -40,7 +47,10 @@ router.post('/add', async (req, res) => {
 
             list = await list.save();
 
-            res.status(201).json(list);
+            res.status(201).json({
+                status: true,
+                ...list._doc
+            });
         } else {
             return res.status(200).json({
                 status: false,
@@ -50,7 +60,9 @@ router.post('/add', async (req, res) => {
     } catch (err) {
         res.status(500).json({
             error: err.message,
-            success: false
+            msg: "Something went wrong on the server!",
+            success: false,
+            status: false
         })
     }
 });

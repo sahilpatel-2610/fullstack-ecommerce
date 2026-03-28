@@ -61,7 +61,7 @@ const Header = () => {
 
                                 <div className='part3 d-flex align-items-center ml-auto'>
                                     {
-                                        context.isLogin !== true ? <Link to="/signIn"><Button className="btn-blue btn-round mr-3">Sign In</Button></Link> :
+                                        context.isLogin !== true ? <Link to="/signIn"><Button className="btn-blue mr-3">Sign In</Button></Link> :
                                             <>
                                                 <Button className='circle mr-3' onClick={handleClick}><FiUser /></Button>
                                                 <Menu
@@ -86,12 +86,14 @@ const Header = () => {
                                                         </ListItemIcon>
                                                         Orders
                                                     </MenuItem>
-                                                    <MenuItem onClick={handleClose}>
-                                                        <ListItemIcon>
-                                                            <FaHeart fontSize="small" />
-                                                        </ListItemIcon>
-                                                        My List
-                                                    </MenuItem>
+                                                    <Link to="/my-list">
+                                                        <MenuItem onClick={handleClose}>
+                                                            <ListItemIcon>
+                                                                <FaHeart fontSize="small" />
+                                                            </ListItemIcon>
+                                                            My List
+                                                        </MenuItem>
+                                                    </Link>
                                                     <MenuItem onClick={logout}>
                                                         <ListItemIcon>
                                                             <RiLogoutCircleRFill fontSize="small" />
@@ -103,26 +105,38 @@ const Header = () => {
 
                                     }
 
+                                    <Link to="/my-list">
+                                        <div className='mr-3 cartTab d-flex align-items-center'>
+                                            <div className='position-relative'>
+                                                <Button className='circle'><FaHeart style={{ fontSize: '18px' }} /></Button>
+                                                <span className='count d-flex align-items-center justify-content-center'>
+                                                    {context.isLogin ? context.myListData?.length || 0 : 0}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </Link>
+
                                     <Link to="/cart">
                                         <div className='ml-auto cartTab d-flex align-items-center'>
 
                                             {
-                                                context.cartData?.length !== 0 ?
+                                                context.isLogin && context.cartData?.length !== 0 ?
                                                     <span className='price'>
-                                                        Rs.
-                                                        {
+                                                        Rs.{
                                                             context.cartData?.map(item => parseInt(item.price) * item.quantity).reduce((total, value) => total + value, 0)
                                                         }
                                                     </span>
                                                     :
                                                     <span className='price'>
-                                                        Rs. 0
+                                                        Rs.0
                                                     </span>
                                             }
 
                                             <div className='position-relative ml-2'>
                                                 <Button className='circle'><IoBagOutline /></Button>
-                                                <span className='count d-flex align-items-center justify-content-center'>{context.cartData?.length}</span>
+                                                <span className='count d-flex align-items-center justify-content-center'>
+                                                    {context.isLogin ? context.cartData?.length || 0 : 0}
+                                                </span>
                                             </div>
                                         </div>
                                     </Link>

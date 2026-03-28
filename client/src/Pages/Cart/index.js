@@ -259,7 +259,9 @@ const Cart = () => {
                                         </div>
 
                                         <br />
-                                        <Button className="btn-red btn-lg btn-big" onClick={checkout}><IoBagCheckOutline /> &nbsp; Checkout</Button>
+                                        <Link to="/checkout">
+                                            <Button className="btn-red btn-lg btn-big" onClick={checkout}><IoBagCheckOutline /> &nbsp; Checkout</Button>
+                                        </Link>
 
 
                                     </div>
