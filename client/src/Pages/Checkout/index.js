@@ -1,11 +1,14 @@
 import React, { useState, useContext } from 'react'
+import { useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { IoBagCheckOutline } from "react-icons/io5";
 
 import { MyContext } from '../../App';
+import { postData } from '../../utils/api';
 
 const Checkout = () => {
+    const history = useNavigate();
 
     const [formFilleds, setFormFilleds] = useState({
         fullName: '',
@@ -18,6 +21,8 @@ const Checkout = () => {
         phoneNumber: '',
         email: '',
     });
+
+
 
     const onChangeInput = (e) => {
         setFormFilleds({
@@ -118,6 +123,72 @@ const Checkout = () => {
                     year: "numeric"
                 }
             )
+        }
+
+        const totalAmount = context.cartData?.length !== 0 ?
+            context.cartData?.map(item => {
+                const price = typeof item.price === "string" ? parseInt(item.price.replace(/[^0-9]/g, "")) : parseInt(item.price);
+                return (price || 0) * item.quantity;
+            }).reduce((total, value) => total + value, 0) : 0;
+
+        const options = {
+            // Using your key directly as a fallback so it works without a restart
+            key: process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_test_lhO6WJjtmN7Evj",
+            amount: totalAmount * 100, // Amount in paise
+            currency: "INR",
+            order_receipt: 'order_rcptid_' + formFilleds.fullName,
+            name: "E-Commerce",
+            description: "for testing purpose",
+            handler: function (response) {
+                const paymentId = response.razorpay_payment_id
+                const userData = JSON.parse(localStorage.getItem("user"));
+
+                const totalAmount = context.cartData?.length !== 0 ?
+                    context.cartData?.map(item => {
+                        const price = typeof item.price === "string" ? parseInt(item.price.replace(/[^0-9]/g, "")) : parseInt(item.price);
+                        return (price || 0) * (item.quantity || 1);
+                    }).reduce((total, value) => total + value, 0) : 0;
+
+                const payLoad = {
+                    name: formFilleds.fullName,
+                    phoneNumber: formFilleds.phoneNumber,
+                    address: formFilleds.streetAddressLine1 + " " + formFilleds.streetAddressLine2,
+                    pincode: formFilleds.zipCode,
+                    amount: totalAmount,
+                    paymentId: paymentId,
+                    email: userData?.email,
+                    userId: userData?._id,
+                    products: context.cartData?.map((item) => ({
+                        productName: item.productTitle,
+                        quantity: item.quantity,
+                        price: item.price,
+                        images: item.images,
+                        total: item.subTotal
+                    })),
+                    date: new Date().toLocaleString("en-US", { month: "short", day: "2-digit", year: "numeric" })
+                }
+
+                postData(`/api/orders/create`, payLoad).then((res) => {
+                    history('/');
+                })
+
+
+            },
+
+            theme: {
+                color: "#ed174a"
+            }
+        };
+
+        if (window.Razorpay) {
+            var pay = new window.Razorpay(options);
+            pay.open();
+        } else {
+            context.setAlertBox({
+                open: true,
+                error: true,
+                msg: "Razorpay script not loaded. Please wait a moment or check your connection."
+            });
         }
     };
 
@@ -262,7 +333,7 @@ const Checkout = () => {
                                 </div>
 
 
-                                <Button type='submit' className="btn-red btn-lg btn-big" onClick={checkout}><IoBagCheckOutline /> &nbsp; Checkout</Button>
+                                <Button type='submit' className="btn-red btn-lg btn-big"><IoBagCheckOutline /> &nbsp; Checkout</Button>
                             </div>
                         </div>
 

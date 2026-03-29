@@ -29,6 +29,7 @@ const productReviews = require('./routes/productReviews.js');
 const cart = require('./routes/cart.js');
 const myListSchema = require('./routes/myList.js');
 const checkout = require('./routes/checkout.js');
+const orders = require('./routes/orders.js');
 
 
 app.use("/uploads", express.static('uploads'));
@@ -44,6 +45,7 @@ app.use(`/api/productReviews`, productReviews);
 app.use(`/api/cart`, cart);
 app.use(`/api/my-list`, myListSchema);
 app.use(`/api/checkout`, checkout);
+app.use(`/api/orders`, orders);
 
 // Error Handler
 app.use((err, req, res, next) => {

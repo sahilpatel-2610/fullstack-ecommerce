@@ -756,29 +756,40 @@ nav .navpart2 ul li:hover .submenu {
   width: 100%;
 }
 
+.sticky {
+  position: sticky;
+  top: 100px;
+  z-index: 100;
+}
+
 .homeProducts .banner {
-  width: 80%;
+  width: 100%;
   border-radius: 10px;
   overflow: hidden;
-  margin: 0 auto 20px auto;
+  margin-bottom: 20px;
 }
 
 .homeProducts .banner img {
-  width: 80%;
-  height: auto;
+  width: 100%;
+  height: auto !important;
   object-fit: cover;
+  transition: all 0.3s ease-in-out;
+}
+
+.homeProducts .banner img:hover {
+  transform: scale(1.02);
 }
 
 /* .bannerSec .banner img {
   height: 130px !important;
 } */
 
-.col-md-3 .banner:first-child img {
-  height: 380px !important;
+.col-md-3 .banner img {
+  height: auto !important;
 }
 
 .col-md-3 .banner:last-child img {
-  height: 380px !important;
+  height: auto !important;
 }
 
 .homeProducts .hd {
