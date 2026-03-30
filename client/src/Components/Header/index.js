@@ -122,13 +122,13 @@ const Header = () => {
                                             {
                                                 context.isLogin && context.cartData?.length !== 0 ?
                                                     <span className='price'>
-                                                        Rs.{
+                                                        ₹ {
                                                             context.cartData?.map(item => parseInt(item.price) * item.quantity).reduce((total, value) => total + value, 0)
                                                         }
                                                     </span>
                                                     :
                                                     <span className='price'>
-                                                        Rs.0
+                                                        ₹ 0
                                                     </span>
                                             }
 

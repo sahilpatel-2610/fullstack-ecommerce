@@ -110,43 +110,86 @@ const Cart = () => {
     }
 
     const checkout = async () => {
-        const stripe = await loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
+        if (localStorage.getItem("user") !== null && localStorage.getItem("user") !== "") {
+            setIsLoading(true);
 
-        const cartProducts = cartData.map((product) => {
-            return {
-                price: product?.price,
-                quantity: product?.quantity,
-                productTitle: product?.productTitle,
-                images: product?.images,
-                productId: product?.productId,
-                userId: product?.userId,
-                ram: product?.ram,
-                size: product?.size,
-                weight: product?.weight
-            }
-        })
-
-        const userData = JSON.parse(localStorage.getItem("user"));
-
-        const body = {
-            products: cartProducts,
-            userId: userData?._id,
-            email: userData?.email
-        }
-
-        postData(`/api/checkout`, body).then((res) => {
-            if (res !== undefined && !res.error) {
-                stripe.redirectToCheckout({
-                    sessionId: res.id
-                })
-            } else {
+            if (!process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY) {
                 context.setAlertBox({
                     open: true,
                     error: true,
-                    msg: "Checkout failed, please try again!"
+                    msg: "Stripe Publishable Key is missing!"
                 })
+                setIsLoading(false);
+                return;
             }
-        })
+
+            const stripe = await loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
+
+            const cartProducts = context.cartData.map((product) => {
+                return {
+                    price: product?.price,
+                    quantity: product?.quantity,
+                    productTitle: product?.productTitle,
+                    images: product?.images,
+                    productId: product?.productId,
+                    userId: product?.userId,
+                    ram: product?.ram,
+                    size: product?.size,
+                    weight: product?.weight
+                }
+            })
+
+            const userData = JSON.parse(localStorage.getItem("user"));
+
+            const body = {
+                products: cartProducts,
+                userId: userData?._id,
+                email: userData?.email,
+            }
+
+            const token = localStorage.getItem("token");
+
+            try {
+                let apiUrl = (process.env.REACT_APP_API_URL || "http://localhost:4000").replace(/\/$/, "");
+                
+                const response = await fetch(`${apiUrl}/api/checkout`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(body),
+                });
+
+                const session = await response.json();
+
+                if (session.url) {
+                    window.location.href = session.url;
+                } else {
+                    context.setAlertBox({
+                        open: true,
+                        error: true,
+                        msg: session.message || "Failed to create checkout session!"
+                    })
+                }
+            } catch (error) {
+                console.error("Checkout Error:", error);
+                context.setAlertBox({
+                    open: true,
+                    error: true,
+                    msg: error.message || "Network error occurred during checkout!"
+                })
+            } finally {
+                setIsLoading(false);
+            }
+        } else {
+            context.setAlertBox({
+                open: true,
+                error: true,
+                msg: "Please login to proceed to checkout!"
+            })
+        }
+
     }
 
     return (
@@ -202,11 +245,11 @@ const Cart = () => {
                                                                         </div>
                                                                     </Link>
                                                                 </td>
-                                                                <td width="15%">Rs {item?.price}</td>
+                                                                <td width="15%">₹ {item?.price}</td>
                                                                 <td width="25%">
                                                                     <QuantityBox quantity={quantity} value={item?.quantity} item={item} selectedItem={selectedItem} />
                                                                 </td>
-                                                                <td width="15%">Rs {item?.subTotal}</td>
+                                                                <td width="15%">₹ {item?.subTotal}</td>
                                                                 <td width="10%"><span className="remove" onClick={() => removeItem(item?._id)}><IoIosClose /></span></td>
                                                             </tr>
 
@@ -229,10 +272,10 @@ const Cart = () => {
                                         <div className="d-flex align-item-center mb-3">
                                             <span>Subtotal</span>
                                             <span className="ml-auto text-red font-weight-bold">
-                                                Rs.
+                                                ₹
                                                 {
                                                     context.cartData?.length !== 0 &&
-                                                    context.cartData?.map(item => parseInt(item.price) * item.quantity).reduce((total, value) => total + value, 0).toLocaleString()
+                                                    context.cartData?.map(item => parseInt(item.price) * item.quantity).reduce((total, value) => total + value, 0).toFixed(2)
                                                 }
                                             </span>
                                         </div>
@@ -250,16 +293,16 @@ const Cart = () => {
                                         <div className="d-flex align-item-center mb-3">
                                             <span>Total</span>
                                             <span className="ml-auto text-red font-weight-bold">
-                                                Rs.
+                                                ₹
                                                 {
                                                     context.cartData?.length !== 0 &&
-                                                    context.cartData?.map(item => parseInt(item.price) * item.quantity).reduce((total, value) => total + value, 0).toLocaleString()
+                                                    context.cartData?.map(item => parseInt(item.price) * item.quantity).reduce((total, value) => total + value, 0).toFixed(2)
                                                 }
                                             </span>
                                         </div>
 
                                         <br />
-                                        <Button className="btn-red btn-lg btn-big" onClick={checkout}><IoBagCheckOutline /> &nbsp; Checkout</Button>
+                                        <Button className="btn-blue btn-lg btn-big btn-round w-100" onClick={checkout}><IoBagCheckOutline /> &nbsp; Checkout</Button>
 
 
                                     </div>
