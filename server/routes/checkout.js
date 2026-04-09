@@ -48,13 +48,13 @@ router.post('/', async (req, res) => {
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             phone_number_collection: {
-                enabled: true
+                enabled: false // Disabled to avoid confusion with card number fields
             },
             customer: customer.id,
             line_items: lineItems,
             mode: 'payment',
             shipping_address_collection: {
-                allowed_countries: ['IN', 'US', 'CA', 'GB', 'AU', 'DE', 'FR', 'ES', 'IT', 'JP', 'CN', 'KR', 'SG', 'MY', 'TH', 'VN', 'PH', 'ID']
+                allowed_countries: ['IN', 'US', 'CA', 'GB']
             },
             success_url: `${clientUrl}/payment/complete/{CHECKOUT_SESSION_ID}`,
             cancel_url: `${clientUrl}/cart`,

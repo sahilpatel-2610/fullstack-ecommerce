@@ -80,12 +80,14 @@ const Header = () => {
                                                         </ListItemIcon>
                                                         My Account
                                                     </MenuItem>
-                                                    <MenuItem onClick={handleClose}>
-                                                        <ListItemIcon>
-                                                            <FaClipboardCheck fontSize="small" />
-                                                        </ListItemIcon>
-                                                        Orders
-                                                    </MenuItem>
+                                                    <Link to="/orders">
+                                                        <MenuItem onClick={handleClose}>
+                                                            <ListItemIcon>
+                                                                <FaClipboardCheck fontSize="small" />
+                                                            </ListItemIcon>
+                                                            Orders
+                                                        </MenuItem>
+                                                    </Link>
                                                     <Link to="/my-list">
                                                         <MenuItem onClick={handleClose}>
                                                             <ListItemIcon>

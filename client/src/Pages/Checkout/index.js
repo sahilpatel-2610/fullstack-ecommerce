@@ -1,11 +1,12 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { IoBagCheckOutline } from "react-icons/io5";
+import { loadStripe } from "@stripe/stripe-js";
 
 import { MyContext } from '../../App';
-import { postData } from '../../utils/api';
+import { postData, deleteData } from '../../utils/api';
 
 const Checkout = () => {
     const history = useNavigate();
@@ -22,6 +23,12 @@ const Checkout = () => {
         email: '',
     });
 
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
 
 
     const onChangeInput = (e) => {
@@ -33,148 +40,104 @@ const Checkout = () => {
 
     const context = useContext(MyContext);
 
-    const checkout = (e) => {
+    const checkout = async (e) => {
         e.preventDefault();
 
-        console.log(formFilleds);
         if (formFilleds.fullName === "") {
-            context.setAlertBox({
-                open: true,
-                error: true,
-                msg: "Please fill full name!"
-            })
+            context.setAlertBox({ open: true, error: true, msg: "Please fill full name!" })
             return false;
         }
         if (formFilleds.country === "") {
-            context.setAlertBox({
-                open: true,
-                error: true,
-                msg: "Please fill country!"
-            })
+            context.setAlertBox({ open: true, error: true, msg: "Please fill country!" })
             return false;
         }
         if (formFilleds.streetAddressLine1 === "") {
-            context.setAlertBox({
-                open: true,
-                error: true,
-                msg: "Please fill Street address!"
-            })
-            return false;
-        }
-        if (formFilleds.streetAddressLine2 === "") {
-            context.setAlertBox({
-                open: true,
-                error: true,
-                msg: "Please fill Street address!"
-            })
+            context.setAlertBox({ open: true, error: true, msg: "Please fill Street address!" })
             return false;
         }
         if (formFilleds.city === "") {
-            context.setAlertBox({
-                open: true,
-                error: true,
-                msg: "Please fill city!"
-            })
+            context.setAlertBox({ open: true, error: true, msg: "Please fill city!" })
             return false;
         }
         if (formFilleds.state === "") {
-            context.setAlertBox({
-                open: true,
-                error: true,
-                msg: "Please fill state!"
-            })
+            context.setAlertBox({ open: true, error: true, msg: "Please fill state!" })
             return false;
         }
         if (formFilleds.zipCode === "") {
-            context.setAlertBox({
-                open: true,
-                error: true,
-                msg: "Please fill zip code!"
-            })
+            context.setAlertBox({ open: true, error: true, msg: "Please fill zip code!" })
             return false;
         }
         if (formFilleds.phoneNumber === "") {
-            context.setAlertBox({
-                open: true,
-                error: true,
-                msg: "Please fill phone number!"
-            })
+            context.setAlertBox({ open: true, error: true, msg: "Please fill phone number!" })
             return false;
         }
         if (formFilleds.email === "") {
-            context.setAlertBox({
-                open: true,
-                error: true,
-                msg: "Please fill email!"
-            })
+            context.setAlertBox({ open: true, error: true, msg: "Please fill email!" })
             return false;
-        }
-
-        const addressInfo = {
-            name: formFilleds.fullName,
-            phoneNumber: formFilleds.phoneNumber,
-            address: formFilleds.streetAddressLine1 + formFilleds.streetAddressLine2,
-            pincode: formFilleds.zipCode,
-            date: new Date().toLocaleString(
-                "en-US",
-                {
-                    month: "short",
-                    day: "2-digit",
-                    year: "numeric"
-                }
-            )
         }
 
         const totalAmount = context.cartData?.length !== 0 ?
             context.cartData?.map(item => {
                 const price = typeof item.price === "string" ? parseInt(item.price.replace(/[^0-9]/g, "")) : parseInt(item.price);
-                return (price || 0) * item.quantity;
+                return (price || 0) * (item.quantity || 1);
             }).reduce((total, value) => total + value, 0) : 0;
 
         const options = {
-            // Using your key directly as a fallback so it works without a restart
             key: process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_test_lhO6WJjtmN7Evj",
-            amount: totalAmount * 100, // Amount in paise
+            amount: totalAmount * 100,
             currency: "INR",
-            order_receipt: 'order_rcptid_' + formFilleds.fullName,
             name: "E-Commerce",
-            description: "for testing purpose",
+            description: "Shopping Payment",
             handler: function (response) {
-                const paymentId = response.razorpay_payment_id
+                const paymentId = response.razorpay_payment_id;
                 const userData = JSON.parse(localStorage.getItem("user"));
-
-                const totalAmount = context.cartData?.length !== 0 ?
-                    context.cartData?.map(item => {
-                        const price = typeof item.price === "string" ? parseInt(item.price.replace(/[^0-9]/g, "")) : parseInt(item.price);
-                        return (price || 0) * (item.quantity || 1);
-                    }).reduce((total, value) => total + value, 0) : 0;
 
                 const payLoad = {
                     name: formFilleds.fullName,
                     phoneNumber: formFilleds.phoneNumber,
-                    address: formFilleds.streetAddressLine1 + " " + formFilleds.streetAddressLine2,
+                    address: formFilleds.streetAddressLine1 + " " + (formFilleds.streetAddressLine2 || ""),
                     pincode: formFilleds.zipCode,
                     amount: totalAmount,
                     paymentId: paymentId,
-                    email: userData?.email,
+                    email: formFilleds.email,
                     userId: userData?._id,
                     products: context.cartData?.map((item) => ({
-                        productName: item.productTitle,
+                        productId: item.productId,
+                        productTitle: item.productTitle,
                         quantity: item.quantity,
                         price: item.price,
-                        images: item.images,
-                        total: item.subTotal
+                        images: item.images?.length > 0 ? item.images[0] : "",
+                        subTotal: item.subTotal
                     })),
+                    status: "Pending",
                     date: new Date().toLocaleString("en-US", { month: "short", day: "2-digit", year: "numeric" })
-                }
+                };
 
                 postData(`/api/orders/create`, payLoad).then((res) => {
-                    history('/');
-                })
+                    // Clear Cart
+                    deleteData(`/api/cart/user/${userData?._id}`).then(() => {
+                        context.getCartData(); // Refresh cart context
+                    });
 
-
+                    context.setAlertBox({
+                        open: true,
+                        error: false,
+                        msg: "Order placed successfully!"
+                    });
+                    history('/orders');
+                }).catch(err => {
+                    context.setAlertBox({
+                        open: true,
+                        error: true,
+                        msg: "Failed to create order. Please contact support."
+                    });
+                });
             },
-
+            prefill: {
+                name: formFilleds.fullName,
+                email: formFilleds.email,
+                contact: formFilleds.phoneNumber
+            },
             theme: {
                 color: "#ed174a"
             }
@@ -183,11 +146,13 @@ const Checkout = () => {
         if (window.Razorpay) {
             var pay = new window.Razorpay(options);
             pay.open();
+            setIsLoading(false);
         } else {
+            setIsLoading(false);
             context.setAlertBox({
                 open: true,
                 error: true,
-                msg: "Razorpay script not loaded. Please wait a moment or check your connection."
+                msg: "Razorpay script not loaded. Please wait a moment."
             });
         }
     };
@@ -307,7 +272,7 @@ const Checkout = () => {
                                                 context.cartData?.length !== 0 && context.cartData?.map((item, index) => {
                                                     return (
                                                         <tr key={index}>
-                                                            <td>{item?.productTitle?.substr(0, 20) + '...'} <b>× {item?.quantity}</b></td>
+                                                            <td>{item?.productTitle?.substr(0, 15) + '...'} <b>× {item?.quantity}</b></td>
 
                                                             <td>&#8377; {item?.subTotal}</td>
                                                         </tr>

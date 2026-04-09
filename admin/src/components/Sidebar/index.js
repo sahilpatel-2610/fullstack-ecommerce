@@ -2,6 +2,7 @@ import Button from '@mui/material/Button';
 import { MdDashboard } from "react-icons/md";
 import { FaAngleRight } from "react-icons/fa6";
 import { FaProductHunt } from "react-icons/fa";
+import { BiSolidCategory } from "react-icons/bi";
 import { HiShoppingBag } from "react-icons/hi2";
 import { MdEmail } from "react-icons/md";
 import { FaBell } from "react-icons/fa";
@@ -12,11 +13,15 @@ import { IoMdLogOut } from "react-icons/io";
 import { useContext } from 'react';
 import { MyContext } from '../../App';
 import { FaUser } from "react-icons/fa";
+import { NavLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const Sidebar = () => {
 
     const [activeTab, setActiveTab] = useState(0);
     const [isToggleSubmenu, setIsToggleSubmenu] = useState(false);
+    const [isLogin, setIsLogin] = useState(false);
 
 
     const context = useContext(MyContext);
@@ -29,6 +34,7 @@ const Sidebar = () => {
             setIsToggleSubmenu(true);
         }
     }
+
 
     return (
         <>
@@ -64,7 +70,7 @@ const Sidebar = () => {
                     <li>
 
                         <Button className={`w-100 ${activeTab === 2 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(2)}>
-                            <span className='icon'><FaProductHunt /></span>
+                            <span className='icon'><BiSolidCategory /></span>
                             Category
                             <span className='arrow'><FaAngleRight /></span>
                         </Button>
@@ -78,13 +84,12 @@ const Sidebar = () => {
                         </div>
                     </li>
                     <li>
-                        <Link to="/">
+                        <NavLink exact activeClassName='is-active' to="/orders">
                             <Button className={`w-100 ${activeTab === 3 ? 'active' : ''}`} onClick={() => isOpenSubmenu(3)}>
                                 <span className='icon'><HiShoppingBag /></span>
                                 Orders
-                                <span className='arrow'><FaAngleRight /></span>
                             </Button>
-                        </Link>
+                        </NavLink>
                     </li>
                     <li>
                         <Link to="/">

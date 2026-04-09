@@ -136,4 +136,27 @@ router.put('/:id', async (req, res) => {
 });
 
 
+router.delete('/user/:userId', async (req, res) => {
+    try {
+        const deletedItems = await Cart.deleteMany({ userId: req.params.userId });
+
+        if (!deletedItems) {
+            return res.status(404).json({
+                message: 'Cart items not found!',
+                success: false
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Cart cleared!'
+        });
+
+    } catch (error) {
+        console.error("Clear cart error:", error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+
 module.exports = router;

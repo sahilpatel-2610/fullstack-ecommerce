@@ -26,12 +26,14 @@ import EditSubCategory from './Pages/Category/editSubCat';
 import AddProductRAMS from './Pages/Products/addProductRAMS';
 import ProductWeight from './Pages/Products/addProductWeight';
 import ProductSize from './Pages/Products/addProductSize';
+import Orders from './Pages/Orders';
 
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
 import LoadingBar from "react-top-loading-bar";
 import { fetchDataFromApi } from './utils/api';
+
 
 
 
@@ -68,6 +70,7 @@ function App() {
     open: false
   });
 
+
   useEffect(() => {
 
     const token = localStorage.getItem("token");
@@ -84,6 +87,8 @@ function App() {
     }
 
   }, [isLogin]);
+
+
 
   useEffect(() => {
     if (theme === true) {
@@ -131,23 +136,39 @@ function App() {
 
 
   useEffect(() => {
-
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
-
 
     window.addEventListener('resize', handleResize);
 
     return () => {
       window.removeEventListener('resize', handleResize);
     }
-
   }, []);
 
   const openNav = () => {
     setIsOpenNav(true);
   }
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const currentPath = window.location.pathname;
+
+    if (token === "" || token === undefined || token === null) {
+      setIsLogin(false);
+      // If not logged in and not on login/signup page, redirect to login
+      if (currentPath !== "/login" && currentPath !== "/signUp") {
+        window.location.href = "/login";
+      }
+    } else {
+      setIsLogin(true);
+      // If logged in and on login/signup page, redirect to dashboard
+      if (currentPath === "/login" || currentPath === "/signUp") {
+        window.location.href = "/";
+      }
+    }
+  }, [isLogin]);
 
   const values = {
     isToggleSidebar,
@@ -236,6 +257,7 @@ function App() {
               <Route path="/productRAMS/add" exact={true} element={<AddProductRAMS />} />
               <Route path="/productWEIGHT/add" exact={true} element={<ProductWeight />} />
               <Route path="/productSIZE/add" exact={true} element={<ProductSize />} />
+              <Route path="/orders" exact={true} element={<Orders />} />
             </Routes>
           </div>
         </div>

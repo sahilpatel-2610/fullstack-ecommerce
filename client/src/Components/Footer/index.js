@@ -65,17 +65,18 @@ const Footer = () => {
                     </div>
 
                     <div className="col">
-                        <h5>MEAT & SEAFOOD</h5>
+                        <h5>SAME & FOOD</h5>
                         <ul>
-                            <li><Link to="#">Breakfast Sausage</Link></li>
-                            <li><Link to="#">Dinner Sausage</Link></li>
-                            <li><Link to="#">Beef</Link></li>
-                            <li><Link to="#">Chicken</Link></li>
-                            <li><Link to="#">Sliced Deli Meat</Link></li>
-                            <li><Link to="#">Shrimp</Link></li>
-                            <li><Link to="#">Wild Caught Fillets</Link></li>
-                            <li><Link to="#">Crab and Shellfish</Link></li>
-                            <li><Link to="#">Farm Raised Fillets</Link></li>
+                            <li><Link to="#">Aloo Potato</Link></li>
+                            <li><Link to="#">Bingan Eggplant Brinjal</Link></li>
+                            <li><Link to="#">Milk</Link></li>
+                            <li><Link to="#">Chickpeas Gram</Link></li>
+                            <li><Link to="#">Golgappa Puchka</Link></li>
+                            <li><Link to="#">Khichari</Link></li>
+                            <li><Link to="#">Tomato Sev Curry</Link></li>
+                            <li><Link to="#">Chapati Flatbread</Link></li>
+                            <li><Link to="#">Vegetable Curry</Link></li>
+                            <li><Link to="#">Lentil Soup</Link></li>
                         </ul>
                     </div>
 

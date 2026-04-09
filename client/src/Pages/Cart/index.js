@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Rating from '@mui/material/Rating';
 import QuantityBox from "../../Components/QuantityBox";
 import { IoIosClose } from "react-icons/io";
@@ -21,6 +21,7 @@ const Cart = () => {
     const [selectedQuantity, setSelectedQuantity] = useState();
 
     const context = useContext(MyContext);
+    const history = useNavigate();
 
     useEffect(() => {
         fetchDataFromApi(`/api/cart`).then((res) => {
@@ -109,87 +110,8 @@ const Cart = () => {
         })
     }
 
-    const checkout = async () => {
-        if (localStorage.getItem("user") !== null && localStorage.getItem("user") !== "") {
-            setIsLoading(true);
-
-            if (!process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY) {
-                context.setAlertBox({
-                    open: true,
-                    error: true,
-                    msg: "Stripe Publishable Key is missing!"
-                })
-                setIsLoading(false);
-                return;
-            }
-
-            const stripe = await loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
-
-            const cartProducts = context.cartData.map((product) => {
-                return {
-                    price: product?.price,
-                    quantity: product?.quantity,
-                    productTitle: product?.productTitle,
-                    images: product?.images,
-                    productId: product?.productId,
-                    userId: product?.userId,
-                    ram: product?.ram,
-                    size: product?.size,
-                    weight: product?.weight
-                }
-            })
-
-            const userData = JSON.parse(localStorage.getItem("user"));
-
-            const body = {
-                products: cartProducts,
-                userId: userData?._id,
-                email: userData?.email,
-            }
-
-            const token = localStorage.getItem("token");
-
-            try {
-                let apiUrl = (process.env.REACT_APP_API_URL || "http://localhost:4000").replace(/\/$/, "");
-                
-                const response = await fetch(`${apiUrl}/api/checkout`, {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(body),
-                });
-
-                const session = await response.json();
-
-                if (session.url) {
-                    window.location.href = session.url;
-                } else {
-                    context.setAlertBox({
-                        open: true,
-                        error: true,
-                        msg: session.message || "Failed to create checkout session!"
-                    })
-                }
-            } catch (error) {
-                console.error("Checkout Error:", error);
-                context.setAlertBox({
-                    open: true,
-                    error: true,
-                    msg: error.message || "Network error occurred during checkout!"
-                })
-            } finally {
-                setIsLoading(false);
-            }
-        } else {
-            context.setAlertBox({
-                open: true,
-                error: true,
-                msg: "Please login to proceed to checkout!"
-            })
-        }
-
+    const checkout = () => {
+        history("/checkout");
     }
 
     return (

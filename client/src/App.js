@@ -16,6 +16,8 @@ import MyList from "./Pages/MyList";
 import SignIn from "./Pages/SignIn";
 import SignUp from "./Pages/SignUp";
 import Checkout from "./Pages/Checkout";
+import Orders from "./Pages/Orders";
+import PaymentComplete from "./Pages/PaymentComplete";
 import { fetchDataFromApi, postData, deleteData, editData } from "./utils/api";
 import LoadingBar from 'react-top-loading-bar';
 
@@ -310,6 +312,8 @@ function App() {
           <Route exact={true} path="/signIn" element={<SignIn />} />
           <Route exact={true} path="/signUp" element={<SignUp />} />
           <Route exact={true} path="/checkout" element={<Checkout />} />
+          <Route exact={true} path="/orders" element={<Orders />} />
+          <Route exact={true} path="/payment/complete/:id" element={<PaymentComplete />} />
         </Routes>
         {
           isHeaderFooterShow === true && <Footer />

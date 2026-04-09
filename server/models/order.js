@@ -35,7 +35,10 @@ const orderSchema = mongoose.Schema({
     },
     products: [
         {
-            productName: {
+            productId: {
+                type: String
+            },
+            productTitle: {
                 type: String
             },
             quantity: {
@@ -47,16 +50,20 @@ const orderSchema = mongoose.Schema({
             images: {
                 type: String
             },
-            total: {
+            subTotal: {
                 type: Number
             }
         }
     ],
+    status: {
+        type: String,
+        default: "Pending"
+    },
     date: {
         type: String,
         default: new Date().toLocaleString("en-US", { month: "short", day: "2-digit", year: "numeric" })
     }
-});
+}, { timestamps: true });
 
 orderSchema.virtual('id').get(function () {
     return this._id.toHexString();

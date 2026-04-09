@@ -1,4 +1,4 @@
-const { Orders } = require('../models/order');
+const { Order } = require('../models/order');
 const express = require('express');
 const router = express.Router();
 
@@ -7,14 +7,19 @@ router.get(`/`, async (req, res) => {
 
         const page = parseInt(req.query.page) || 1;
         const perPage = 8;
-        const totalOrders = await Orders.countDocuments();
-        const totalPages = Math.ceil(totalOrders / perPage);
 
-        if (page > totalPages) {
+        let query = { ...req.query };
+        delete query.page;
+        delete query.perPage;
+
+        const totalOrder = await Order.countDocuments(query);
+        const totalPages = Math.ceil(totalOrder / perPage);
+
+        if (page > totalPages && totalPages > 0) {
             return res.status(404).json({ message: "Page not found!" });
         }
 
-        const ordersList = await Orders.find(req.query)
+        const ordersList = await Order.find(query)
             .sort({ createdAt: -1 })
             .skip((page - 1) * perPage)
             .limit(perPage);
@@ -34,7 +39,7 @@ router.get(`/`, async (req, res) => {
 });
 
 router.get(`/:id`, async (req, res) => {
-    const order = await Orders.findById(req.params.id);
+    const order = await Order.findById(req.params.id);
 
     if (!order) {
         res.status(500).json({ success: false, message: 'The order with the given ID was not found.' });
@@ -46,7 +51,7 @@ router.post('/create', async (req, res) => {
     try {
         console.log("Incoming order body:", req.body);
 
-        let order = new Orders({
+        let order = new Order({
             name: req.body.name,
             phoneNumber: req.body.phoneNumber,
             address: req.body.address,
@@ -72,12 +77,50 @@ router.post('/create', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
 
-    const deletedOrder = await Orders.findByIdAndDelete(req.params.id);
+    const deletedOrder = await Order.findByIdAndDelete(req.params.id);
 
     if (!deletedOrder) {
         res.status(404).json({ success: false, message: 'The order with the given ID was not found.' });
     }
     res.status(200).json({ success: true, message: 'The order with the given ID was deleted.' });
 });
+
+
+router.put('/:id', async (req, res) => {
+    try {
+
+        const order = await Order.findByIdAndUpdate(
+            req.params.id,
+            {
+                name: req.body.name,
+                phoneNumber: req.body.phoneNumber,
+                address: req.body.address,
+                pincode: req.body.pincode,
+                amount: req.body.amount,
+                paymentId: req.body.paymentId,
+                email: req.body.email,
+                userId: req.body.userId,
+                products: req.body.products,
+                date: req.body.date,
+                status: req.body.status
+            },
+            { new: true }
+        );
+
+        if (!order) {
+            return res.status(500).json({
+                message: 'Order cannot be updated!',
+                success: false
+            });
+        }
+
+        res.status(200).json(order);
+
+    } catch (error) {
+        console.error("Update order error:", error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 
 module.exports = router;
