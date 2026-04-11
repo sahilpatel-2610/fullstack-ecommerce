@@ -10,6 +10,11 @@ import Chip from "@mui/material/Chip";
 import HomeIcon from "@mui/icons-material/Home";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Pagination } from "@mui/material";
+
+import Dialog from '@mui/material/Dialog';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+
 import { deleteData, editData, fetchDataFromApi } from "../../utils/api";
 
 import { Link } from "react-router-dom";
@@ -40,11 +45,13 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 });
 
 
-const Category = () => {
+const HomeSlideList = () => {
 
-    const [catData, setCatData] = useState({
-        categoryList: [],
-        totalPages: 0,
+    const [slideList, setSlideList] = useState([]);
+
+    const [lightBox, setLightBox] = useState({
+        photoIndex: 0,
+        isOpen: false,
     });
 
     const context = useContext(MyContext);
@@ -52,8 +59,8 @@ const Category = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
         context.setProgress(20)
-        fetchDataFromApi('/api/category?page=1&perPage=10').then((res) => {
-            setCatData(res);
+        fetchDataFromApi('/api/homeBanner?page=1&perPage=10').then((res) => {
+            setSlideList(res);
             console.log(res);
             context.setProgress(100);
         })
@@ -61,36 +68,57 @@ const Category = () => {
 
     }, []);
 
-    const deleteCat = (id) => {
+    const deleteSlide = (id) => {
         context.setProgress(30);
-        deleteData(`/api/category/${id}`).then(res => {
-            fetchDataFromApi('/api/category?page=1&perPage=10').then((res) => {
-                setCatData(res);
+        deleteData(`/api/homeBanner/${id}`).then(res => {
+            fetchDataFromApi('/api/homeBanner?page=1&perPage=10').then((res) => {
+                setSlideList(res);
                 context.setProgress(100);
                 context.setAlertBox({
                     open: true,
-                    error: false,
-                    msg: "Category Deleted!"
+                    error: true,
+                    msg: "Slide Deleted!"
                 })
             })
         })
     }
 
-    const handleChange = (event, value) => {
-        context.setProgress(40);
-        fetchDataFromApi(`/api/category?page=${value}&perPage=10`).then((res) => {
-            setCatData(res);
-            context.setProgress(100);
-        })
-    }
 
+    const slideImages = slideList?.bannerList?.map(item => Array.isArray(item.images) ? item.images[0] : item.images) || [];
 
 
     return (
         <>
+
+
+            <Dialog 
+                open={lightBox.isOpen} 
+                onClose={() => setLightBox({ isOpen: false })} 
+                maxWidth="md" 
+                fullWidth 
+                PaperProps={{ style: { backgroundColor: 'transparent', boxShadow: 'none' } }}
+            >
+                {lightBox.isOpen && slideImages.length > 0 && (
+                    <div style={{ position: 'relative' }}>
+                        <IconButton 
+                            onClick={() => setLightBox({ isOpen: false })} 
+                            style={{ position: 'absolute', top: -10, right: -10, color: '#fff', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 100 }}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                        <img 
+                            src={slideImages[lightBox.photoIndex]} 
+                            className="w-100" 
+                            style={{ borderRadius: '8px' }} 
+                            alt="Preview" 
+                        />
+                    </div>
+                )}
+            </Dialog>
+
             <div className="right-content w-100">
                 <div className="card shadow border-0 w-100 flex-row p-4">
-                    <h5 className="mb-0">Category List</h5>
+                    <h5 className="mb-0">Home Banner Slide List</h5>
                     <Breadcrumbs aria-label="breadcrumb" className="ms-auto breadcrumbs_">
                         <StyledBreadcrumb
                             component="a"
@@ -99,12 +127,12 @@ const Category = () => {
                             icon={<HomeIcon fontSize="small" />}
                         />
                         <StyledBreadcrumb
-                            label="Category"
+                            label="Home Banner Slide"
                             deleteIcon={<ExpandMoreIcon />}
                         />
                     </Breadcrumbs>
 
-                    <Link to="/category/add"><Button className="btn-blue ms-3 ps-3 pe-3">Add Category</Button></Link>
+                    <Link to="/homeBannerSlide/add"><Button className="btn-blue ms-3 ps-3 pe-3">Add Home Slide</Button></Link>
                 </div>
 
 
@@ -115,17 +143,14 @@ const Category = () => {
                             <thead className="thead-dark">
                                 <tr>
                                     {/* <th>UID</th> */}
-                                    <th style={{ width: '100px' }}>IMAGE</th>
-                                    <th>CATEGORY</th>
-                                    <th>COLOR</th>
+                                    <th style={{ width: '250px' }}>IMAGE</th>
                                     <th>ACTION</th>
                                 </tr>
                             </thead>
 
                             <tbody>
                                 {
-                                    // catData?.categoryList?.length !== 0 && catData?.categoryList?.map((item, index) => (
-                                    catData?.categoryList?.map((item, index) => (
+                                    slideList?.bannerList?.map((item, index) => (
                                         <tr key={item._id}>
                                             {/* <td>
                                                 <div className="d-flex align-items-center">
@@ -134,32 +159,20 @@ const Category = () => {
                                             </td> */}
 
                                             <td>
-                                                <div className="d-flex align-items-center productBox">
-                                                    <div className="imgWrapper">
-                                                        <div className="img card shadow m-0">
-                                                            <img src={Array.isArray(item.images) ? item.images?.[0] : item.images} className="w-100" />
-                                                        </div>
-                                                    </div>
+                                                <div className="d-flex align-items-center" style={{ width: '250px', height: '100px' }} onClick={() => setLightBox({ isOpen: true, photoIndex: index })}>
+                                                    <img src={Array.isArray(item.images) ? item.images?.[0] : item.images} className="w-100 h-100 rounded shadow" style={{ objectFit: 'cover' }} />
                                                 </div>
                                             </td>
 
-                                            <td>{item.name}</td>
-                                            <td>{item.color}</td>
-
                                             <td>
                                                 <div className="actions d-flex align-items-center">
-                                                    <Link to={`/category/edit/${item._id}`}>
-                                                        <Button
-                                                            color="success"
-                                                        >
+                                                    <Link to={`/homeBannerSlide/edit/${item._id}`}>
+                                                        <Button className="success" color="success">
                                                             <FaPencilAlt />
                                                         </Button>
                                                     </Link>
 
-                                                    <Button
-                                                        color="error"
-                                                        onClick={() => deleteCat(item._id)}
-                                                    >
+                                                    <Button className="error" color="error" onClick={() => deleteSlide(item._id)}>
                                                         <MdDelete />
                                                     </Button>
                                                 </div>
@@ -175,14 +188,6 @@ const Category = () => {
                         </table>
 
 
-                        {
-                            catData?.totalPages > 1 && <div className="d-flex tableFooter">
-                                <Pagination count={catData?.totalPages} color="primary" className="pagination" showFirstButton showLastButton onChange={handleChange} />
-                            </div>
-
-                        }
-
-
                     </div>
 
                 </div>
@@ -193,6 +198,6 @@ const Category = () => {
         </>
     )
 }
-export default Category;
+export default HomeSlideList;
 
 

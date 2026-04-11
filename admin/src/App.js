@@ -27,7 +27,9 @@ import AddProductRAMS from './Pages/Products/addProductRAMS';
 import ProductWeight from './Pages/Products/addProductWeight';
 import ProductSize from './Pages/Products/addProductSize';
 import Orders from './Pages/Orders';
-
+import AddHomeBannerSlide from './Pages/HomeBanner/addHomeSlide';
+import HomeBannerSlideList from './Pages/HomeBanner/homeSlideList';
+import EditHomeBannerSlide from './Pages/HomeBanner/editSlide';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
@@ -245,7 +247,7 @@ function App() {
               <Route path="/login" exact={true} element={<Login />} />
               <Route path="/signUp" exact={true} element={<SignUp />} />
               <Route path="/products" exact={true} element={<Products />} />
-              <Route path="/product/details" exact={true} element={<ProductDetails />} />
+              <Route path="/product/details/:id" exact={true} element={<ProductDetails />} />
               <Route path="/product/upload" exact={true} element={<ProductUpload />} />
               <Route path="/product/edit/:id" exact={true} element={<EditProduct />} />
               <Route path="/category" exact={true} element={<CategoryList />} />
@@ -258,6 +260,9 @@ function App() {
               <Route path="/productWEIGHT/add" exact={true} element={<ProductWeight />} />
               <Route path="/productSIZE/add" exact={true} element={<ProductSize />} />
               <Route path="/orders" exact={true} element={<Orders />} />
+              <Route path="/homeBannerSlide/add" exact={true} element={<AddHomeBannerSlide />} />
+              <Route path="/homeBannerSlide/list" exact={true} element={<HomeBannerSlideList />} />
+              <Route path="/homeBannerSlide/edit/:id" exact={true} element={<EditHomeBannerSlide />} />
             </Routes>
           </div>
         </div>

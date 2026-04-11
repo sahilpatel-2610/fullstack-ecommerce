@@ -478,7 +478,7 @@ const ProductDetails = (props) => {
     const user = JSON.parse(localStorage.getItem("user"));
 
     cartFields.productTitle = productData?.name;
-    cartFields.images = productData?.images[0];
+    cartFields.images = productData?.images?.length > 0 ? productData?.images[0] : "";
     cartFields.rating = productData?.rating;
     cartFields.price = productData?.price;
     cartFields.quantity = productQuantity;
@@ -605,7 +605,7 @@ const ProductDetails = (props) => {
     const userData = JSON.parse(localStorage.getItem("user"));
     const data = {
       productTitle: productData?.name,
-      images: productData?.images[0],
+      images: productData?.images?.length > 0 ? productData?.images[0] : "",
       rating: productData?.rating,
       price: productData?.price,
       productId: id,

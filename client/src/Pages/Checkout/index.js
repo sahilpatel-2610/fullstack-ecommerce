@@ -82,6 +82,16 @@ const Checkout = () => {
                 return (price || 0) * (item.quantity || 1);
             }).reduce((total, value) => total + value, 0) : 0;
 
+        // Warning for High Amount (MobiKwik/Wallet Limit Fix)
+        if (totalAmount > 50000) {
+            const message = totalAmount > 100000 
+                ? `This high-value order (₹${totalAmount.toLocaleString()}) exceeds wallet limits. Please use Credit/Debit Card, Netbanking, or EMI for a successful transaction. Cards have no such limits. Do you want to proceed?`
+                : "For payments above ₹50,000, wallets like MobiKwik may not work due to limit restrictions. Please use Credit/Debit Card or Netbanking. Do you want to proceed?";
+            
+            const confirmPayment = window.confirm(message);
+            if (!confirmPayment) return false;
+        }
+
         const options = {
             key: process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_test_lhO6WJjtmN7Evj",
             amount: totalAmount * 100,
@@ -106,7 +116,7 @@ const Checkout = () => {
                         productTitle: item.productTitle,
                         quantity: item.quantity,
                         price: item.price,
-                        images: item.images?.length > 0 ? item.images[0] : "",
+                        images: Array.isArray(item.images) ? (item.images.length > 0 ? item.images[0] : "") : (item.images || ""),
                         subTotal: item.subTotal
                     })),
                     status: "Pending",
@@ -289,7 +299,10 @@ const Checkout = () => {
                                                 <td>
                                                     &#8377; {
                                                         context.cartData?.length !== 0 &&
-                                                        context.cartData?.map(item => parseInt(item.price) * item.quantity).reduce((total, value) => total + value, 0).toLocaleString()
+                                                        context.cartData?.map(item => {
+                                                            const price = typeof item.price === "string" ? parseInt(item.price.replace(/[^0-9]/g, "")) : parseInt(item.price);
+                                                            return (price || 0) * (item.quantity || 1);
+                                                        }).reduce((total, value) => total + value, 0).toLocaleString()
                                                     }
                                                 </td>
                                             </tr>

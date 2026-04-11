@@ -233,7 +233,7 @@ const Cart = () => {
 
                             :
                             <div className="empty d-flex align-items-center justify-content-center flex-column">
-                                <img src="https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIyLTExL3JtNTg2LWJhdGNoMi1zZ3MtMDgtcG5nLnBuZw.png" width="150" alt="empty" />
+                                <img src="/empty-cart.png" width="250" alt="Your cart is empty" />
                                 <h3>Your Cart is currently empty</h3>
                                 <br />
                                 <Link to="/"> <Button className="btn-blue btn-lg btn-big btn-round">Continue Shopping</Button></Link>
