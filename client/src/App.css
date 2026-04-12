@@ -25,7 +25,20 @@ a {
   background: #6d4aae;
 }
 
-@media (max-width: 1300px) {
+.container {
+  max-width: 1360px !important;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.section {
+  padding: 45px 0px;
+}
+
+@media (max-width: 1360px) {
+  .container {
+    max-width: 100% !important;
+  }
 
   .container,
   .container-lg,
@@ -2884,3 +2897,21 @@ a:hover {
   font-weight: 500;
   margin-bottom: 0px;
 }
+
+.myAccountPage .MuiTabs-root button {
+  font-weight: 600 !important;
+}
+
+.myAccBox {
+  padding: 25px;
+  background: #fafafa;
+}
+
+/* .myAccountPage .MuiTabs-root button.Mui-selected {
+  color: #53348c !important;
+}
+
+.myAccountPage .MuiTabs-indicator {
+  background-color: #53348c !important;
+  height: 3px !important;
+} */
