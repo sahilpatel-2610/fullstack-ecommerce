@@ -298,9 +298,17 @@ button {
   color: #000;
 }
 
+
+
+
 .headerSearch button svg {
   font-size: 22px;
   color: #000 !important;
+}
+
+.headerSearch button .MuiCircularProgress-root {
+  width: 25px !important;
+  height: 25px !important;
 }
 
 header .part3 .btn-blue {

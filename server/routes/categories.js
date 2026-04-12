@@ -241,4 +241,16 @@ router.put('/:id', async (req, res) => {
 });
 
 
+router.get(`/get/count`, async (req, res) => {
+    const categoryCount = await Category.countDocuments();
+
+    if (!categoryCount && categoryCount !== 0) {
+        res.status(500).json({ success: false })
+    }
+
+    res.send({
+        categoryCount: categoryCount
+    });
+});
+
 module.exports = router;

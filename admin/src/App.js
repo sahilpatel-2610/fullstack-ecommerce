@@ -30,8 +30,11 @@ import Orders from './Pages/Orders';
 import AddHomeBannerSlide from './Pages/HomeBanner/addHomeSlide';
 import HomeBannerSlideList from './Pages/HomeBanner/homeSlideList';
 import EditHomeBannerSlide from './Pages/HomeBanner/editSlide';
+import Users from './Pages/Users';
+import Reviews from './Pages/Reviews';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import { IoMdClose } from "react-icons/io";
 
 import LoadingBar from "react-top-loading-bar";
 import { fetchDataFromApi } from './utils/api';
@@ -110,9 +113,10 @@ function App() {
       return;
     }
 
-    setAlertBox({
+    setAlertBox(prev => ({
+      ...prev,
       open: false
-    });
+    }));
   };
 
   useEffect(() => {
@@ -209,16 +213,6 @@ function App() {
           className='topLoadingBar'
         />
 
-        <Snackbar open={alertBox.open} autoHideDuration={6000} onClose={handleClose}>
-          <Alert
-            onClose={handleClose}
-            severity={alertBox.error === true ? "error" : 'success'}
-            variant="filled"
-            sx={{ width: '100%' }}
-          >
-            {alertBox.msg}
-          </Alert>
-        </Snackbar>
         {
           isHideSidebarAndHeader !== true &&
           <Header />
@@ -263,9 +257,37 @@ function App() {
               <Route path="/homeBannerSlide/add" exact={true} element={<AddHomeBannerSlide />} />
               <Route path="/homeBannerSlide/list" exact={true} element={<HomeBannerSlideList />} />
               <Route path="/homeBannerSlide/edit/:id" exact={true} element={<EditHomeBannerSlide />} />
+              <Route path="/users" exact={true} element={<Users />} />
+              <Route path="/reviews" exact={true} element={<Reviews />} />
             </Routes>
           </div>
         </div>
+
+        <Snackbar
+          open={alertBox.open}
+          autoHideDuration={6000}
+          onClose={handleClose}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+          sx={{ zIndex: 999999 }}
+        >
+          <div style={{
+            backgroundColor: alertBox.error === true ? '#d32f2f' : '#2e7d32',
+            color: '#fff',
+            padding: '12px 20px',
+            borderRadius: '4px',
+            fontWeight: '600',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '15px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            fontSize: '14px',
+            minWidth: '250px',
+            justifyContent: 'space-between'
+          }}>
+            <span>{alertBox.msg}</span>
+            <IoMdClose style={{ cursor: 'pointer', fontSize: '20px' }} onClick={handleClose} />
+          </div>
+        </Snackbar>
 
         {/* </SnackbarProvider>   */}
       </MyContext.Provider>

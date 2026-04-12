@@ -59,7 +59,6 @@ const Sidebar = () => {
                         <div className={`submenuWrapper ${activeTab === 1 && isToggleSubmenu === true ? 'colapse' : 'colapsed'}`}>
                             <ul className='submenu'>
                                 <li><Link to="/products">Product List</Link></li>
-                                <li><Link to="/product/details">Product View</Link></li>
                                 <li><Link to="/product/upload">Product Upload</Link></li>
                                 <li><Link to="/productRAMS/add">Add Product RAMS</Link></li>
                                 <li><Link to="/productWEIGHT/add">Add Product WEIGHT</Link></li>
@@ -143,7 +142,11 @@ const Sidebar = () => {
 
                 <div className='logoutWrapper'>
                     <div className='logoutBox'>
-                        <Button variant="contained"><IoMdLogOut /> Logout</Button>
+                        <Button variant="contained" onClick={() => {
+                            localStorage.clear();
+                            context.setIsLogin(false);
+                            window.location.href = "/login";
+                        }}><IoMdLogOut /> Logout</Button>
                     </div>
                 </div>
 

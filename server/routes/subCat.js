@@ -136,4 +136,16 @@ router.put('/:id', async (req, res) => {
 
 
 
+router.get(`/get/count`, async (req, res) => {
+    const subCatCount = await SubCategory.countDocuments();
+
+    if (!subCatCount && subCatCount !== 0) {
+        res.status(500).json({ success: false })
+    }
+
+    res.send({
+        subCatCount: subCatCount
+    });
+});
+
 module.exports = router;

@@ -9,13 +9,19 @@ import { useState } from "react";
 import { IoIosTimer } from "react-icons/io";
 
 
+import { useNavigate } from "react-router-dom";
+
 const DashboardBox = (props) => {
+    const navigate = useNavigate();
 
     return (
-        <Button className="dashboardBox" style={{
-            backgroundImage:
-                `linear-gradient(to right, ${props.color?.[0]}, ${props.color?.[1]})`,
-        }}>
+        <Button className="dashboardBox"
+            onClick={() => props.path && navigate(props.path)}
+            style={{
+                backgroundImage:
+                    `linear-gradient(to right, ${props.color?.[0]}, ${props.color?.[1]})`,
+                cursor: props.path ? 'pointer' : 'default'
+            }}>
 
 
             {

@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import Footer from "./Components/Footer";
 import ProductModal from "./Components/ProductModal";
 import Listing from "./Pages/Listing";
+import SearchPage from "./Pages/Search";
 import ProductDetails from "./Pages/ProductDetails";
 import Cart from "./Pages/Cart";
 import MyList from "./Pages/MyList";
@@ -59,6 +60,8 @@ function App() {
     email: "",
     userId: ""
   })
+
+  const [searchData, setSearchData] = useState([]);
 
   const [cartData, setCartData] = useState([]);
   const [myListData, setMyListData] = useState([]);
@@ -269,7 +272,9 @@ function App() {
     updateCartItem,
     myListData,
     setMyListData,
-    getMyListData
+    getMyListData,
+    searchData,
+    setSearchData
   };
 
 
@@ -304,6 +309,7 @@ function App() {
 
         <Routes>
           <Route path="/" exact={true} element={<Home />} />
+          <Route path="/search" exact={true} element={<SearchPage />} />
           <Route path="/products/category/:id" exact={true} element={<Listing />} />
           <Route path="/products/subCat/:id" exact={true} element={<Listing />} />
           <Route exact={true} path="/product/:id" element={<ProductDetails />} />

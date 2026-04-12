@@ -106,8 +106,7 @@ const Login = () => {
                     setTimeout(() => {
                         setIsLoading(false);
                         context.setIsLogin(true);
-                        // history("/dashboard");
-                        window.location.href = "/dashboard";
+                        history("/dashboard");
                     }, 2000);
 
                     context.setProgress(100);

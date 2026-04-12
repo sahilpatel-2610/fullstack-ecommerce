@@ -208,10 +208,11 @@ header .part2 {
 .searchBox {
     width: 100%;
     max-width: 500px;
-    height: 40px;
+    height: 38px;
     background: #f0f5ff;
-    border-radius: 6px;
+    border-radius: 4px;
     padding: 3px 15px;
+    border: 1px solid rgba(0, 0, 0, 0.23);
     transition: all 0.3s ease-in-out;
 }
 
@@ -223,11 +224,14 @@ header .part2 {
 }
 
 body.dark .searchBox {
-    background: #12254e;
+    background: transparent !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 
 .searchBox input {
+    width: 100%;
+    height: 100% !important;
     margin-left: 5px;
     background: transparent;
     border: 0px;
@@ -1621,27 +1625,8 @@ body.dark .signUpSection .loginBox {
     font-weight: 500;
 }
 
-.breadcrumbs_ a:hover {
-    text-decoration: none !important;
-}
+/* Breadcrumb styling moved to StyledBreadcrumb in individual pages */
 
-body.dark .breadcrumbs_ a {
-    background-color: #112143 !important;
-}
-
-body.dark .breadcrumbs_ a * {
-    color: #ffffffb3 !important;
-}
-
-body.dark .breadcrumbs_ li .MuiChip-filled {
-    background-color: #112143 !important;
-    color: #ffffffb3 !important;
-}
-
-body.dark .css-1wuw8dw-MuiBreadcrumbs-separator {
-    background-color: #112143 !important;
-    color: rgba(255, 255, 255, 0.7) !important;
-}
 
 .sliderBig *,
 .sliderSml * {
@@ -2463,4 +2448,16 @@ body.dark .zoomSlider .item_active {
 
 .zoomSlider .swiper-slide .item_active {
     opacity: 1 !important;
+}
+
+.MuiAlert-filledSuccess {
+    background-color: #2e7d32 !important;
+}
+
+.MuiAlert-filledError {
+    background-color: #d32f2f !important;
+}
+
+.MuiAlert-root .MuiAlert-message {
+    color: #fff !important;
 }

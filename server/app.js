@@ -31,6 +31,7 @@ const myListSchema = require('./routes/myList.js');
 const checkout = require('./routes/checkout.js');
 const orders = require('./routes/orders.js');
 const homeBanner = require('./routes/homeBanner.js');
+const searchRoute = require('./routes/search.js');
 
 
 app.use("/uploads", express.static('uploads'));
@@ -48,6 +49,7 @@ app.use(`/api/my-list`, myListSchema);
 app.use(`/api/checkout`, checkout);
 app.use(`/api/orders`, orders);
 app.use(`/api/homeBanner`, homeBanner);
+app.use(`/api/search`, searchRoute);
 
 // Error Handler
 app.use((err, req, res, next) => {

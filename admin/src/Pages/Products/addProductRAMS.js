@@ -8,7 +8,7 @@ import { useContext, useState } from "react";
 import Button from '@mui/material/Button';
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { deleteData, editData, fetchDataFromApi, postData } from "../../utils/api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { FaPencilAlt } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { useEffect } from "react";
@@ -16,21 +16,40 @@ import { useEffect } from "react";
 
 //breadcrumb code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
-    const backgroundColor =
-        theme.palette.mode === "light"
-            ? theme.palette.grey[100]
-            : theme.palette.grey[800];
     return {
-        backgroundColor,
+        backgroundColor: 'rgba(0,0,0,0.05)',
         height: theme.spacing(3),
-        color: theme.palette.text.primary,
-        fontWeight: theme.typography.fontWeightRegular,
+        color: 'rgba(0,0,0,0.7)',
+        fontWeight: theme.typography.fontWeightMedium,
+        padding: '0 5px',
+        borderRadius: '100px',
+        cursor: 'pointer',
+        "& .MuiChip-label": {
+            paddingLeft: '10px',
+            paddingRight: '10px',
+        },
+        "& .MuiChip-icon": {
+            color: 'rgba(0,0,0,0.7)',
+        },
         "&:hover, &:focus": {
-            backgroundColor: emphasize(backgroundColor, 0.06),
+            backgroundColor: 'rgba(0,0,0,0.1)',
+        },
+        "body.dark &": {
+            backgroundColor: '#1a2745',
+            color: '#ffffffb3',
+        },
+        "body.dark & .MuiChip-label": {
+            color: '#ffffffb3',
+        },
+        "body.dark & .MuiChip-icon": {
+            color: '#ffffffb3',
+        },
+        "body.dark &:hover, body.dark &:focus": {
+            backgroundColor: '#1e2d50',
         },
         '&:active': {
             boxShadow: theme.shadows[1],
-            backgroundColor: emphasize(backgroundColor, 0.12),
+            backgroundColor: theme.palette.mode === 'light' ? 'rgba(0,0,0,0.2)' : '#1e2d50',
         },
     };
 });
@@ -130,20 +149,18 @@ const AddProductRAMS = () => {
                 <h5 className="mb-0">Add Product RAMS</h5>
                 <Breadcrumbs aria-label="breadcrumb" className="ms-auto breadcrumbs_">
                     <StyledBreadcrumb
-                        component="a"
-                        href="#"
+                        component={Link}
+                        to="/"
                         label="Dashboard"
                         icon={<HomeIcon fontSize="small" />}
                     />
                     <StyledBreadcrumb
-                        component="a"
+                        component={Link}
                         label="Product RAMS"
-                        href="#"
-                        deleteIcon={<ExpandMoreIcon />}
+                        to="/productRAMS/add"
                     />
                     <StyledBreadcrumb
                         label="Add Product RAMS"
-                        deleteIcon={<ExpandMoreIcon />}
                     />
                 </Breadcrumbs>
             </div>

@@ -11,21 +11,12 @@ import { FaHome } from "react-icons/fa";
 
 const MyList = () => {
 
-    const [myListData, setMyListData] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-
     const context = useContext(MyContext);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         window.scrollTo(0, 0);
-        const userData = JSON.parse(localStorage.getItem("user"));
-        fetchDataFromApi(`/api/my-list?userId=${userData?._id}`).then((res) => {
-            if (res !== undefined && !res.error) {
-                setMyListData(res);
-            } else {
-                setMyListData([]);
-            }
-        })
+        context.getMyListData();
     }, []);
 
     const removeItem = (id) => {
@@ -37,12 +28,10 @@ const MyList = () => {
                     error: false,
                     msg: "Item removed from My List!"
                 })
-
-                const userData = JSON.parse(localStorage.getItem("user"));
-                fetchDataFromApi(`/api/my-list?userId=${userData?._id}`).then((res) => {
-                    setMyListData(res);
+                context.getMyListData();
+                setTimeout(() => {
                     setIsLoading(false);
-                })
+                }, 500);
             } else {
                 context.setAlertBox({
                     open: true,
@@ -69,10 +58,10 @@ const MyList = () => {
 
                     <div className="myListTableWrapper">
                         <h2 className="hd mb-1">MY LIST</h2>
-                        <p>There are <b className="text-red">{myListData?.length}</b> products in your wish list</p>
+                        <p>There are <b className="text-red">{context.myListData?.length}</b> products in your wish list</p>
 
                         {
-                            myListData?.length !== 0 ?
+                            context.myListData?.length !== 0 ?
                                 <div className="row">
                                     <div className="col-md-12 pr-5">
                                         <div className="table-responsive myListTable">
@@ -88,7 +77,7 @@ const MyList = () => {
                                                 <tbody>
 
                                                     {
-                                                        myListData?.length !== 0 && myListData?.map((item, index) => {
+                                                        context.myListData?.length !== 0 && context.myListData?.map((item, index) => {
                                                             return (
                                                                 <tr key={index}>
                                                                     <td width="50%">

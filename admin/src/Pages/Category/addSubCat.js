@@ -11,26 +11,45 @@ import Select from '@mui/material/Select';
 import Button from '@mui/material/Button';
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { postData } from "../../utils/api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useEffect } from "react";
 
 //breadcrumb code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
-    const backgroundColor =
-        theme.palette.mode === "light"
-            ? theme.palette.grey[100]
-            : theme.palette.grey[800];
     return {
-        backgroundColor,
+        backgroundColor: 'rgba(0,0,0,0.05)',
         height: theme.spacing(3),
-        color: theme.palette.text.primary,
-        fontWeight: theme.typography.fontWeightRegular,
+        color: 'rgba(0,0,0,0.7)',
+        fontWeight: theme.typography.fontWeightMedium,
+        padding: '0 5px',
+        borderRadius: '100px',
+        cursor: 'pointer',
+        "& .MuiChip-label": {
+            paddingLeft: '10px',
+            paddingRight: '10px',
+        },
+        "& .MuiChip-icon": {
+            color: 'rgba(0,0,0,0.7)',
+        },
         "&:hover, &:focus": {
-            backgroundColor: emphasize(backgroundColor, 0.06),
+            backgroundColor: 'rgba(0,0,0,0.1)',
+        },
+        "body.dark &": {
+            backgroundColor: '#1a2745',
+            color: '#ffffffb3',
+        },
+        "body.dark & .MuiChip-label": {
+            color: '#ffffffb3',
+        },
+        "body.dark & .MuiChip-icon": {
+            color: '#ffffffb3',
+        },
+        "body.dark &:hover, body.dark &:focus": {
+            backgroundColor: '#1e2d50',
         },
         '&:active': {
             boxShadow: theme.shadows[1],
-            backgroundColor: emphasize(backgroundColor, 0.12),
+            backgroundColor: theme.palette.mode === 'light' ? 'rgba(0,0,0,0.2)' : '#1e2d50',
         },
     };
 });
@@ -111,24 +130,22 @@ const AddSubCat = () => {
 
     return (
         <div className="right-content w-100">
-            <div className="card shadow border-0 w-100 flex-row p-4 mt-2">
+            <div className="card shadow border-0 w-100 flex-row p-4 mt-2 align-items-center">
                 <h5 className="mb-0">Add Sub Category</h5>
                 <Breadcrumbs aria-label="breadcrumb" className="ms-auto breadcrumbs_">
                     <StyledBreadcrumb
-                        component="a"
-                        href="#"
+                        component={Link}
+                        to="/"
                         label="Dashboard"
                         icon={<HomeIcon fontSize="small" />}
                     />
                     <StyledBreadcrumb
-                        component="a"
+                        component={Link}
+                        to="/subCategory"
                         label="Sub Category"
-                        href="#"
-                        deleteIcon={<ExpandMoreIcon />}
                     />
                     <StyledBreadcrumb
                         label="Add Category"
-                        deleteIcon={<ExpandMoreIcon />}
                     />
                 </Breadcrumbs>
             </div>

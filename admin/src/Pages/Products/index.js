@@ -22,9 +22,9 @@ import { MdDelete } from "react-icons/md";
 import Pagination from "@mui/material/Pagination";
 import TablePagination from '@mui/material/TablePagination';
 import { MyContext } from "../../App";
+import { Link } from "react-router-dom";
 
 import Rating from "@mui/material/Rating";
-import { Link } from "react-router-dom";
 
 import { emphasize, styled } from "@mui/material/styles";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
@@ -41,21 +41,40 @@ const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
 //breadcrumb code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
-    const backgroundColor =
-        theme.palette.mode === "light"
-            ? theme.palette.grey[100]
-            : theme.palette.grey[800];
     return {
-        backgroundColor,
+        backgroundColor: 'rgba(0,0,0,0.05)',
         height: theme.spacing(3),
-        color: theme.palette.text.primary,
-        fontWeight: theme.typography.fontWeightRegular,
+        color: 'rgba(0,0,0,0.7)',
+        fontWeight: theme.typography.fontWeightMedium,
+        padding: '0 5px',
+        borderRadius: '100px',
+        cursor: 'pointer',
+        "& .MuiChip-label": {
+            paddingLeft: '10px',
+            paddingRight: '10px',
+        },
+        "& .MuiChip-icon": {
+            color: 'rgba(0,0,0,0.7)',
+        },
         "&:hover, &:focus": {
-            backgroundColor: emphasize(backgroundColor, 0.06),
+            backgroundColor: '#1e2d50',
+        },
+        "body.dark &": {
+            backgroundColor: '#1a2745',
+            color: '#ffffffb3',
+        },
+        "body.dark & .MuiChip-label": {
+            color: '#ffffffb3',
+        },
+        "body.dark & .MuiChip-icon": {
+            color: '#ffffffb3',
+        },
+        "body.dark &:hover, body.dark &:focus": {
+            backgroundColor: '#1e2d50',
         },
         '&:active': {
             boxShadow: theme.shadows[1],
-            backgroundColor: emphasize(backgroundColor, 0.12),
+            backgroundColor: theme.palette.mode === 'light' ? 'rgba(0,0,0,0.2)' : '#1e2d50',
         },
     };
 });
@@ -73,6 +92,10 @@ const Products = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
+    const [totalProducts, setTotalProducts] = useState(0);
+    const [totalCategory, setTotalCategory] = useState(0);
+    const [totalSubCategory, setTotalSubCategory] = useState(0);
+
     const ITEM_HEIGHT = 48;
 
     useEffect(() => {
@@ -81,7 +104,20 @@ const Products = () => {
         fetchDataFromApi(`/api/products?page=${page + 1}&perPage=${rowsPerPage}`).then((res) => {
             setProductList(res);
             context.setProgress(100);
+        });
+
+        fetchDataFromApi("/api/products/get/count").then((res) => {
+            setTotalProducts(res.productsCount);
         })
+
+        fetchDataFromApi("/api/category/get/count").then((res) => {
+            setTotalCategory(res.categoryCount);
+        })
+
+        fetchDataFromApi("/api/subCat/get/count").then((res) => {
+            setTotalSubCategory(res.subCatCount);
+        })
+
     }, [page, rowsPerPage]);
 
     const deleteProduct = (id) => {
@@ -124,30 +160,31 @@ const Products = () => {
     return (
         <>
             <div className="right-content w-100">
-                <div className="card shadow border-0 w-100 flex-row p-4 res-col">
+                <div className="card shadow border-0 w-100 flex-row p-4 res-col align-items-center">
                     <h5 className="mb-0">Product List</h5>
                     <div className="ms-auto d-flex align-items-center">
                         <Breadcrumbs aria-label="breadcrumb" className="breadcrumbs_">
                             <StyledBreadcrumb
-                                component="a"
-                                href="#"
+                                component={Link}
+                                to="/"
                                 label="Dashboard"
                                 icon={<HomeIcon fontSize="small" />}
                             />
                             <StyledBreadcrumb
                                 label="Products"
-                                deleteIcon={<ExpandMoreIcon />}
                             />
                         </Breadcrumbs>
 
-                        <Link to="/product/upload"><Button className="btn-blue pl-3 pr-3 ms-3">Add Product</Button></Link>
+                        <Link to="/product/upload" className="ms-3">
+                            <Button className="btn-blue ps-3 pe-3">Add Product</Button>
+                        </Link>
                     </div>
 
                 </div>
                 <div className="dashboardBoxWrapper d-flex">
-                    <DashboardBox color={["#1da256", "#48d483"]} icon={<MdShoppingBag />} title="Total Products" count="105" />
-                    <DashboardBox color={["#c012e2", "#eb64fe"]} icon={<MdCategory />} title="Total Categories" count="9" />
-                    <DashboardBox color={["#2c78e5", "#60aff5"]} icon={<MdShield />} title="Total Sub Category" count="14" />
+                    <DashboardBox color={["#1da256", "#48d483"]} icon={<MdShoppingBag />} title="Total Products" count={totalProducts} path="/products" />
+                    <DashboardBox color={["#c012e2", "#eb64fe"]} icon={<MdCategory />} title="Total Categories" count={totalCategory} path="/category" />
+                    <DashboardBox color={["#2c78e5", "#60aff5"]} icon={<MdShield />} title="Total Sub Category" count={totalSubCategory} path="/subCategory" />
                 </div>
 
 
@@ -155,7 +192,7 @@ const Products = () => {
                 <div className="card shadow border-0 p-3 mt-4">
                     <h3 className="hd">Best Selling Products</h3>
 
-                    <div className="row cardFilters mt-3 align-items-center">
+                    <div className="row cardFilters mt-3 align-items-end">
                         <div className="col-md-3">
                             <h4>CATEGORY BY</h4>
                             <FormControl size="small" className="w-100">

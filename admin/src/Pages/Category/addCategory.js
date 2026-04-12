@@ -8,7 +8,7 @@ import { FaCloudUploadAlt } from "react-icons/fa";
 import Button from '@mui/material/Button';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import { deleteImages, deleteData, fetchDataFromApi, postData } from "../../utils/api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import CircularProgress from '@mui/material/CircularProgress';
 import { FaRegImages } from "react-icons/fa6";
 import { MyContext } from "../../App";
@@ -18,22 +18,29 @@ import { IoCloseSharp } from "react-icons/io5";
 
 
 //breadcrumb code
-const StyledBreadcrumb = styled(Chip)(({ theme }) => {
-    const backgroundColor =
-        theme.palette.mode === "light"
-            ? theme.palette.grey[100]
-            : theme.palette.grey[800];
+const StyledBreadcrumb = styled(Chip)(({ theme, isDark }) => {
     return {
-        backgroundColor,
+        backgroundColor: isDark ? '#1a2745' : 'rgba(0,0,0,0.05)',
         height: theme.spacing(3),
-        color: theme.palette.text.primary,
-        fontWeight: theme.typography.fontWeightRegular,
+        color: isDark ? '#ffffffb3' : 'rgba(0,0,0,0.7)',
+        fontWeight: theme.typography.fontWeightMedium,
+        padding: '0 5px',
+        borderRadius: '100px',
+        cursor: 'pointer',
+        "& .MuiChip-label": {
+            paddingLeft: '10px',
+            paddingRight: '10px',
+            color: isDark ? '#ffffffb3' : 'rgba(0,0,0,0.7)',
+        },
+        "& .MuiChip-icon": {
+            color: isDark ? '#ffffffb3' : 'rgba(0,0,0,0.7)',
+        },
         "&:hover, &:focus": {
-            backgroundColor: emphasize(backgroundColor, 0.06),
+            backgroundColor: isDark ? '#1e2d50' : 'rgba(0,0,0,0.1)',
         },
         '&:active': {
             boxShadow: theme.shadows[1],
-            backgroundColor: emphasize(backgroundColor, 0.12),
+            backgroundColor: isDark ? '#1e2d50' : 'rgba(0,0,0,0.2)',
         },
     };
 });
@@ -252,24 +259,25 @@ const AddCategory = () => {
     return (
         <>
             <div className="right-content w-100">
-                <div className="card shadow border-0 w-100 flex-row p-4 mt-2">
+                <div className="card shadow border-0 w-100 flex-row p-4 mt-2 align-items-center">
                     <h5 className="mb-0">Add Category</h5>
                     <Breadcrumbs aria-label="breadcrumb" className="ms-auto breadcrumbs_">
                         <StyledBreadcrumb
-                            component="a"
-                            href="#"
+                            component={Link}
+                            to="/"
                             label="Dashboard"
                             icon={<HomeIcon fontSize="small" />}
+                            isDark={context.theme}
                         />
                         <StyledBreadcrumb
-                            component="a"
+                            component={Link}
+                            to="/category"
                             label="Category"
-                            href="#"
-                            deleteIcon={<ExpandMoreIcon />}
+                            isDark={context.theme}
                         />
                         <StyledBreadcrumb
                             label="Add Category"
-                            deleteIcon={<ExpandMoreIcon />}
+                            isDark={context.theme}
                         />
                     </Breadcrumbs>
                 </div>

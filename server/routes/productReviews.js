@@ -11,6 +11,8 @@ router.get(`/`, async (req, res) => {
 
         if (req.query.productId !== undefined && req.query.productId !== null && req.query.productId !== "") {
             reviews = await ProductReviews.find({ productId: req.query.productId });
+        } else {
+            reviews = await ProductReviews.find();
         }
 
         if (!reviews) {
@@ -138,5 +140,17 @@ router.post('/add', async (req, res) => {
 //     }
 // });
 
+
+router.get(`/get/count`, async (req, res) => {
+    const reviewsCount = await ProductReviews.countDocuments();
+
+    if (!reviewsCount && reviewsCount !== 0) {
+        res.status(500).json({ success: false })
+    }
+
+    res.send({
+        reviewsCount: reviewsCount
+    });
+});
 
 module.exports = router;

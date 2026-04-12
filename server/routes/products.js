@@ -449,4 +449,17 @@ router.put('/:id', async (req, res) => {
 
 
 
+router.get(`/get/count`, async (req, res) => {
+    const productsCount = await Product.countDocuments();
+
+    if (!productsCount && productsCount !== 0) {
+        res.status(500).json({ success: false })
+    }
+
+    res.send({
+        productsCount: productsCount
+    });
+});
+
+
 module.exports = router;

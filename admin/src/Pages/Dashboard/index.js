@@ -51,6 +51,11 @@ const Dashboard = () => {
     const [categoryVal, setCategoryVal] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+
+    const [totalUsers, setTotalUsers] = useState(0);
+    const [totalOrders, setTotalOrders] = useState(0);
+    const [totalProducts, setTotalProducts] = useState(0);
+    const [totalReviews, setTotalReviews] = useState(0);
     const open = Boolean(anchorEl);
 
     const ITEM_HEIGHT = 48;
@@ -66,6 +71,23 @@ const Dashboard = () => {
             setProductList(res);
             context.setProgress(100);
         })
+
+        fetchDataFromApi("/api/user/get/count").then((res) => {
+            setTotalUsers(res.userCount);
+        })
+
+        fetchDataFromApi("/api/orders/get/count").then((res) => {
+            setTotalOrders(res.orderCount);
+        })
+
+        fetchDataFromApi("/api/products/get/count").then((res) => {
+            setTotalProducts(res.productsCount);
+        })
+
+        fetchDataFromApi("/api/productReviews/get/count").then((res) => {
+            setTotalReviews(res.reviewsCount);
+        })
+
     }, [page, rowsPerPage]);
 
     const deleteProduct = (id) => {
@@ -123,10 +145,10 @@ const Dashboard = () => {
                 <div className="row dashboardBoxWrapperRow">
                     <div className="col-md-12">
                         <div className="dashboardBoxWrapper d-flex">
-                            <DashboardBox color={["#1da256", "#48d483"]} icon={<FaUserCircle />} grow={true} title="Total Users" count="8586" />
-                            <DashboardBox color={["#c012e2", "#eb64fe"]} icon={<IoMdCart />} title="Total Orders" count="430" />
-                            <DashboardBox color={["#2c78e5", "#60aff5"]} icon={<MdShoppingBag />} title="Total Products" count="105" />
-                            <DashboardBox color={["#e1950e", "#f3cd29"]} icon={<GiStarsStack />} title="Total Reviews" count="365" />
+                            <DashboardBox color={["#1da256", "#48d483"]} icon={<FaUserCircle />} grow={true} title="Total Users" count={totalUsers} path="/users" />
+                            <DashboardBox color={["#c012e2", "#eb64fe"]} icon={<IoMdCart />} title="Total Orders" count={totalOrders} path="/orders" />
+                            <DashboardBox color={["#2c78e5", "#60aff5"]} icon={<MdShoppingBag />} title="Total Products" count={totalProducts} path="/products" />
+                            <DashboardBox color={["#e1950e", "#f3cd29"]} icon={<GiStarsStack />} title="Total Reviews" count={totalReviews} path="/reviews" />
                         </div>
                     </div>
 
@@ -224,13 +246,13 @@ const Dashboard = () => {
                                 </Select>
                             </FormControl>
                         </div>
-
-                        <div className="col-md-4 ms-auto">
+                        {/* 
+                        <div className="col-md-4 ms-auto w-100">
                             <div className="searchBox ms-auto position-relative d-flex align-items-center">
                                 <IoSearch className="me-2" />
-                                <input type="text" placeholder="Search here..." />
+                                <input type="text" placeholder="Search here..." className="w-100" />
                             </div>
-                        </div>
+                        </div> */}
                     </div>
 
 
