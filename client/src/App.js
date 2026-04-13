@@ -136,6 +136,14 @@ function App() {
 
 
 
+  const fetchUser = () => {
+    const userData = JSON.parse(localStorage.getItem("user"));
+    fetchDataFromApi(`/api/user/${userData?._id || userData?.id}`).then((res) => {
+      setUser(res);
+      localStorage.setItem("user", JSON.stringify(res));
+    })
+  }
+
   useEffect(() => {
 
     const token = localStorage.getItem("token");
@@ -275,7 +283,8 @@ function App() {
     setMyListData,
     getMyListData,
     searchData,
-    setSearchData
+    setSearchData,
+    fetchUser
   };
 
 

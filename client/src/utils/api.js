@@ -63,3 +63,27 @@ export const deleteData = async (url) => {
         return { error: true, msg: error.message };
     }
 };
+
+export const uploadImage = async (url, image) => {
+    try {
+        const token = localStorage.getItem("token");
+        const headers = token ? { "Authorization": `Bearer ${token}` } : {};
+        const { data } = await axios.post(`${BASE_URL}${url}`, image, { headers });
+        return data;
+    } catch (error) {
+        console.error("API Upload Error:", error);
+        return { error: true, msg: error.message };
+    }
+}
+
+export const deleteImage = async (url) => {
+    try {
+        const token = localStorage.getItem("token");
+        const headers = token ? { "Authorization": `Bearer ${token}` } : {};
+        const { data } = await axios.delete(`${BASE_URL}${url}`, { headers });
+        return data;
+    } catch (error) {
+        console.error("API Delete Image Error:", error);
+        return { error: true, msg: error.message };
+    }
+}

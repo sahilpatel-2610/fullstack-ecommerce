@@ -1,9 +1,71 @@
 const { User } = require("../models/user");
+const { ImageUpload } = require('../models/imageUpload');
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
+const multer = require('multer');
+const fs = require("fs");
+
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CONFIG_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_CONFIG_API_KEY,
+    api_secret: process.env.CLOUDINARY_CONFIG_API_SECRET,
+    secure: true
+});
+
+
+
+const storage = multer.diskStorage({
+
+    destination: function (req, file, cb) {
+        cb(null, 'uploads');
+    },
+    filename: function (req, file, cb) {
+        cb(null, `${Date.now()}_${file.originalname}`);
+        // imagesArr.push(`${Date.now()}-${file.originalname}`);
+    },
+})
+
+const upload = multer({ storage: storage });
+
+
+router.post(`/upload`, upload.array("images"), async (req, res) => {
+
+    let imagesArr = [];
+    try {
+
+        for (let i = 0; i < req.files.length; i++) {
+
+            const options = {
+                use_filename: true,
+                unique_filename: false,
+                overwrite: false,
+                resource_type: "auto"
+            };
+
+            const result = await cloudinary.uploader.upload(req.files[i].path, options);
+            imagesArr.push(result.secure_url);
+            fs.unlinkSync(`uploads/${req.files[i].filename}`);
+        }
+
+        let imagesUploaded = new ImageUpload({
+            images: imagesArr,
+        });
+
+        imagesUploaded = await imagesUploaded.save();
+        return res.status(200).json(imagesArr);
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: true, msg: "Images Upload Failed", details: error });
+    }
+
+});
+
 
 router.post(`/signup`, async (req, res) => {
     const { name, phone, email, password, isAdmin } = req.body;
@@ -129,13 +191,13 @@ router.delete('/:id', async (req, res) => {
         })
 });
 
+
+
 router.put('/:id', async (req, res) => {
 
-    const { name, phone, email, password } = req.body;
+    const { name, phone, email } = req.body;
 
     const userExist = await User.findById(req.params.id);
-
-    let newPassword;
 
     if (req.body.password) {
         newPassword = bcrypt.hashSync(req.body.password, 10)
@@ -149,7 +211,8 @@ router.put('/:id', async (req, res) => {
             name: name,
             phone: phone,
             email: email,
-            password: newPassword
+            password: newPassword,
+            images: req.body.images
         },
         {
             new: true
@@ -161,6 +224,62 @@ router.put('/:id', async (req, res) => {
 
     res.send(user);
 })
+
+// router.put('/:id', async (req, res) => {
+
+//     const { name, phone, email, password } = req.body;
+
+//     const userExist = await User.findById(req.params.id);
+
+//     let newPassword;
+
+//     if (req.body.password) {
+//         newPassword = bcrypt.hashSync(req.body.password, 10)
+//     } else {
+//         newPassword = userExist.password;
+//     }
+
+//     const user = await User.findByIdAndUpdate(
+//         req.params.id,
+//         {
+//             name: name,
+//             phone: phone,
+//             email: email,
+//             password: newPassword,
+//             images: imagesArr
+//         },
+//         {
+//             new: true
+//         }
+//     )
+
+//     if (!user)
+//         return res.status(404).json('the user cannot be updated!')
+
+//     res.send(user);
+// })
+
+router.delete('/deleteImage', async (req, res) => {
+    const imgUrl = req.query.img;
+
+    if (!imgUrl) {
+        return res.status(400).send("Image URL is required");
+    }
+
+    const urlArr = imgUrl.split('/');
+    const image = urlArr[urlArr.length - 1];
+
+    const imageName = image.split('.')[0];
+
+    try {
+        const response = await cloudinary.uploader.destroy(imageName);
+        return res.status(200).send(response || { success: true, message: "Image removed" });
+    } catch (error) {
+        console.error("Cloudinary delete error:", error);
+        return res.status(500).send(error);
+    }
+});
+
 
 
 module.exports = router;
