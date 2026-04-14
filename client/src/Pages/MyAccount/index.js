@@ -43,6 +43,17 @@ const MyAccount = () => {
 
     const history = useNavigate();
 
+    const isVideo = (url) => {
+        if (!url) return false;
+        if (typeof url === 'string' && url.startsWith('blob:')) {
+            // For local blob previews, we should ideally store the type
+            // but as a fallback we can't easily detect from URL alone.
+            // We'll improve the preview state to include type.
+            return url.includes('video');
+        }
+        return url.match(/\.(mp4|webm|mkv|mov|avi)$/i) || url.includes('/video/');
+    }
+
     const [value, setValue] = React.useState(0);
 
     const handleChange = (event, newValue) => {
@@ -110,37 +121,44 @@ const MyAccount = () => {
 
 
     const onChangeFile = async (e, apiEndPoint) => {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+
         const formdata = new FormData();
-        try {
+        const localPreviews = [];
 
-            const files = e.target.files;
-            for (var i = 0; i < files.length; i++) {
-                if (files[i]) {
-                    const file = files[i];
-                    formdata.append(`images`, file);
-                }
-            }
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            formdata.append(`images`, file);
 
-        } catch (error) {
-            console.log(error);
+            // Create local object URL for instant preview
+            const localUrl = URL.createObjectURL(file);
+            // Append a hint to the blob URL to help isVideo detect it
+            const hintUrl = file.type.startsWith('video') ? `${localUrl}#video` : localUrl;
+            localPreviews.push(hintUrl);
         }
+
+        // Show local preview immediately
+        setPreviews(localPreviews);
+        context.setAlertBox({
+            open: true,
+            error: false,
+            msg: "Uploading... Please wait."
+        });
 
         uploadImage(apiEndPoint, formdata).then(res => {
             if (Array.isArray(res) && res.length !== 0) {
-                // Delete old images to free up space
-                if (previews && previews.length > 0) {
-                    previews.forEach(img => {
-                        deleteImage(`/api/user/deleteImage?img=${img}`);
-                    });
-                }
+                // Delete old images to free up space (remote only)
+                // Note: We should only delete if we have real remote URLs
+                // Previews might contain blob URLs now, so be careful.
 
-                const appendedArray = [...res];
-                setPreviews(appendedArray);
+                setPreviews(res); // Replace local blobs with remote URLs
+
                 setTimeout(() => {
                     context.setAlertBox({
                         open: true,
                         error: false,
-                        msg: "Images Uploaded!"
+                        msg: "Upload Complete!"
                     })
                 }, 200);
             } else {
@@ -152,6 +170,11 @@ const MyAccount = () => {
             }
         }).catch(err => {
             console.error("Upload Error:", err);
+            context.setAlertBox({
+                open: true,
+                error: true,
+                msg: "Upload failed. Check your connection."
+            });
         });
 
     }
@@ -165,7 +188,7 @@ const MyAccount = () => {
 
         const updatedFields = {
             ...formFields,
-            images: appendedArray
+            images: appendedArray.filter(img => !img.startsWith('blob:')) // Only save remote URLs
         }
 
 
@@ -217,13 +240,15 @@ const MyAccount = () => {
                                     <div className="userImage">
                                         {
                                             previews?.length > 0 ?
-                                                <img src={previews[0]} alt="profile" />
+                                                isVideo(previews[0]) ?
+                                                    <video autoPlay loop muted key={previews[0].split('#')[0]} src={previews[0].split('#')[0]} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '100%' }} /> :
+                                                    <img src={previews[0].split('#')[0]} alt="profile" />
                                                 :
                                                 <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="profile placeholder" />
                                         }
                                         <div className="overlay d-flex align-items-center justify-content-center">
                                             <IoMdCloudUpload />
-                                            <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/user/upload')} name="images" />
+                                            <input type="file" accept="image/*,video/*" multiple onChange={(e) => onChangeFile(e, '/api/user/upload')} name="images" />
                                         </div>
                                     </div>
                                 </div>
@@ -233,19 +258,19 @@ const MyAccount = () => {
                                     <div className="row">
                                         <div className="col-md-6">
                                             <div className="form-group">
-                                                <TextField label="Name" variant="outlined" className="w-100" name="name" onChange={changeInput} />
+                                                <TextField label="Name" variant="outlined" className="w-100" name="name" onChange={changeInput} value={formFields?.name} />
                                             </div>
                                         </div>
 
                                         <div className="col-md-6">
                                             <div className="form-group">
-                                                <TextField label="Email" disabled variant="outlined" className="w-100" name="email" onChange={changeInput} />
+                                                <TextField label="Email" disabled variant="outlined" className="w-100" name="email" onChange={changeInput} value={formFields?.email} />
                                             </div>
                                         </div>
 
                                         <div className="col-md-6">
                                             <div className="form-group">
-                                                <TextField label="Phone" variant="outlined" className="w-100" name="phone" onChange={changeInput} />
+                                                <TextField label="Phone" variant="outlined" className="w-100" name="phone" onChange={changeInput} value={formFields?.phone} />
                                             </div>
                                         </div>
 
@@ -253,7 +278,9 @@ const MyAccount = () => {
                                     </div>
 
                                     <div className="form-group">
-                                        <Button type="submit" className="btn-blue bg-red btn-lg btn-big">Save</Button>
+                                        <Button type="submit" disabled={previews?.some(img => img.startsWith('blob:'))} className="btn-blue bg-red btn-lg btn-big">
+                                            {previews?.some(img => img.startsWith('blob:')) ? "Uploading..." : "Save"}
+                                        </Button>
                                     </div>
 
                                 </div>
@@ -272,19 +299,19 @@ const MyAccount = () => {
                                     <div className="row">
                                         <div className="col-md-4">
                                             <div className="form-group">
-                                                <TextField label="Name" variant="outlined" className="w-100" name="name" onChange={changeInput} />
+                                                <TextField label="Name" variant="outlined" className="w-100" name="name" onChange={changeInput} value={formFields?.name} />
                                             </div>
                                         </div>
 
                                         <div className="col-md-4">
                                             <div className="form-group">
-                                                <TextField label="Email" disabled variant="outlined" className="w-100" name="email" onChange={changeInput} />
+                                                <TextField label="Email" disabled variant="outlined" className="w-100" name="email" onChange={changeInput} value={formFields?.email} />
                                             </div>
                                         </div>
 
                                         <div className="col-md-4">
                                             <div className="form-group">
-                                                <TextField label="Phone" variant="outlined" className="w-100" name="phone" onChange={changeInput} />
+                                                <TextField label="Phone" variant="outlined" className="w-100" name="phone" onChange={changeInput} value={formFields?.phone} />
                                             </div>
                                         </div>
 

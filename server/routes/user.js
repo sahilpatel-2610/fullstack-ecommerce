@@ -11,9 +11,9 @@ const fs = require("fs");
 const cloudinary = require('cloudinary').v2;
 
 cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CONFIG_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_CONFIG_API_KEY,
-    api_secret: process.env.CLOUDINARY_CONFIG_API_SECRET,
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
     secure: true
 });
 
@@ -40,11 +40,13 @@ router.post(`/upload`, upload.array("images"), async (req, res) => {
 
         for (let i = 0; i < req.files.length; i++) {
 
+            const isVideo = req.files[i].mimetype.startsWith('video');
+
             const options = {
                 use_filename: true,
                 unique_filename: false,
                 overwrite: false,
-                resource_type: "auto"
+                resource_type: isVideo ? "video" : "image"
             };
 
             const result = await cloudinary.uploader.upload(req.files[i].path, options);
@@ -270,9 +272,12 @@ router.delete('/deleteImage', async (req, res) => {
     const image = urlArr[urlArr.length - 1];
 
     const imageName = image.split('.')[0];
+    const isVideo = imgUrl.match(/\.(mp4|webm|mkv|mov|avi)$/i) || imgUrl.includes('/video/');
 
     try {
-        const response = await cloudinary.uploader.destroy(imageName);
+        const response = await cloudinary.uploader.destroy(imageName, {
+            resource_type: isVideo ? 'video' : 'image'
+        });
         return res.status(200).send(response || { success: true, message: "Image removed" });
     } catch (error) {
         console.error("Cloudinary delete error:", error);
