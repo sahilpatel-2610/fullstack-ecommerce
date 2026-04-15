@@ -114,6 +114,50 @@ router.post(`/signup`, async (req, res) => {
 
 });
 
+
+router.put(`/changePassword/:id`, async (req, res) => {
+    try {
+        const { oldPassword, newPassword } = req.body;
+
+        if (!mongoose.isValidObjectId(req.params.id)) {
+            return res.status(400).json({ error: true, msg: "Invalid user ID." });
+        }
+
+        if (!oldPassword || !newPassword) {
+            return res.status(400).json({ error: true, msg: "Old password and new password are required." });
+        }
+
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ error: true, msg: "User not found!" });
+        }
+
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ error: true, msg: "Old password is incorrect." });
+        }
+
+        const hashPassword = await bcrypt.hash(newPassword, 10);
+
+        const updatedUser = await User.findByIdAndUpdate(
+            req.params.id,
+            { password: hashPassword },
+            { new: true }
+        );
+
+        res.status(200).json({
+            error: false,
+            msg: "Password changed successfully!",
+            user: updatedUser
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: true, msg: "Something went wrong." });
+    }
+});
+
+
 router.post(`/signin`, async (req, res) => {
     const { email, password } = req.body;
 

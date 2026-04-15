@@ -13,6 +13,8 @@ import { deleteImage, editData, fetchDataFromApi, uploadImage } from "../../util
 import { MyContext } from "../../App";
 import { useContext } from "react";
 
+import NoUserImg from '../../assets/images/no-user.png'
+
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -64,6 +66,13 @@ const MyAccount = () => {
 
     const context = useContext(MyContext);
 
+    const [userData, setUserData] = useState({
+        name: "",
+        email: "",
+        phone: "",
+        password: ""
+    });
+
 
 
 
@@ -73,6 +82,13 @@ const MyAccount = () => {
         phone: "",
         images: []
     });
+
+    const [fields, setFields] = useState({
+        oldPassword: "",
+        newPassword: "",
+        confirmPassword: ""
+    });
+
 
 
     useEffect(() => {
@@ -110,6 +126,15 @@ const MyAccount = () => {
 
 
     const changeInput = (e) => {
+        setFields(() => (
+            {
+                ...fields,
+                [e.target.name]: e.target.value
+            }
+        ))
+    }
+
+    const changeInput2 = (e) => {
         setFormFields(() => (
             {
                 ...formFields,
@@ -117,6 +142,7 @@ const MyAccount = () => {
             }
         ))
     }
+
 
 
 
@@ -221,6 +247,61 @@ const MyAccount = () => {
 
     }
 
+    const changePassword = (e) => {
+        e.preventDefault();
+
+        if (fields.oldPassword !== "" && fields.newPassword !== "" && fields.confirmPassword !== "") {
+
+            if (fields.newPassword !== fields.confirmPassword) {
+                context.setAlertBox({
+                    open: true,
+                    error: true,
+                    msg: 'New password and confirm password do not match'
+                });
+                return false;
+            }
+
+            const user = JSON.parse(localStorage.getItem("user"));
+            const userId = user?._id || user?.id;
+
+            if (!userId) {
+                context.setAlertBox({
+                    open: true,
+                    error: true,
+                    msg: 'User session not found. Please log in again.'
+                });
+                return;
+            }
+
+            editData(`/api/user/changePassword/${userId}`, {
+                oldPassword: fields.oldPassword,
+                newPassword: fields.newPassword
+            }).then(res => {
+                if (res.error) {
+                    context.setAlertBox({
+                        open: true,
+                        error: true,
+                        msg: res.msg || 'Failed to change password'
+                    });
+                } else {
+                    context.setAlertBox({
+                        open: true,
+                        error: false,
+                        msg: 'Password changed successfully!'
+                    });
+                    setFields({ oldPassword: '', newPassword: '', confirmPassword: '' });
+                }
+            });
+
+        } else {
+            context.setAlertBox({
+                open: true,
+                error: true,
+                msg: 'Please fill all the fields'
+            });
+        }
+    }
+
     return (
         <section className="section myAccountPage">
             <div className="container">
@@ -244,7 +325,7 @@ const MyAccount = () => {
                                                     <video autoPlay loop muted key={previews[0].split('#')[0]} src={previews[0].split('#')[0]} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '100%' }} /> :
                                                     <img src={previews[0].split('#')[0]} alt="profile" />
                                                 :
-                                                <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="profile placeholder" />
+                                                <img src={NoUserImg} alt="profile placeholder" />
                                         }
                                         <div className="overlay d-flex align-items-center justify-content-center">
                                             <IoMdCloudUpload />
@@ -258,19 +339,19 @@ const MyAccount = () => {
                                     <div className="row">
                                         <div className="col-md-6">
                                             <div className="form-group">
-                                                <TextField label="Name" variant="outlined" className="w-100" name="name" onChange={changeInput} value={formFields?.name} />
+                                                <TextField label="Name" variant="outlined" className="w-100" name="name" onChange={changeInput2} value={formFields?.name} />
                                             </div>
                                         </div>
 
                                         <div className="col-md-6">
                                             <div className="form-group">
-                                                <TextField label="Email" disabled variant="outlined" className="w-100" name="email" onChange={changeInput} value={formFields?.email} />
+                                                <TextField label="Email" disabled variant="outlined" className="w-100" name="email" onChange={changeInput2} value={formFields?.email} />
                                             </div>
                                         </div>
 
                                         <div className="col-md-6">
                                             <div className="form-group">
-                                                <TextField label="Phone" variant="outlined" className="w-100" name="phone" onChange={changeInput} value={formFields?.phone} />
+                                                <TextField label="Phone" variant="outlined" className="w-100" name="phone" onChange={changeInput2} value={formFields?.phone} />
                                             </div>
                                         </div>
 
@@ -293,25 +374,25 @@ const MyAccount = () => {
 
                     </CustomTabPanel>
                     <CustomTabPanel value={value} index={1}>
-                        <form>
+                        <form onSubmit={changePassword}>
                             <div className="row">
                                 <div className="col-md-12">
                                     <div className="row">
                                         <div className="col-md-4">
                                             <div className="form-group">
-                                                <TextField label="Name" variant="outlined" className="w-100" name="name" onChange={changeInput} value={formFields?.name} />
+                                                <TextField label="Old Password" type="password" variant="outlined" className="w-100" name="oldPassword" onChange={changeInput} value={fields?.oldPassword} />
                                             </div>
                                         </div>
 
                                         <div className="col-md-4">
                                             <div className="form-group">
-                                                <TextField label="Email" disabled variant="outlined" className="w-100" name="email" onChange={changeInput} value={formFields?.email} />
+                                                <TextField label="New Password" type="password" variant="outlined" className="w-100" name="newPassword" onChange={changeInput} value={fields?.newPassword} />
                                             </div>
                                         </div>
 
                                         <div className="col-md-4">
                                             <div className="form-group">
-                                                <TextField label="Phone" variant="outlined" className="w-100" name="phone" onChange={changeInput} value={formFields?.phone} />
+                                                <TextField label="Confirm Password" type="password" variant="outlined" className="w-100" name="confirmPassword" onChange={changeInput} value={fields?.confirmPassword} />
                                             </div>
                                         </div>
 
@@ -319,7 +400,7 @@ const MyAccount = () => {
                                     </div>
 
                                     <div className="form-group">
-                                        <Button className="btn-blue bg-red btn-lg btn-big">Save</Button>
+                                        <Button type="submit" className="btn-blue bg-red btn-lg btn-big">Save</Button>
                                     </div>
 
                                 </div>

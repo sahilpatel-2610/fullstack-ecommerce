@@ -178,6 +178,7 @@ const ProductModal = (props) => {
 
   const context = useContext(MyContext);
   const [isAddedToMyList, setIsAddedToMyList] = useState(false);
+  const [quantity, setQuantity] = useState(1);
 
   const addToMyList = (id) => {
     if (context.isLogin !== true) {
@@ -278,8 +279,26 @@ const ProductModal = (props) => {
           </p>
 
           <div className="d-flex align-items-center">
-            <QuantityBox />
-            <Button className="btn-blue btn-lg btn-big btn-round ml-3"><IoCartSharp /> &nbsp; Add to Cart</Button>
+            <QuantityBox quantity={(val) => setQuantity(val)} />
+            <Button
+              className="btn-blue btn-lg btn-big btn-round ml-3"
+              onClick={() => {
+                const userData = JSON.parse(localStorage.getItem("user"));
+                context.addtoCart({
+                  productTitle: props?.data?.name,
+                  images: props?.data?.images[0],
+                  rating: props?.data?.rating,
+                  price: props?.data?.price,
+                  quantity: quantity,
+                  subTotal: props?.data?.price * quantity,
+                  productId: props?.data?._id,
+                  countInStock: props?.data?.countInStock,
+                  userId: userData?._id
+                })
+              }}
+            >
+              <IoCartSharp /> &nbsp; Add to Cart
+            </Button>
           </div>
 
           <div className="d-flex align-items-center mt-5 actions">
