@@ -56,6 +56,12 @@ const Dashboard = () => {
     const [totalOrders, setTotalOrders] = useState(0);
     const [totalProducts, setTotalProducts] = useState(0);
     const [totalReviews, setTotalReviews] = useState(0);
+
+    const [usersPeriod, setUsersPeriod] = useState("");
+    const [ordersPeriod, setOrdersPeriod] = useState("");
+    const [productsPeriod, setProductsPeriod] = useState("");
+    const [reviewsPeriod, setReviewsPeriod] = useState("");
+
     const open = Boolean(anchorEl);
 
     const ITEM_HEIGHT = 48;
@@ -72,23 +78,23 @@ const Dashboard = () => {
             context.setProgress(100);
         })
 
-        fetchDataFromApi("/api/user/get/count").then((res) => {
+        fetchDataFromApi(`/api/user/get/count?period=${usersPeriod}`).then((res) => {
             setTotalUsers(res.userCount);
         })
 
-        fetchDataFromApi("/api/orders/get/count").then((res) => {
+        fetchDataFromApi(`/api/orders/get/count?period=${ordersPeriod}`).then((res) => {
             setTotalOrders(res.orderCount);
         })
 
-        fetchDataFromApi("/api/products/get/count").then((res) => {
+        fetchDataFromApi(`/api/products/get/count?period=${productsPeriod}`).then((res) => {
             setTotalProducts(res.productsCount);
         })
 
-        fetchDataFromApi("/api/productReviews/get/count").then((res) => {
+        fetchDataFromApi(`/api/productReviews/get/count?period=${reviewsPeriod}`).then((res) => {
             setTotalReviews(res.reviewsCount);
         })
 
-    }, [page, rowsPerPage]);
+    }, [page, rowsPerPage, usersPeriod, ordersPeriod, productsPeriod, reviewsPeriod]);
 
     const deleteProduct = (id) => {
         context.setProgress(40);
@@ -146,9 +152,9 @@ const Dashboard = () => {
                     <div className="col-md-12">
                         <div className="dashboardBoxWrapper d-flex">
                             <DashboardBox color={["#1da256", "#48d483"]} icon={<FaUserCircle />} grow={true} title="Total Users" count={totalUsers} path="/users" />
-                            <DashboardBox color={["#c012e2", "#eb64fe"]} icon={<IoMdCart />} title="Total Orders" count={totalOrders} path="/orders" />
-                            <DashboardBox color={["#2c78e5", "#60aff5"]} icon={<MdShoppingBag />} title="Total Products" count={totalProducts} path="/products" />
-                            <DashboardBox color={["#e1950e", "#f3cd29"]} icon={<GiStarsStack />} title="Total Reviews" count={totalReviews} path="/reviews" />
+                            <DashboardBox color={["#c012e2", "#eb64fe"]} icon={<IoMdCart />} grow={false} title="Total Orders" count={totalOrders} path="/orders" />
+                            <DashboardBox color={["#2c78e5", "#60aff5"]} icon={<MdShoppingBag />} grow={true} title="Total Products" count={totalProducts} path="/products" />
+                            <DashboardBox color={["#e1950e", "#f3cd29"]} icon={<GiStarsStack />} grow={false} title="Total Reviews" count={totalReviews} path="/reviews" />
                         </div>
                     </div>
 

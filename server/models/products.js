@@ -79,11 +79,15 @@ const peoductSchema = mongoose.Schema({
             default: null,
         }
     ],
+    location: {
+        type: String,
+        required: true,
+    },
     dateCreated: {
         type: Date,
         default: Date.now,
     },
-});
+}, { timestamps: true });
 
 
 peoductSchema.virtual('id').get(function () {

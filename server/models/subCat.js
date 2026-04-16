@@ -10,7 +10,7 @@ const subCatSchema = mongoose.Schema({
         type: String,
         required: true
     }
-})
+}, { timestamps: true });
 
 
 subCatSchema.virtual('id').get(function () {

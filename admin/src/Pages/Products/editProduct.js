@@ -25,6 +25,8 @@ import { useContext } from "react";
 import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from "react-router-dom";
 import { Link, useParams } from "react-router-dom";
+import axios from 'axios';
+import CountryDropdown from "../../components/CountryDropdown";
 
 
 //breadcrumb code
@@ -88,6 +90,8 @@ const EditUpload = () => {
     const [isSelectedFiles, setIsSelectedFiles] = useState(false);
     const [isSelectedImages, setIsSelectedImages] = useState(false);
 
+
+
     let { id } = useParams();
 
     const history = useNavigate();
@@ -108,7 +112,8 @@ const EditUpload = () => {
         discount: null,
         productRam: [],
         size: [],
-        productWeight: []
+        productWeight: [],
+        location: ''
     });
 
     const productImages = useRef();
@@ -119,6 +124,8 @@ const EditUpload = () => {
 
     useEffect(() => {
         window.scrollTo(0, 0);
+
+
         setCatData(context.catData);
         setSubCatData(context.subCatData);
 
@@ -151,6 +158,11 @@ const EditUpload = () => {
             setProductSize(res.size || []);
             setProductWeight(res.productWeight || []);
             setPreviews(res.images);
+            context.setSelectedLocation(res.location || '');
+            setFormFields((prev) => ({
+                ...prev,
+                location: res.location || ''
+            }));
             context.setProgress(100);
         });
 
@@ -168,6 +180,7 @@ const EditUpload = () => {
 
 
     }, []);
+
 
 
 
@@ -389,6 +402,7 @@ const EditUpload = () => {
         formdata.append('productRam', formFields.productRam);
         formdata.append('size', formFields.size);
         formdata.append('productWeight', formFields.productWeight);
+        formdata.append('location', formFields.location);
 
 
 
@@ -779,6 +793,20 @@ const EditUpload = () => {
                                                 />
                                             </div>
                                         </div>
+                                    </div>
+
+
+                                    <div className="row">
+                                        <div className='col-md-12'>
+                                            <div className='form-group'>
+                                                <h6>LOCATION</h6>
+                                                {
+                                                    context.countryList?.length > 0 && <CountryDropdown countryList={context.countryList} />
+
+                                                }
+                                            </div>
+                                        </div>
+
                                     </div>
 
                                 </div>

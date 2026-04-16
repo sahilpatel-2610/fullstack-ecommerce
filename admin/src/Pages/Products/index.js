@@ -96,6 +96,10 @@ const Products = () => {
     const [totalCategory, setTotalCategory] = useState(0);
     const [totalSubCategory, setTotalSubCategory] = useState(0);
 
+    const [productsPeriod, setProductsPeriod] = useState("");
+    const [categoriesPeriod, setCategoriesPeriod] = useState("");
+    const [subCategoriesPeriod, setSubCategoriesPeriod] = useState("");
+
     const ITEM_HEIGHT = 48;
 
     useEffect(() => {
@@ -106,19 +110,19 @@ const Products = () => {
             context.setProgress(100);
         });
 
-        fetchDataFromApi("/api/products/get/count").then((res) => {
+        fetchDataFromApi(`/api/products/get/count?period=${productsPeriod}`).then((res) => {
             setTotalProducts(res.productsCount);
         })
 
-        fetchDataFromApi("/api/category/get/count").then((res) => {
+        fetchDataFromApi(`/api/category/get/count?period=${categoriesPeriod}`).then((res) => {
             setTotalCategory(res.categoryCount);
         })
 
-        fetchDataFromApi("/api/subCat/get/count").then((res) => {
+        fetchDataFromApi(`/api/subCat/get/count?period=${subCategoriesPeriod}`).then((res) => {
             setTotalSubCategory(res.subCatCount);
         })
 
-    }, [page, rowsPerPage]);
+    }, [page, rowsPerPage, productsPeriod, categoriesPeriod, subCategoriesPeriod]);
 
     const deleteProduct = (id) => {
         context.setProgress(40);
@@ -182,9 +186,9 @@ const Products = () => {
 
                 </div>
                 <div className="dashboardBoxWrapper d-flex">
-                    <DashboardBox color={["#1da256", "#48d483"]} icon={<MdShoppingBag />} title="Total Products" count={totalProducts} path="/products" />
-                    <DashboardBox color={["#c012e2", "#eb64fe"]} icon={<MdCategory />} title="Total Categories" count={totalCategory} path="/category" />
-                    <DashboardBox color={["#2c78e5", "#60aff5"]} icon={<MdShield />} title="Total Sub Category" count={totalSubCategory} path="/subCategory" />
+                    <DashboardBox color={["#1da256", "#48d483"]} icon={<MdShoppingBag />} title="Total Products" count={totalProducts} path="/products" setPeriod={setProductsPeriod} />
+                    <DashboardBox color={["#c012e2", "#eb64fe"]} icon={<MdCategory />} title="Total Categories" count={totalCategory} path="/category" setPeriod={setCategoriesPeriod} />
+                    <DashboardBox color={["#2c78e5", "#60aff5"]} icon={<MdShield />} title="Total Sub Category" count={totalSubCategory} path="/subCategory" setPeriod={setSubCategoriesPeriod} />
                 </div>
 
 

@@ -39,7 +39,7 @@ import { IoMdClose } from "react-icons/io";
 import LoadingBar from "react-top-loading-bar";
 import { fetchDataFromApi } from './utils/api';
 
-
+import axios from 'axios';
 
 
 
@@ -75,6 +75,11 @@ function App() {
     open: false
   });
 
+  const [countryList, setCountryList] = useState([]);
+  const [selectedLocation, setSelectedLocation] = useState('');
+  const [selectedCountry, setSelectedCountry] = useState('');
+
+
 
   useEffect(() => {
 
@@ -94,6 +99,19 @@ function App() {
   }, [isLogin]);
 
 
+  useEffect(() => {
+    getCountry("https://countriesnow.space/api/v0.1/countries/");
+  }, []);
+
+  const getCountry = async (url) => {
+    try {
+      const res = await axios.get(url);
+      setCountryList(res.data.data);
+      console.log(res.data.data);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   useEffect(() => {
     if (theme === true) {
@@ -197,7 +215,14 @@ function App() {
     catData,
     fetchCategory,
     subCatData,
-    fetchSubCategory
+    fetchSubCategory,
+    user,
+    setUser,
+    countryList,
+    selectedLocation,
+    setSelectedLocation,
+    selectedCountry,
+    setSelectedCountry
   }
 
 

@@ -199,7 +199,27 @@ router.get('/', async (req, res) => {
 });
 
 router.get(`/get/count`, async (req, res) => {
-    const userCount = await User.countDocuments();
+    let query = {};
+    if (req.query.period !== undefined && req.query.period !== null && req.query.period !== "") {
+        const today = new Date();
+        let startDate;
+
+        if (req.query.period === "lastDay") {
+            startDate = new Date(today.setDate(today.getDate() - 1));
+        } else if (req.query.period === "lastWeek") {
+            startDate = new Date(today.setDate(today.getDate() - 7));
+        } else if (req.query.period === "lastMonth") {
+            startDate = new Date(today.setMonth(today.getMonth() - 1));
+        } else if (req.query.period === "lastYear") {
+            startDate = new Date(today.setFullYear(today.getFullYear() - 1));
+        }
+
+        if (startDate) {
+            query.createdAt = { $gte: startDate };
+        }
+    }
+
+    const userCount = await User.countDocuments(query);
 
     if (!userCount && userCount !== 0) {
         return res.status(500).json({ error: true, msg: "something went wrong" })
