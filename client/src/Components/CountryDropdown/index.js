@@ -32,6 +32,8 @@ const CountryDropdown = () => {
         setselectedTab(index);
         setIsOpenModal(false);
         context.setSelectedCountry(country);
+        localStorage.setItem('location', country);
+        window.location.href = window.location.href;
     }
 
     useEffect(() => {
@@ -78,6 +80,7 @@ const CountryDropdown = () => {
 
 
                 <ul className='countryList mt-3'>
+                    <li><Button onClick={() => selectCountry(0, "All")}>All</Button></li>
                     {
                         countryList?.length > 0 && countryList?.map((item, index) => {
                             return (

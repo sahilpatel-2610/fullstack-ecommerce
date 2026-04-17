@@ -40,8 +40,7 @@ import LoadingBar from "react-top-loading-bar";
 import { fetchDataFromApi } from './utils/api';
 
 import axios from 'axios';
-
-
+import countriesData from './utils/countries.json';
 
 
 const MyContext = createContext();
@@ -100,18 +99,9 @@ function App() {
 
 
   useEffect(() => {
-    getCountry("https://countriesnow.space/api/v0.1/countries/");
+    setCountryList(countriesData);
   }, []);
 
-  const getCountry = async (url) => {
-    try {
-      const res = await axios.get(url);
-      setCountryList(res.data.data);
-      console.log(res.data.data);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
 
   useEffect(() => {
     if (theme === true) {

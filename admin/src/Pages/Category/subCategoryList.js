@@ -14,6 +14,8 @@ import { deleteData, editData, fetchDataFromApi } from "../../utils/api";
 
 import { Link } from "react-router-dom";
 import { MyContext } from "../../App";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import { IoCloseSharp } from "react-icons/io5";
 
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
@@ -61,8 +63,8 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 
 const SubCategory = () => {
 
-    const [subCatData, setSubCatData] = useState({
-        subCategoryList: [],
+    const [catData, setCatData] = useState({
+        categoryList: [],
         totalPages: 0,
     });
 
@@ -71,26 +73,34 @@ const SubCategory = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
         context.setProgress(20)
-        fetchDataFromApi('/api/subCat?page=1&perPage=10').then((res) => {
-            setSubCatData(res);
+        fetchDataFromApi('/api/category').then((res) => {
+            setCatData(res);
             context.setProgress(100);
         })
 
-
     }, []);
 
-    const deleteCat = (id) => {
-        deleteData(`/api/subCat/${id}`).then(res => {
-            fetchDataFromApi('/api/subCat?page=1&perPage=10').then((res) => {
-                setSubCatData(res);
+    const deleteSubCat = (id) => {
+
+        context.setProgress(30);
+        deleteData(`/api/category/${id}`).then(res => {
+            context.setProgress(100);
+            fetchDataFromApi('/api/category').then((res) => {
+                setCatData(res);
+                context.setProgress(100);
+                context.setAlertBox({
+                    open: true,
+                    error: false,
+                    msg: "Sub Category Deleted!"
+                })
             })
         })
     }
 
     const handleChange = (event, value) => {
         context.setProgress(40);
-        fetchDataFromApi(`/api/subCat?page=${value}&perPage=10`).then((res) => {
-            setSubCatData(res);
+        fetchDataFromApi(`/api/category?page=${value}&perPage=10`).then((res) => {
+            setCatData(res);
             context.setProgress(100);
         })
     }
@@ -132,57 +142,46 @@ const SubCategory = () => {
                                     <th style={{ width: '100px' }}>CATEGORY IMAGE</th>
                                     <th>CATEGORY</th>
                                     <th>SUB CATEGORY</th>
-                                    <th>ACTION</th>
                                 </tr>
                             </thead>
 
                             <tbody>
                                 {
-                                    // subCatData?.categoryList?.length !== 0 && subCatData?.categoryList?.map((item, index) => (
-                                    subCatData?.subCategoryList?.map((item, index) => (
-                                        <tr key={item._id}>
-                                            {/* <td>
-                                                <div className="d-flex align-items-center">
-                                                    <Checkbox {...label} /> <span>#{index + 1}</span>
-                                                </div>
-                                            </td> */}
-
-                                            <td>
-                                                <div className="d-flex align-items-center productBox " style={{ width: '150px' }}>
-                                                    <div className="imgWrapper" style={{ width: '50px', flex: '0 0 50px' }}>
-                                                        <div className="img card shadow m-0">
-                                                            <img src={item?.category?.images?.[0]} className="w-100" />
-
+                                    catData?.categoryList?.length !== 0 && catData?.categoryList?.map((item, index) => {
+                                        if (item?.children?.length !== 0) {
+                                            return (
+                                                <tr key={index}>
+                                                    <td>
+                                                        <div className="d-flex align-items-center" style={{ width: '150px' }}>
+                                                            <div className="imgWrapper" style={{ width: '50px', flex: '0 0 50px' }}>
+                                                                <div className="img card shadow m-0">
+                                                                    <LazyLoadImage
+                                                                        alt={"image"}
+                                                                        effect="blur"
+                                                                        className="w-100"
+                                                                        src={item.images[0]}
+                                                                    />
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-
-
-                                            <td>{item?.category?.name}</td>
-                                            <td>{item?.subCat}</td>
-
-                                            <td>
-                                                <div className="actions d-flex align-items-center">
-                                                    <Link to={`/subCategory/edit/${item._id}`}>
-                                                        <Button
-                                                            color="success"
-                                                        >
-                                                            <FaPencilAlt />
-                                                        </Button>
-                                                    </Link>
-
-                                                    <Button
-                                                        color="error"
-                                                        onClick={() => deleteCat(item._id)}
-                                                    >
-                                                        <MdDelete />
-                                                    </Button>
-                                                </div>
-
-                                            </td>
-                                        </tr>
-                                    ))
+                                                    </td>
+                                                    <td>{item.name}</td>
+                                                    <td>
+                                                        {
+                                                            item?.children?.length !== 0 && item?.children?.map((subCat, index) => {
+                                                                return (
+                                                                    <span className="badge badge-primary mx-1">
+                                                                        {subCat.name}
+                                                                        <IoCloseSharp className="cursor ms-1" onClick={() => deleteSubCat(subCat._id)} />
+                                                                    </span>
+                                                                )
+                                                            })
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            )
+                                        }
+                                    })
                                 }
                             </tbody>
 
@@ -192,10 +191,9 @@ const SubCategory = () => {
 
 
                         {
-                            subCatData?.totalPages > 1 && <div className="d-flex tableFooter">
-                                <Pagination count={subCatData?.totalPages} color="primary" className="pagination" showFirstButton showLastButton onChange={handleChange} />
+                            catData?.totalPages > 1 && <div className="d-flex tableFooter">
+                                <Pagination count={catData?.totalPages} color="primary" className="pagination" showFirstButton showLastButton onChange={handleChange} />
                             </div>
-
                         }
 
 

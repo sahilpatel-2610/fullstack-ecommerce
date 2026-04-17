@@ -73,7 +73,7 @@ const Dashboard = () => {
         context.setisHideSidebarAndHeader(false);
         window.scrollTo(0, 0);
         context.setProgress(40);
-        fetchDataFromApi(`/api/products?page=${page + 1}&perPage=${rowsPerPage}`).then((res) => {
+        fetchDataFromApi(`/api/products?page=${page + 1}&perPage=${rowsPerPage}&category=${categoryVal}`).then((res) => {
             setProductList(res);
             context.setProgress(100);
         })
@@ -94,7 +94,7 @@ const Dashboard = () => {
             setTotalReviews(res.reviewsCount);
         })
 
-    }, [page, rowsPerPage, usersPeriod, ordersPeriod, productsPeriod, reviewsPeriod]);
+    }, [page, rowsPerPage, usersPeriod, ordersPeriod, productsPeriod, reviewsPeriod, categoryVal]);
 
     const deleteProduct = (id) => {
         context.setProgress(40);
@@ -143,6 +143,7 @@ const Dashboard = () => {
 
     const handleChangeCategory = (event) => {
         setCategoryVal(event.target.value);
+        setPage(0);
     };
 
     return (

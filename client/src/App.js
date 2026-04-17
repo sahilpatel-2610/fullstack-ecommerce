@@ -5,6 +5,7 @@ import Home from "./Pages/Home";
 import Header from "./Components/Header";
 import { createContext } from "react";
 import axios from "axios";
+import countriesData from './utils/countries.json';
 import { useState } from "react";
 import { useEffect } from "react";
 import Footer from "./Components/Footer";
@@ -71,7 +72,12 @@ function App() {
 
 
   useEffect(() => {
-    getCountry("https://countriesnow.space/api/v0.1/countries/");
+    setCountryList(countriesData);
+
+    const location = localStorage.getItem("location");
+    if (location !== null && location !== "" && location !== undefined) {
+      setSelectedCountry(location);
+    }
 
     fetchDataFromApi("/api/category").then((res) => {
       setCategoryData(res?.categoryList);
@@ -171,15 +177,6 @@ function App() {
     }
   }, [isOpenProductModal]);
 
-  const getCountry = async (url) => {
-    try {
-      const res = await axios.get(url);
-      setCountryList(res.data.data);
-      console.log(res.data.data);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {

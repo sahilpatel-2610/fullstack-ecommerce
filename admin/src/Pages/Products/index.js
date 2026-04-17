@@ -105,7 +105,7 @@ const Products = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
         context.setProgress(20);
-        fetchDataFromApi(`/api/products?page=${page + 1}&perPage=${rowsPerPage}`).then((res) => {
+        fetchDataFromApi(`/api/products?page=${page + 1}&perPage=${rowsPerPage}&category=${showBysetCatBy}`).then((res) => {
             setProductList(res);
             context.setProgress(100);
         });
@@ -122,7 +122,7 @@ const Products = () => {
             setTotalSubCategory(res.subCatCount);
         })
 
-    }, [page, rowsPerPage, productsPeriod, categoriesPeriod, subCategoriesPeriod]);
+    }, [page, rowsPerPage, productsPeriod, categoriesPeriod, subCategoriesPeriod, showBysetCatBy]);
 
     const deleteProduct = (id) => {
         context.setProgress(40);
@@ -157,6 +157,11 @@ const Products = () => {
 
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
+    const handleChangeCategory = (event) => {
+        setCatBy(event.target.value);
         setPage(0);
     };
 
@@ -202,7 +207,7 @@ const Products = () => {
                             <FormControl size="small" className="w-100">
                                 <Select
                                     value={showBysetCatBy}
-                                    onChange={(e) => setCatBy(e.target.value)}
+                                    onChange={handleChangeCategory}
                                     displayEmpty
                                     inputProps={{ 'aria-label': 'Without label' }}
                                     labelId="demo-select-small-label"
@@ -223,12 +228,12 @@ const Products = () => {
                             </FormControl>
                         </div>
 
-                        <div className="col-md-4 ms-auto">
+                        {/* <div className="col-md-4 ms-auto">
                             <div className="searchBox ms-auto position-relative d-flex align-items-center">
                                 <IoSearch className="me-2" />
                                 <input type="text" placeholder="Search here..." className="w-100" />
                             </div>
-                        </div>
+                        </div> */}
                     </div>
 
 

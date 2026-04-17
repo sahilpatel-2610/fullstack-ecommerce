@@ -17,7 +17,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 
-const CountryDropdown = () => {
+const CountryDropdown = (props) => {
 
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [selectedTab, setselectedTab] = useState(null);
@@ -32,11 +32,17 @@ const CountryDropdown = () => {
         setselectedTab(index);
         setIsOpenModal(false);
         context.setSelectedCountry(country);
+        if (props.onSelect) {
+            props.onSelect(country);
+        }
     }
 
     useEffect(() => {
         setCountryList(context.countryList);
-    }, [context.countryList]);
+        if (props.selectedLocation) {
+            context.setSelectedCountry(props.selectedLocation);
+        }
+    }, [props.selectedLocation, context.countryList]);
 
     const filterList = (e) => {
         const keyword = e.target.value.toLowerCase();
@@ -57,9 +63,8 @@ const CountryDropdown = () => {
     return (
         <>
             <Button className='countryDrop open' onClick={() => setIsOpenModal(true)}>
-                <div className='info d-flex flex-column'>
-
-                    <span className='name'>{context.selectedCountry ? (context.selectedCountry.length > 10 ? context.selectedCountry.substr(0, 10) + '...' : context.selectedCountry) : 'Select Location'}</span>
+                <div className='info d-flex'>
+                    <span className='name'>{props.selectedLocation ? (props.selectedLocation.length > 15 ? props.selectedLocation.substr(0, 15) + '...' : props.selectedLocation) : (context.selectedCountry ? (context.selectedCountry.length > 15 ? context.selectedCountry.substr(0, 15) + '...' : context.selectedCountry) : 'Select Location')}</span>
                 </div>
                 <span className='ml-auto'><FaAngleDown /></span>
             </Button>

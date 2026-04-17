@@ -45,11 +45,11 @@ const Home = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
 
-    fetchDataFromApi(`/api/products/featured`).then((res) => {
+    fetchDataFromApi(`/api/products/featured?location=${context.selectedCountry}`).then((res) => {
       setFeaturedProducts(res);
     })
 
-    fetchDataFromApi("/api/products?perPage=8").then((res) => {
+    fetchDataFromApi(`/api/products?perPage=8&location=${context.selectedCountry}`).then((res) => {
       setProductsData(res);
     })
 
@@ -57,7 +57,7 @@ const Home = () => {
       setHomeSlides(res?.bannerList);
     })
 
-  }, [])
+  }, [context.selectedCountry])
 
   useEffect(() => {
     if (context.categoryData?.length > 0) {
@@ -67,11 +67,11 @@ const Home = () => {
 
   useEffect(() => {
     if (selectedCat !== undefined) {
-      fetchDataFromApi(`/api/products?catName=${selectedCat}`).then((res) => {
+      fetchDataFromApi(`/api/products?catName=${selectedCat}&location=${context.selectedCountry}`).then((res) => {
         setFilterData(res.products);
       })
     }
-  }, [selectedCat]);
+  }, [selectedCat, context.selectedCountry]);
 
   return (
     <>
@@ -209,7 +209,7 @@ const Home = () => {
               {/* -------- HEADING -------- */}
               <div className="d-flex align-items-center mb-3 mt-4">
                 <div>
-                  <h3 className="mb-1 hd">ELECTRONICS</h3>
+                  <h3 className="mb-1 hd">FEATURED PRODUCTS</h3>
                   <p className="text-muted text-sml mb-0">
                     Do not miss the current offers until the end of March.
                   </p>

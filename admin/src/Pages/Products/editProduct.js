@@ -125,7 +125,6 @@ const EditUpload = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
 
-
         setCatData(context.catData);
         setSubCatData(context.subCatData);
 
@@ -147,7 +146,8 @@ const EditUpload = () => {
                 discount: res.discount,
                 productRam: res.productRam,
                 size: res.size,
-                productWeight: res.productWeight
+                productWeight: res.productWeight,
+                location: res.location
             });
 
             setRatingValue(res.rating);
@@ -158,6 +158,7 @@ const EditUpload = () => {
             setProductSize(res.size || []);
             setProductWeight(res.productWeight || []);
             setPreviews(res.images);
+            context.setSelectedCountry(res.location || '');
             context.setSelectedLocation(res.location || '');
             setFormFields((prev) => ({
                 ...prev,
@@ -379,6 +380,13 @@ const EditUpload = () => {
             previews.splice(imgIndex, 1); //2nd parameter means remove one item only
         }
     }
+
+    useEffect(() => {
+        setFormFields((prev) => ({
+            ...prev,
+            location: context.selectedCountry
+        }));
+    }, [context.selectedCountry]);
 
 
 
@@ -797,11 +805,11 @@ const EditUpload = () => {
 
 
                                     <div className="row">
-                                        <div className='col-md-12'>
+                                        <div className='col-md-4'>
                                             <div className='form-group'>
                                                 <h6>LOCATION</h6>
                                                 {
-                                                    context.countryList?.length > 0 && <CountryDropdown countryList={context.countryList} />
+                                                    context.countryList?.length > 0 && <CountryDropdown countryList={context.countryList} selectedLocation={formFields.location} onSelect={(country) => setFormFields({ ...formFields, location: country })} />
 
                                                 }
                                             </div>

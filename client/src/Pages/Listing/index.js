@@ -293,9 +293,9 @@ const Listing = () => {
 
     let apiEndPoint = "";
     if (type === "category") {
-      apiEndPoint = `/api/products?category=${id}&page=${page}&perPage=${perPage}&minPrice=${filterPrice[0]}&maxPrice=${filterPrice[1]}`;
+      apiEndPoint = `/api/products?category=${id}&page=${page}&perPage=${perPage}&minPrice=${filterPrice[0]}&maxPrice=${filterPrice[1]}&location=${context.selectedCountry}`;
     } else {
-      apiEndPoint = `/api/products?subCatId=${id}&page=${page}&perPage=${perPage}&minPrice=${filterPrice[0]}&maxPrice=${filterPrice[1]}`;
+      apiEndPoint = `/api/products?subCatId=${id}&page=${page}&perPage=${perPage}&minPrice=${filterPrice[0]}&maxPrice=${filterPrice[1]}&location=${context.selectedCountry}`;
     }
 
     if (filterRating) {
@@ -307,7 +307,7 @@ const Listing = () => {
       setTotalPages(res.totalPages);
       setisLoading(false);
     });
-  }, [id, type, page, perPage, filterPrice, filterRating]);
+  }, [id, type, page, perPage, filterPrice, filterRating, context.selectedCountry]);
 
 
   const filterByPrice = (price, subId) => {

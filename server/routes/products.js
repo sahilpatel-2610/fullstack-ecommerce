@@ -123,6 +123,10 @@ router.get(`/`, async (req, res) => {
             query.subCatId = req.query.subCatId;
         }
 
+        if (req.query.location !== undefined && req.query.location !== null && req.query.location !== "All") {
+            query.location = req.query.location;
+        }
+
         if (req.query.minPrice !== undefined && req.query.maxPrice !== undefined) {
             query.price = { $gte: parseInt(req.query.minPrice), $lte: parseInt(req.query.maxPrice) };
         }
@@ -130,6 +134,11 @@ router.get(`/`, async (req, res) => {
         if (req.query.rating !== undefined) {
             query.rating = parseInt(req.query.rating);
         }
+
+        if (req.query.location !== undefined && req.query.location !== null && req.query.location !== "All") {
+            query.location = req.query.location;
+        }
+
 
         const totalPosts = await Product.countDocuments(query);
         const totalPages = Math.ceil(totalPosts / perPage);
@@ -164,7 +173,17 @@ router.get(`/`, async (req, res) => {
 
 
 router.get(`/featured`, async (req, res) => {
-    const productList = await Product.find({ isFeatured: true });
+
+    let productList = [];
+
+    if (req.query.location !== undefined && req.query.location !== null && req.query.location !== "All") {
+        productList = await Product.find({ isFeatured: true, location: req.query.location });
+    }
+    else {
+        productList = await Product.find({ isFeatured: true });
+    }
+
+
     if (!productList) {
         res.status(500).json({ success: false })
     }
@@ -293,6 +312,7 @@ router.post(`/create`, async (req, res) => {
         productRam: req.body.productRam,
         size: req.body.size,
         productWeight: req.body.productWeight,
+        location: req.body.location,
     });
 
     try {
@@ -424,6 +444,7 @@ router.put('/:id', async (req, res) => {
                 productRam: req.body.productRam,
                 size: req.body.size,
                 productWeight: req.body.productWeight,
+                location: req.body.location,
             },
             { new: true }
         );

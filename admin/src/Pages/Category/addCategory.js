@@ -53,7 +53,9 @@ const AddCategory = () => {
     const [formFields, setFormFields] = useState({
         name: '',
         images: [],
-        color: ''
+        color: '',
+        slug: '',
+        parentId: ''
     });
 
     const [files, setFiles] = useState([]);
@@ -205,24 +207,20 @@ const AddCategory = () => {
     const addCat = (e) => {
         e.preventDefault();
 
-        const appendedArray = [...previews];
+        const appendedArray = [...previews, ...uniqueArray];
 
         img_arr = [];
-        formdata.append('name', formFields.name);
-        formdata.append('color', formFields.color);
 
-        formdata.append('images', appendedArray);
-
+        formFields.slug = formFields.name
         formFields.images = appendedArray
 
-        console.log(formdata);
+        console.log(formFields);
         if (formFields.name !== "" && formFields.color !== "" && previews.length !== 0) {
             setIsLoading(true);
 
             postData(`/api/category/create`, formFields).then(res => {
                 setIsLoading(false);
                 context.fetchCategory();
-                context.fetchSubCategory();
 
                 deleteData("/api/imageUpload/deleteAllImages");
 

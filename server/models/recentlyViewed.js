@@ -46,7 +46,7 @@ const recentlyViewedSchema = mongoose.Schema({
     },
     subCat: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'SubCategory',
+        ref: 'Category',
         required: false
     },
     countInStock: {

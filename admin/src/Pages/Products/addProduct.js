@@ -25,6 +25,9 @@ import { useContext } from "react";
 import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate, Link } from "react-router-dom";
 
+import axios from "axios";
+import CountryDropdown from "../../components/CountryDropdown";
+
 
 
 //breadcrumb code
@@ -120,7 +123,8 @@ const ProductUpload = () => {
         discount: null,
         productRam: [],
         size: [],
-        productWeight: []
+        productWeight: [],
+        location: ''
     });
 
     const productImages = useRef();
@@ -177,6 +181,13 @@ const ProductUpload = () => {
     //     }
     // }, [imgFiles]);
 
+
+    useEffect(() => {
+        setFormFields((prev) => ({
+            ...prev,
+            location: context.selectedCountry
+        }));
+    }, [context.selectedCountry]);
 
     const handleChangeCategory = (event) => {
         setCategoryVal(event.target.value);
@@ -386,6 +397,7 @@ const ProductUpload = () => {
         formdata.append('productRam', formFields.productRam);
         formdata.append('size', formFields.size);
         formdata.append('productWeight', formFields.productWeight);
+        formdata.append('location', formFields.location);
 
 
         formFields.images = appendedArray;
@@ -775,6 +787,22 @@ const ProductUpload = () => {
                                             </div>
                                         </div>
                                     </div>
+
+
+
+                                    <div className="row">
+                                        <div className='col-md-4'>
+                                            <div className='form-group'>
+                                                <h6>LOCATION</h6>
+                                                {
+                                                    context.countryList?.length > 0 && <CountryDropdown countryList={context.countryList} selectedLocation={formFields.location} onSelect={(country) => setFormFields({ ...formFields, location: country })} />
+
+                                                }
+                                            </div>
+                                        </div>
+
+                                    </div>
+
                                 </div>
                             </div>
                         </div>

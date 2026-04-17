@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const fs = require("fs");
+const { error } = require('console');
 
 const cloudinary = require('cloudinary').v2;
 
@@ -67,37 +68,52 @@ router.post(`/upload`, upload.array("images"), async (req, res) => {
 });
 
 
+const createCategories = (categories, parentId = null) => {
+
+    const categoryList = [];
+    let category;
+    if (parentId == null) {
+        category = categories.filter((cat) => !cat.parentId);
+    } else {
+        category = categories.filter((cat) => cat.parentId == parentId);
+    }
+
+    for (let cat of category) {
+        categoryList.push({
+            _id: cat._id,
+            name: cat.name,
+            images: cat.images,
+            color: cat.color,
+            slug: cat.slug,
+            children: createCategories(categories, cat._id)
+        })
+    }
+
+    return categoryList;
+
+}
+
 router.get(`/`, async (req, res) => {
+
     try {
-        const page = parseInt(req.query.page) || 1;
-        const perPage = parseInt(req.query.perPage);
-        let categoryList = [];
-        let totalPages = 0;
 
-        if (req.query.page !== undefined && req.query.perPage !== undefined) {
-            const totalPosts = await Category.countDocuments();
-            totalPages = Math.ceil(totalPosts / perPage);
-
-            categoryList = await Category.find()
-                .skip((page - 1) * perPage)
-                .limit(perPage)
-                .exec();
-        } else {
-            categoryList = await Category.find();
-        }
+        const categoryList = await Category.find();
 
         if (!categoryList) {
-            return res.status(500).json({ success: false })
+            return res.status(500).json({ success: false });
         }
 
-        return res.status(200).json({
-            "categoryList": categoryList,
-            "totalPages": totalPages,
-            "page": page
-        });
+
+        if (categoryList) {
+            const categoryData = createCategories(categoryList);
+
+            return res.status(200).json({
+                categoryList: categoryData
+            });
+        }
 
     } catch (error) {
-        res.status(500).json({ success: false })
+        res.status(500).json({ success: false });
     }
 });
 
@@ -189,20 +205,34 @@ router.delete('/:id', async (req, res) => {
 
 router.post('/create', async (req, res) => {
 
-    let category = new Category({
-        name: req.body.name,
-        images: imagesArr,
-        color: req.body.color
-    });
+    let catObj = {};
 
+    if (imagesArr.length > 0) {
+        catObj = {
+            name: req.body.name,
+            images: imagesArr,
+            color: req.body.color,
+            slug: req.body.slug,
+        };
+    } else {
+        catObj = {
+            name: req.body.name,
+            slug: req.body.slug,
+        };
+    }
+
+    if (req.body.parentId) {
+        catObj.parentId = req.body.parentId;
+    }
+
+    let category = new Category(catObj);
 
     if (!category) {
         res.status(500).json({
             error: err,
             success: false
-        })
+        });
     }
-
 
     category = await category.save();
 
