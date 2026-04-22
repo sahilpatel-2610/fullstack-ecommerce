@@ -49,6 +49,7 @@ const EditCategory = () => {
     });
 
     const [category, setcategory] = useState([]);
+    const [catData, setCatData] = useState([]);
     const [files, setFiles] = useState([]);
     const [imgFiles, setimgFiles] = useState();
     const [previews, setPreviews] = useState();
@@ -94,12 +95,24 @@ const EditCategory = () => {
             })
         })
 
+        setCatData(context.catData);
+
         fetchDataFromApi(`/api/category/${id}`).then((res) => {
             setcategory(res);
-            setFormFields({
-                name: res.name,
-                color: res.color
-            });
+            if (res.parentId !== undefined && res.parentId !== null && res.parentId !== "") {
+                setFormFields({
+                    name: res.parentId,
+                    subCat: res.name,
+                    color: res.color
+                });
+            } else {
+                setFormFields({
+                    name: res.name,
+                    subCat: '',
+                    color: res.color
+                });
+            }
+
             setPreviews(res.images);
             context.setProgress(100);
         });
@@ -174,11 +187,19 @@ const EditCategory = () => {
         formdata.append('subCat', formFields.subCat);
         formdata.append('color', formFields.color);
 
-        if (formFields.name !== "" && formFields.color !== "" && formFields.subCat !== "") {
+        if (formFields.name !== "" && formFields.color !== "") {
             setIsLoading(true);
 
-            editData(`/api/category/${id}`, formFields).then(res => {
+            const data = {
+                name: formFields.subCat !== "" ? formFields.subCat : formFields.name,
+                color: formFields.color,
+                parentId: formFields.subCat !== "" ? formFields.name : undefined,
+                images: previews
+            }
+
+            editData(`/api/category/${id}`, data).then(res => {
                 setIsLoading(false);
+                context.fetchCategory();
                 history('/category');
             })
         }
@@ -229,13 +250,30 @@ const EditCategory = () => {
 
                                 <div className="form-group">
                                     <h6>Category Name</h6>
-                                    <input type='text' name="name" value={formFields.name} onChange={changeInput} />
+                                    {
+                                        category?.parentId ?
+                                            <select className='form-control' name="name" value={formFields.name} onChange={changeInput}>
+                                                <option value="">Select Category</option>
+                                                {
+                                                    catData?.categoryList?.length !== 0 && catData?.categoryList?.map((cat, index) => {
+                                                        return (
+                                                            <option key={index} value={cat._id}>{cat.name}</option>
+                                                        )
+                                                    })
+                                                }
+                                            </select>
+                                            :
+                                            <input type='text' name="name" value={formFields.name} onChange={changeInput} />
+                                    }
                                 </div>
 
-                                <div className="form-group">
-                                    <h6>Sub Category</h6>
-                                    <input type='text' name="subCat" value={formFields.subCat} onChange={changeInput} />
-                                </div>
+                                {
+                                    category?.parentId &&
+                                    <div className="form-group">
+                                        <h6>Sub Category</h6>
+                                        <input type='text' name="subCat" value={formFields.subCat} onChange={changeInput} />
+                                    </div>
+                                }
 
                                 <div className="form-group">
                                     <h6>Color</h6>

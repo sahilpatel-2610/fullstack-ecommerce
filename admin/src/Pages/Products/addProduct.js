@@ -133,10 +133,23 @@ const ProductUpload = () => {
 
     const formdata = new FormData();
 
+
+    useEffect(() => {
+        const subCatArr = [];
+
+        context.catData?.categoryList?.length !== 0 && context.catData?.categoryList?.map((cat, index) => {
+            if (cat?.children.length !== 0) {
+                cat?.children?.map((subCat) => {
+                    subCatArr.push(subCat);
+                })
+            }
+        })
+        setSubCatData(subCatArr);
+    }, [context.catData])
+
     useEffect(() => {
         window.scrollTo(0, 0);
         setCatData(context.catData);
-        setSubCatData(context.subCatData);
         fetchDataFromApi("/api/imageUpload").then((res) => {
             Array.isArray(res) && res?.map((item) => {
                 item?.image?.map((img) => {
@@ -201,10 +214,9 @@ const ProductUpload = () => {
         setSubCatVal(event.target.value);
         setFormFields(() => ({
             ...formFields,
-            subCat: event.target.value
-        }))
-
-        formFields.subCatId = event.target.value;
+            subCat: event.target.value,
+            subCatId: event.target.value
+        }));
     };
 
     const handleChangeisFeaturedValue = (event) => {
@@ -624,10 +636,9 @@ const ProductUpload = () => {
                                                     <em value={null}>None</em>
                                                 </MenuItem>
                                                 {
-                                                    context.subCatData?.subCategoryList?.length !== 0 && context.subCatData?.subCategoryList?.map((subCat, index) => {
-                                                        // catData?.categoryList?.map((cat, index) => {
+                                                    subCatData?.length !== 0 && subCatData?.map((subCat, index) => {
                                                         return (
-                                                            <MenuItem className="text-capitalize" value={subCat._id} key={index} >{subCat.subCat}</MenuItem>
+                                                            <MenuItem className="text-capitalize" value={subCat._id} key={index} >{subCat.name}</MenuItem>
                                                         )
                                                     })
                                                 }

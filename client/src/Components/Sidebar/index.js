@@ -63,10 +63,10 @@ const Sidebar = ({ filterByPrice, filterByRating, categoryId }) => {
 
                             {
                                 context.subCategoryData?.length > 0 && context.subCategoryData
-                                    ?.filter(item => categoryId ? item.category?._id === categoryId : true)
+                                    ?.filter(item => categoryId ? item.parentId === categoryId : true)
                                     ?.map((item, index) => {
                                         return (
-                                            <FormControlLabel value={item?._id} control={<Radio />} key={index} label={item?.subCat} />
+                                            <FormControlLabel value={item?._id} control={<Radio />} key={index} label={item?.name} />
                                         )
                                     })
                             }

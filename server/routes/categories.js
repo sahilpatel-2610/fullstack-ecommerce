@@ -85,6 +85,7 @@ const createCategories = (categories, parentId = null) => {
             images: cat.images,
             color: cat.color,
             slug: cat.slug,
+            parentId: cat.parentId,
             children: createCategories(categories, cat._id)
         })
     }
@@ -182,6 +183,11 @@ router.delete('/:id', async (req, res) => {
         }
 
         const deletedCategory = await Category.findByIdAndDelete(req.params.id);
+        
+        if (deletedCategory) {
+            // Also delete all subcategories belonging to this category
+            await Category.deleteMany({ parentId: req.params.id });
+        }
 
         if (!deletedCategory) {
             return res.status(404).json({
@@ -250,7 +256,8 @@ router.put('/:id', async (req, res) => {
             {
                 name: req.body.name,
                 images: imagesArr,
-                color: req.body.color
+                color: req.body.color,
+                parentId: req.body.parentId
             },
             { new: true }
         );
@@ -272,7 +279,7 @@ router.put('/:id', async (req, res) => {
 
 
 router.get(`/get/count`, async (req, res) => {
-    let query = {};
+    let query = { $or: [{ parentId: { $exists: false } }, { parentId: "" }, { parentId: null }] };
     if (req.query.period !== undefined && req.query.period !== null && req.query.period !== "") {
         const today = new Date();
         let startDate;
@@ -302,5 +309,27 @@ router.get(`/get/count`, async (req, res) => {
         categoryCount: categoryCount
     });
 });
+
+
+router.get(`/subCat/get/count`, async (req, res) => {
+    const categories = await Category.find();
+
+    if (!categories) {
+        res.status(500).json({ success: false })
+    } else {
+
+        const subCatList = [];
+        for (let cat of categories) {
+            if (cat.parentId !== undefined) {
+                subCatList.push(cat);
+            }
+        }
+
+        res.send({
+            subCatList: subCatList,
+        });
+    }
+});
+
 
 module.exports = router;

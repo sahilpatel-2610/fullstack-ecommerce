@@ -31,6 +31,8 @@ const checkout = require('./routes/checkout.js');
 const orders = require('./routes/orders.js');
 const homeBanner = require('./routes/homeBanner.js');
 const searchRoute = require('./routes/search.js');
+const subCatRoutes = require('./routes/subCat.js');
+
 
 
 app.use("/uploads", express.static('uploads'));
@@ -48,6 +50,8 @@ app.use(`/api/checkout`, checkout);
 app.use(`/api/orders`, orders);
 app.use(`/api/homeBanner`, homeBanner);
 app.use(`/api/search`, searchRoute);
+app.use(`/api/subCat`, subCatRoutes);
+
 
 // Error Handler
 app.use((err, req, res, next) => {

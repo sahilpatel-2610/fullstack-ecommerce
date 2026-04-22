@@ -1,4 +1,4 @@
-const { SubCategory } = require('../models/subCat');
+const { Category } = require('../models/category');
 const express = require('express');
 const router = express.Router();
 
@@ -9,16 +9,18 @@ router.get(`/`, async (req, res) => {
         let SubCategoryList = [];
         let totalPages = 0;
 
+        const query = { parentId: { $exists: true, $ne: null, $ne: "" } };
+
         if (req.query.page !== undefined && req.query.perPage !== undefined) {
-            const totalPosts = await SubCategory.countDocuments();
+            const totalPosts = await Category.countDocuments(query);
             totalPages = Math.ceil(totalPosts / perPage);
 
-            SubCategoryList = await SubCategory.find().populate('category')
+            SubCategoryList = await Category.find(query).populate('category')
                 .skip((page - 1) * perPage)
                 .limit(perPage)
                 .exec();
         } else {
-            SubCategoryList = await SubCategory.find().populate('category');
+            SubCategoryList = await Category.find(query).populate('category');
         }
 
         if (!SubCategoryList) {
@@ -40,7 +42,7 @@ router.get('/:id', async (req, res) => {
 
     try {
 
-        const subCat = await SubCategory.findById(req.params.id);
+        const subCat = await Category.findById(req.params.id);
 
         if (!subCat) {
             return res.status(404).json({ success: false, message: 'The sub category with the given ID was not found.' });
@@ -51,24 +53,14 @@ router.get('/:id', async (req, res) => {
         console.error("Error fetching subCategory:", error);
         return res.status(500).json({ success: false, error: error.message });
     }
-
-    // router.get('/:id', async (req, res) => {
-
-    //   const subCat = await SubCategory.findById(req.params.id).populate('category');
-
-    //     if (!subCat) {
-    //        res.status(500).json({ message: 'The sub category with the given ID was not found.' });
-    //     }
-
-    //     return res.status(200).send(subCat);
-    // });
 });
 
 router.post('/create', async (req, res) => {
     try {
-        let subCat = new SubCategory({
-            category: req.body.category,
-            subCat: req.body.subCat,
+        let subCat = new Category({
+            name: req.body.subCat,
+            parentId: req.body.category,
+            slug: req.body.subCat.toLowerCase().replace(/ /g, '-')
         });
 
         if (!subCat) {
@@ -88,7 +80,7 @@ router.post('/create', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
     try {
-        const deletedSubCat = await SubCategory.findByIdAndDelete(req.params.id);
+        const deletedSubCat = await Category.findByIdAndDelete(req.params.id);
 
         if (!deletedSubCat) {
             return res.status(404).json({
@@ -110,11 +102,11 @@ router.delete('/:id', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
 
-        const subCat = await SubCategory.findByIdAndUpdate(
+        const subCat = await Category.findByIdAndUpdate(
             req.params.id,
             {
-                category: req.body.category,
-                subCat: req.body.subCat,
+                parentId: req.body.category,
+                name: req.body.subCat,
             },
             { new: true }
         );
@@ -137,7 +129,7 @@ router.put('/:id', async (req, res) => {
 
 
 router.get(`/get/count`, async (req, res) => {
-    let query = {};
+    let query = { parentId: { $exists: true, $ne: null, $ne: "" } };
     if (req.query.period !== undefined && req.query.period !== null && req.query.period !== "") {
         const today = new Date();
         let startDate;
@@ -157,7 +149,7 @@ router.get(`/get/count`, async (req, res) => {
         }
     }
 
-    const subCatCount = await SubCategory.countDocuments(query);
+    const subCatCount = await Category.countDocuments(query);
 
     if (!subCatCount && subCatCount !== 0) {
         res.status(500).json({ success: false })
@@ -168,4 +160,4 @@ router.get(`/get/count`, async (req, res) => {
     });
 });
 
-module.exports = router;
+module.exports = router;

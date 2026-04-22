@@ -312,7 +312,7 @@ router.post(`/create`, async (req, res) => {
         productRam: req.body.productRam,
         size: req.body.size,
         productWeight: req.body.productWeight,
-        location: req.body.location,
+        location: req.body.location !== "" ? req.body.location : "All",
     });
 
     try {

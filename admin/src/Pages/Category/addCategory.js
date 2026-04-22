@@ -220,7 +220,6 @@ const AddCategory = () => {
 
             postData(`/api/category/create`, formFields).then(res => {
                 setIsLoading(false);
-                context.fetchCategory();
 
                 deleteData("/api/imageUpload/deleteAllImages");
 

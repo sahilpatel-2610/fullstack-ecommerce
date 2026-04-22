@@ -58,7 +58,6 @@ function App() {
   );
 
   const [catData, setCatData] = useState([]);
-  const [subCatData, setSubCatData] = useState([]);
   const [user, setUser] = useState({
     name: "",
     email: "",
@@ -130,19 +129,11 @@ function App() {
   useEffect(() => {
     setProgress(20);
     fetchCategory();
-    fetchSubCategory();
   }, []);
 
   const fetchCategory = () => {
     fetchDataFromApi('/api/category').then((res) => {
       setCatData(res);
-      setProgress(100);
-    })
-  }
-
-  const fetchSubCategory = () => {
-    fetchDataFromApi('/api/subCat').then((res) => {
-      setSubCatData(res);
       setProgress(100);
     })
   }
@@ -204,8 +195,6 @@ function App() {
     baseUrl,
     catData,
     fetchCategory,
-    subCatData,
-    fetchSubCategory,
     user,
     setUser,
     countryList,

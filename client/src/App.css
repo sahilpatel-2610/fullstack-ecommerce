@@ -493,6 +493,7 @@ nav .navpart1 .catWrapper .sidebarNav {
   transition: all 0.2s;
   visibility: hidden;
   z-index: 100;
+  border-radius: 10px;
 }
 
 nav .navpart1 .catWrapper .sidebarNav.open {
@@ -512,6 +513,7 @@ nav .navpart1 .catWrapper .sidebarNav ul li button {
   width: 100%;
   justify-content: flex-start;
   text-transform: capitalize !important;
+  text-align: left !important;
 }
 
 nav .navpart1 .catWrapper .sidebarNav ul li button:hover {
@@ -529,6 +531,7 @@ nav .navpart1 .catWrapper .sidebarNav ul li {
 }
 
 nav .navpart1 .catWrapper .sidebarNav ul li .submenu {
+
   position: absolute;
   top: 0px;
   left: 105%;
@@ -541,6 +544,7 @@ nav .navpart1 .catWrapper .sidebarNav ul li .submenu {
   transition: all 0.2s ease-in-out;
   border-left: 1px solid rgba(0, 0, 0, 0.1);
   padding: 20px;
+  border-radius: 10px;
 }
 
 nav .navpart1 .catWrapper .sidebarNav ul li:hover .submenu {
@@ -633,6 +637,7 @@ nav .navpart2 ul li .submenu {
   visibility: hidden;
   transition: all 0.2s ease-in-out;
   z-index: 100;
+  border-radius: 10px;
 }
 
 nav .navpart2 ul li .submenu a {
@@ -641,9 +646,10 @@ nav .navpart2 ul li .submenu a {
 }
 
 nav .navpart2 ul li .submenu a button {
+  text-align: left !important;
   width: 100%;
   justify-content: flex-start !important;
-  border-radius: 0px !important;
+  border-radius: 10px !important;
   text-transform: capitalize !important;
   font-weight: 600;
 }
@@ -1053,7 +1059,7 @@ nav .navpart2 ul li:hover .submenu {
 
 .productItem .slick-dots li.slick-active button:before {
   color: #6c757d;
-  opacity: 1;
+  opacity: 0.5;
 }
 
 .productItem:hover .actions {
@@ -1085,7 +1091,7 @@ nav .navpart2 ul li:hover .submenu {
 }
 
 .productItem .img_rapper:hover img {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 .product_row {
@@ -2334,7 +2340,23 @@ a:hover {
 /* List view (one per row) */
 .productsWrapper.one {
   grid-template-columns: 1fr;
+}
 
+.productsWrapper.one .productItem {
+  display: flex !important;
+  align-items: center;
+  flex-direction: row !important;
+}
+
+.productsWrapper.one .productItem .img_rapper {
+  width: 25% !important;
+  height: 180px !important;
+  min-width: 200px;
+}
+
+.productsWrapper.one .productItem .info {
+  width: 75% !important;
+  padding-left: 30px !important;
 }
 
 /* 2 per row */

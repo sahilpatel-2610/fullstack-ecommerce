@@ -38,12 +38,10 @@ const peoductSchema = mongoose.Schema({
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
-        required: true
     },
     subCat: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
-        required: true
     },
     countInStock: {
         type: Number,
@@ -81,7 +79,7 @@ const peoductSchema = mongoose.Schema({
     ],
     location: {
         type: String,
-        required: true,
+        default: 'All',
     },
     dateCreated: {
         type: Date,

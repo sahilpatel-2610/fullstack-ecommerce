@@ -304,7 +304,7 @@ const Dashboard = () => {
                                                     </div>
                                                 </td>
                                                 <td>{item?.category?.name}</td>
-                                                <td>{item?.subCat?.subCat}</td>
+                                                <td>{item?.subCat?.name}</td>
                                                 <td><span className="brand">{item?.brand}</span></td>
                                                 <td>
                                                     <div className="d-flex align-items-center price-wrap">

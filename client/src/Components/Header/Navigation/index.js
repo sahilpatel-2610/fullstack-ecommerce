@@ -34,10 +34,10 @@ const Navigation = (props) => {
                                                     </Link>
                                                     <div className='submenu'>
                                                         {
-                                                            context.subCategoryData?.length > 0 && context.subCategoryData?.filter(sub => sub.category?._id === item._id || sub.category === item._id).map((subItem, subIndex) => {
+                                                            item.children?.length !== 0 && item.children?.map((subItem, subIndex) => {
                                                                 return (
                                                                     <Link key={subIndex} to={`/products/subCat/${subItem._id}`} onClick={() => setIsOpenSidebarVal(false)}>
-                                                                        <Button>{subItem.subCat}</Button>
+                                                                        <Button>{subItem.name}</Button>
                                                                     </Link>
                                                                 )
                                                             })
@@ -59,7 +59,16 @@ const Navigation = (props) => {
                                 props.navData?.length > 0 && props.navData?.map((item, index) => {
                                     return (
                                         <li className='list-inline-item'>
-                                            <Link to={`/products/subCat/${item?._id}`}><Button>{item?.subCat}</Button></Link>
+                                            <Link to={item?.parentId ? `/products/subCat/${item?._id}` : `/products/category/${item?._id}`}><Button>{item?.name}</Button></Link>
+                                            <div className='submenu'>
+                                                {
+                                                    item.children?.length !== 0 && item.children?.map((subCat, index) => {
+                                                        return (
+                                                            <Link key={index} to={`/products/subCat/${subCat?._id}`}><Button>{subCat?.name}</Button></Link>
+                                                        )
+                                                    })
+                                                }
+                                            </div>
                                         </li>
                                     )
                                 })
