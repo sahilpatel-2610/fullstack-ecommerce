@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:4000";
+const BASE_URL = "https://fullstack-ecommerce-server-do5l.onrender.com";
 
 export const fetchDataFromApi = async (url) => {
     try {
@@ -17,26 +17,13 @@ export const fetchDataFromApi = async (url) => {
 export const postData = async (url, formData) => {
     try {
         const token = localStorage.getItem("token");
-        const response = await fetch(BASE_URL + url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify(formData),
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            return data;
-        } else {
-            const errorData = await response.json();
-            return errorData;
-        }
-
+        const headers = { "Content-Type": "application/json" };
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+        const response = await axios.post(BASE_URL + url, formData, { headers });
+        return response.data;
     } catch (error) {
         console.error("Error:", error);
-        return { error: true, msg: error.message };
+        return error.response ? error.response.data : { error: true, msg: error.message };
     }
 }
 

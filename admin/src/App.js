@@ -64,7 +64,7 @@ function App() {
     userId: ""
   });
 
-  const [baseUrl, setBaseUrl] = useState("http://localhost:4000");
+  const [baseUrl, setBaseUrl] = useState("https://fullstack-ecommerce-server-do5l.onrender.com");
 
   const [progress, setProgress] = useState(0);
   const [alertBox, setAlertBox] = useState({
@@ -86,9 +86,18 @@ function App() {
     if (token !== "" && token !== undefined && token !== null) {
       setIsLogin(true);
 
-      const userData = JSON.parse(localStorage.getItem("user"));
-
-      setUser(userData);
+      try {
+        const rawUser = localStorage.getItem("user");
+        if (rawUser && rawUser !== "undefined" && rawUser !== "null") {
+          const userData = JSON.parse(rawUser);
+          setUser(userData);
+        }
+      } catch (e) {
+        console.warn("Invalid user data in localStorage, clearing...");
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        setIsLogin(false);
+      }
 
     } else {
       setIsLogin(false);

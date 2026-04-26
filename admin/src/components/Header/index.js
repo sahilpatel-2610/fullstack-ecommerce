@@ -323,14 +323,13 @@ const Header = () => {
                   <Button className="myAcc d-flex align-items-center" onClick={handleOpenMyAccDrop}>
                 <div className="userImg">
                   <span className="rounded-circle">
-                    {/* {context.user?.name?.charAt(0)} */}
-                    {JSON.parse(localStorage.getItem("user"))?.name?.charAt(0)}
+                    {context.user?.name?.charAt(0)}
                   </span>
                 </div>
 
                 <div className="userInfo res-hide">
-                  <h4>{JSON.parse(localStorage.getItem("user"))?.name}</h4>
-                  <p className="mb-0"> &nbsp; {JSON.parse(localStorage.getItem("user"))?.email}</p>
+                  <h4>{context.user?.name}</h4>
+                  <p className="mb-0"> &nbsp; {context.user?.email}</p>
                 </div>
 
 
