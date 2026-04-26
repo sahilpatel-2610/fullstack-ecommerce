@@ -92,10 +92,20 @@ function App() {
 
     const token = localStorage.getItem("token");
 
-    if (token !== "" && token !== undefined && token !== null) {
+    if (token !== "" && token !== undefined && token !== null && token !== "undefined") {
       setisLogin(true);
-      const userData = JSON.parse(localStorage.getItem("user"));
-      setUser(userData);
+      const userStr = localStorage.getItem("user");
+      if (userStr && userStr !== "undefined") {
+        try {
+          const userData = JSON.parse(userStr);
+          setUser(userData);
+        } catch (e) {
+          console.error("Failed to parse user data", e);
+          localStorage.removeItem("user");
+          localStorage.removeItem("token");
+          setisLogin(false);
+        }
+      }
     }
 
     // fetchDataFromApi(`/api/count`).then((res) => {
@@ -106,9 +116,26 @@ function App() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token !== "" && token !== undefined && token !== null) {
-      const userData = JSON.parse(localStorage.getItem("user"));
-      fetchDataFromApi(`/api/cart?userId=${userData?._id}`).then((res) => {
+    if (token !== "" && token !== undefined && token !== null && token !== "undefined") {
+      const userStr = localStorage.getItem("user");
+      if (userStr && userStr !== "undefined") {
+        const userData = JSON.parse(userStr);
+        fetchDataFromApi(`/api/cart?userId=${userData?._id || userData?.id}`).then((res) => {
+          if (res !== undefined && !res.error) {
+            setCartData(res);
+          } else {
+            setCartData([]);
+          }
+        })
+      }
+    }
+  }, [isLogin]);
+
+  const getCartData = () => {
+    const userStr = localStorage.getItem("user");
+    if (userStr && userStr !== "undefined") {
+      const userData = JSON.parse(userStr);
+      fetchDataFromApi(`/api/cart?userId=${userData?._id || userData?.id}`).then((res) => {
         if (res !== undefined && !res.error) {
           setCartData(res);
         } else {
@@ -116,51 +143,53 @@ function App() {
         }
       })
     }
-  }, [isLogin]);
-
-  const getCartData = () => {
-    const userData = JSON.parse(localStorage.getItem("user"));
-    fetchDataFromApi(`/api/cart?userId=${userData?._id}`).then((res) => {
-      if (res !== undefined && !res.error) {
-        setCartData(res);
-      } else {
-        setCartData([]);
-      }
-    })
   }
 
   const getMyListData = () => {
-    const userData = JSON.parse(localStorage.getItem("user"));
-    fetchDataFromApi(`/api/my-list?userId=${userData?._id}`).then((res) => {
-      if (res !== undefined && !res.error) {
-        setMyListData(res);
-      } else {
-        setMyListData([]);
-      }
-    })
+    const userStr = localStorage.getItem("user");
+    if (userStr && userStr !== "undefined") {
+      const userData = JSON.parse(userStr);
+      fetchDataFromApi(`/api/my-list?userId=${userData?._id || userData?.id}`).then((res) => {
+        if (res !== undefined && !res.error) {
+          setMyListData(res);
+        } else {
+          setMyListData([]);
+        }
+      })
+    }
   }
 
 
 
   const fetchUser = () => {
-    const userData = JSON.parse(localStorage.getItem("user"));
-    fetchDataFromApi(`/api/user/${userData?._id || userData?.id}`).then((res) => {
-      setUser(res);
-      localStorage.setItem("user", JSON.stringify(res));
-    })
+    const userStr = localStorage.getItem("user");
+    if (userStr && userStr !== "undefined") {
+      const userData = JSON.parse(userStr);
+      fetchDataFromApi(`/api/user/${userData?._id || userData?.id}`).then((res) => {
+        if (res && !res.error) {
+          setUser(res);
+          localStorage.setItem("user", JSON.stringify(res));
+        } else {
+          console.error("Failed to fetch user:", res?.msg);
+        }
+      })
+    }
   }
 
   useEffect(() => {
 
     const token = localStorage.getItem("token");
 
-    if (token !== "" && token !== undefined && token !== null) {
+    if (token !== "" && token !== undefined && token !== null && token !== "undefined") {
       setisLogin(true);
 
-      const userData = JSON.parse(localStorage.getItem("user"));
+      const userStr = localStorage.getItem("user");
+      if (userStr && userStr !== "undefined") {
+        const userData = JSON.parse(userStr);
 
-      setUser(userData);
-      getMyListData();
+        setUser(userData);
+        getMyListData();
+      }
     } else {
       setisLogin(false);
     }

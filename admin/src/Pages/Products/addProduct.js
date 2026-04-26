@@ -195,12 +195,7 @@ const ProductUpload = () => {
     // }, [imgFiles]);
 
 
-    useEffect(() => {
-        setFormFields((prev) => ({
-            ...prev,
-            location: context.selectedCountry
-        }));
-    }, [context.selectedCountry]);
+
 
     const handleChangeCategory = (event) => {
         setCategoryVal(event.target.value);

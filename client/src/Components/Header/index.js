@@ -9,7 +9,7 @@ import SearchBox from './SearchBox';
 import Navigation from './Navigation';
 import { MyContext } from '../../App';
 import { useContext } from 'react';
-
+import { useEffect } from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -30,6 +30,13 @@ const Header = () => {
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token && token !== "undefined") {
+            context.setisLogin(true);
+        }
+    }, []);
 
     const logout = () => {
         setAnchorEl(null);
@@ -61,7 +68,7 @@ const Header = () => {
 
                                 <div className='part3 d-flex align-items-center ml-auto'>
                                     {
-                                        context.isLogin !== true ? <Link to="/signIn"><Button className="btn-blue mr-3">Sign In</Button></Link> :
+                                        (context.isLogin !== true && localStorage.getItem("token") === null) ? <Link to="/signIn"><Button className="btn-blue mr-3">Sign In</Button></Link> :
                                             <>
                                                 <Button className='circle mr-3' onClick={handleClick}><FiUser /></Button>
                                                 <Menu

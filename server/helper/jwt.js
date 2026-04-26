@@ -19,6 +19,7 @@ function authJwt() {
             { url: /\/uploads(.*)/, methods: ['GET', 'OPTIONS'] },
             `/api/user/signin`,
             `/api/user/signup`,
+            `/api/user/authWithGoogle`,
         ]
     })
 }

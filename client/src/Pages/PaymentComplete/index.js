@@ -19,7 +19,11 @@ const PaymentComplete = () => {
                     const lineItems = res[1];
 
                     // 2. Prepare Order Payload (matching Razorpay logic in Checkout/index.js)
-                    const userData = JSON.parse(localStorage.getItem("user"));
+                    const userStr = localStorage.getItem("user");
+                    let userData = null;
+                    if (userStr && userStr !== "undefined") {
+                        userData = JSON.parse(userStr);
+                    }
                     
                     const payLoad = {
                         name: session.customer_details.name,
@@ -29,7 +33,7 @@ const PaymentComplete = () => {
                         amount: session.amount_total / 100,
                         paymentId: session.payment_intent,
                         email: session.customer_details.email,
-                        userId: userData?._id,
+                        userId: userData?._id || userData?.id,
                         products: lineItems.data.map((item) => ({
                             productId: item.price.product, // Stripe product ID
                             productTitle: item.description,

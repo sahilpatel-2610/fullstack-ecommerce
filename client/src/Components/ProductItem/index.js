@@ -44,13 +44,16 @@ const ProductItem = (props) => {
             }
         }, 20);
 
-        const userData = JSON.parse(localStorage.getItem("user"));
+        const userStr = localStorage.getItem("user");
+        if (userStr && userStr !== "undefined") {
+            const userData = JSON.parse(userStr);
 
-        fetchDataFromApi(`/api/my-list?productId=${id}&userId=${userData?._id}`).then((res) => {
-            if (res.length !== 0) {
-                setIsAddedToMyList(true);
-            }
-        })
+            fetchDataFromApi(`/api/my-list?productId=${id}&userId=${userData?._id || userData?.id}`).then((res) => {
+                if (res !== undefined && res?.length !== 0) {
+                    setIsAddedToMyList(true);
+                }
+            })
+        }
     }
 
     const handleMouseLeave = () => {
@@ -78,7 +81,11 @@ const ProductItem = (props) => {
             return;
         }
 
-        const userData = JSON.parse(localStorage.getItem("user"));
+        const userStr = localStorage.getItem("user");
+        let userData = null;
+        if (userStr && userStr !== "undefined") {
+            userData = JSON.parse(userStr);
+        }
         const data = {
             productTitle: props?.item?.name,
             images: props?.item?.images[0],
@@ -97,11 +104,15 @@ const ProductItem = (props) => {
                 })
                 context.getMyListData();
 
-                fetchDataFromApi(`/api/my-list?productId=${id}&userId=${userData?._id}`).then((res) => {
-                    if (res.length !== 0) {
-                        setIsAddedToMyList(true);
-                    }
-                })
+                const userStr = localStorage.getItem("user");
+                if (userStr && userStr !== "undefined") {
+                    const userData = JSON.parse(userStr);
+                    fetchDataFromApi(`/api/my-list?productId=${id}&userId=${userData?._id || userData?.id}`).then((res) => {
+                        if (res.length !== 0) {
+                            setIsAddedToMyList(true);
+                        }
+                    })
+                }
 
             } else {
                 context.setAlertBox({

@@ -109,7 +109,7 @@ router.post(`/signup`, async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error: true, msg: "something went wrong" });
+        res.status(500).json({ error: true, msg: error.message || "something went wrong" });
     }
 
 });
@@ -184,10 +184,58 @@ router.post(`/signin`, async (req, res) => {
         })
 
     } catch (error) {
-        res.status(500).json({ error: true, msg: "something went wrong" });
+        res.status(500).json({ error: true, msg: error.message || "something went wrong" });
     }
 
 });
+
+router.post(`/authWithGoogle`, async (req, res) => {
+    const { name, phone, email, password, images, isAdmin } = req.body;
+
+    try {
+        let user = await User.findOne({ email: email });
+
+        if (!user) {
+            user = await User.create({
+                name: name,
+                phone: phone || undefined,
+                email: email,
+                password: password || Math.random().toString(36).slice(-8),
+                images: images ? (Array.isArray(images) ? images : [images]) : [],
+                isAdmin: isAdmin || false
+            });
+        } else {
+            // Update existing user's name or images if they are missing
+            let isUpdated = false;
+            if (!user.name) {
+                user.name = name;
+                isUpdated = true;
+            }
+            if ((!user.images || user.images.length === 0) && images && images.length > 0) {
+                user.images = Array.isArray(images) ? images : [images];
+                isUpdated = true;
+            }
+
+            if (isUpdated) {
+                await user.save();
+            }
+        }
+
+        const token = jwt.sign({ email: user.email, id: user._id }, process.env.JSON_WEB_TOKEN_SECRET_KEY);
+
+        return res.status(200).json({
+            error: false,
+            user: user,
+            token: token,
+            msg: "User Login Successfully!"
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: true, msg: error.message });
+    }
+});
+
 
 router.get('/', async (req, res) => {
     const userList = await User.find();

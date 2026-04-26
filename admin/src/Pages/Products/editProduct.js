@@ -391,12 +391,7 @@ const EditUpload = () => {
         }
     }
 
-    useEffect(() => {
-        setFormFields((prev) => ({
-            ...prev,
-            location: context.selectedCountry
-        }));
-    }, [context.selectedCountry]);
+
 
 
 

@@ -12,6 +12,7 @@ app.use(cors());
 app.options('*', cors())
 
 
+
 //middleware
 app.use(bodyParser.json());
 app.use(authJwt());
@@ -22,7 +23,7 @@ const productRoutes = require('./routes/products');
 const imageUploadRoutes = require('./helper/imageUpload.js');
 const productWeightRoutes = require('./routes/productWeight.js');
 const productRAMSRoutes = require('./routes/productRAMS.js');
-const productSIZERoutes = require('./routes/productSIZE.js');
+const productSIZERoutes = require('./routes/productSize.js');
 const userRoutes = require('./routes/user');
 const productReviews = require('./routes/productReviews.js');
 const cart = require('./routes/cart.js');
@@ -70,14 +71,15 @@ app.use((err, req, res, next) => {
 })
 
 //Database
-mongoose.connect(process.env.CONNECTION_STRING, { family: 4 })
+mongoose.connect(process.env.CONNECTION_STRING)
     .then(() => {
         console.log('Database Connection is ready...');
-        //server
-        app.listen(process.env.PORT, () => {
-            console.log(`server is running http://localhost:${process.env.PORT}`);
-        })
     })
     .catch((err) => {
-        console.log(err);
-    })
+        console.log('Database Connection Error:', err.message);
+    });
+
+//server
+app.listen(process.env.PORT, () => {
+    console.log(`server is running http://localhost:${process.env.PORT}`);
+});

@@ -190,14 +190,19 @@ const ProductModal = (props) => {
       return;
     }
 
-    const userData = JSON.parse(localStorage.getItem("user"));
+    const userStr = localStorage.getItem("user");
+    let userData = null;
+    if (userStr && userStr !== "undefined") {
+      userData = JSON.parse(userStr);
+    }
+
     const data = {
       productTitle: props?.data?.name,
       images: props?.data?.images[0],
       rating: props?.data?.rating,
       price: props?.data?.price,
       productId: id,
-      userId: userData?._id
+      userId: userData?._id || userData?.id
     }
 
     postData("/api/my-list/add", data).then((res) => {
@@ -225,13 +230,16 @@ const ProductModal = (props) => {
   }
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("user"));
+    const userStr = localStorage.getItem("user");
+    if (userStr && userStr !== "undefined") {
+      const userData = JSON.parse(userStr);
 
-    fetchDataFromApi(`/api/my-list?productId=${props?.data?._id}&userId=${userData?._id}`).then((res) => {
-      if (res.length !== 0) {
-        setIsAddedToMyList(true);
-      }
-    })
+      fetchDataFromApi(`/api/my-list?productId=${props?.data?._id}&userId=${userData?._id || userData?.id}`).then((res) => {
+        if (res !== undefined && res?.length !== 0) {
+          setIsAddedToMyList(true);
+        }
+      })
+    }
   }, []);
 
 
@@ -283,7 +291,12 @@ const ProductModal = (props) => {
             <Button
               className="btn-blue btn-lg btn-big btn-round ml-3"
               onClick={() => {
-                const userData = JSON.parse(localStorage.getItem("user"));
+                const userStr = localStorage.getItem("user");
+                let userData = null;
+                if (userStr && userStr !== "undefined") {
+                  userData = JSON.parse(userStr);
+                }
+
                 context.addtoCart({
                   productTitle: props?.data?.name,
                   images: props?.data?.images[0],
@@ -293,7 +306,7 @@ const ProductModal = (props) => {
                   subTotal: props?.data?.price * quantity,
                   productId: props?.data?._id,
                   countInStock: props?.data?.countInStock,
-                  userId: userData?._id
+                  userId: userData?._id || userData?.id
                 })
               }}
             >

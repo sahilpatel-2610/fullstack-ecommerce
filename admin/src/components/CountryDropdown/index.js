@@ -64,7 +64,11 @@ const CountryDropdown = (props) => {
         <>
             <Button className='countryDrop open' onClick={() => setIsOpenModal(true)}>
                 <div className='info d-flex'>
-                    <span className='name'>{props.selectedLocation ? (props.selectedLocation.length > 15 ? props.selectedLocation.substr(0, 15) + '...' : props.selectedLocation) : (context.selectedCountry ? (context.selectedCountry.length > 15 ? context.selectedCountry.substr(0, 15) + '...' : context.selectedCountry) : 'Select Location')}</span>
+                    <span className='name'>{
+                        props.selectedLocation !== undefined && props.selectedLocation !== null ? 
+                        (props.selectedLocation !== "" ? (props.selectedLocation.length > 15 ? props.selectedLocation.substr(0, 15) + '...' : props.selectedLocation) : 'Select Location') 
+                        : (context.selectedCountry !== "" && context.selectedCountry !== undefined && context.selectedCountry !== null ? (context.selectedCountry.length > 15 ? context.selectedCountry.substr(0, 15) + '...' : context.selectedCountry) : 'Select Location')
+                    }</span>
                 </div>
                 <span className='ml-auto'><FaAngleDown /></span>
             </Button>

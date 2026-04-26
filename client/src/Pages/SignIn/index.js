@@ -9,6 +9,12 @@ import { postData } from "../../utils/api";
 import CircularProgress from '@mui/material/CircularProgress';
 
 
+import { getAuth, signInWithPopup, GoogleAuthProvider, } from "firebase/auth";
+import { firebaseApp } from "../../firebase";
+
+const auth = getAuth(firebaseApp);
+const googleProvider = new GoogleAuthProvider();
+
 const SignIn = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [formfildes, setFormfildes] = useState({
@@ -91,6 +97,71 @@ const SignIn = () => {
 
     }
 
+    const signInWithGoogle = () => {
+        signInWithPopup(auth, googleProvider)
+            .then((result) => {
+                const credential = GoogleAuthProvider.credentialFromResult(result);
+                const token = credential.accessToken;
+                // The signed-in user info.
+                const user = result.user;
+
+                const fields = {
+                    name: user.displayName,
+                    email: user.email,
+                    password: null,
+                    images: user.photoURL ? [user.photoURL.replace("s96-c", "s400-c")] : [],
+                    phone: user.phoneNumber
+                }
+
+                postData("/api/user/authWithGoogle", fields).then((res) => {
+                    try {
+                        if (res.error !== true) {
+                            localStorage.setItem("token", res.token);
+                            localStorage.setItem("user", JSON.stringify(res.user));
+
+                            context.setAlertBox({
+                                open: true,
+                                error: false,
+                                msg: res.msg || "User Login Successfully!",
+                            });
+
+                            context.setisLogin(true);
+                            context.setUser(res.user);
+
+                            setTimeout(() => {
+                                setIsLoading(false);
+                                window.location.href = "/";
+                            }, 2000);
+                        } else {
+                            context.setAlertBox({
+                                open: true,
+                                error: true,
+                                msg: res.msg || "Invalid Credentials!",
+                            });
+                            setIsLoading(false);
+                        }
+                    } catch (error) {
+                        console.log(error);
+                        setIsLoading(false);
+                    }
+                });
+            })
+            .catch((error) => {
+                // Handle Errors here.
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                // The email of the user's account used.
+                const email = error.customData.email;
+                // The AuthCredential type that was used.
+                const credential = GoogleAuthProvider.credentialFromError(error);
+                context.setAlertBox({
+                    open: true,
+                    error: true,
+                    msg: errorMessage,
+                });
+            });
+    };
+
     return (
         <section className="section signInPage">
             <div className="shape-bottom"> <svg fill="#fff" id="Layer_1" x="0px" y="0px" viewBox="0 0 1921 819.8"
@@ -130,7 +201,7 @@ const SignIn = () => {
 
                         <h6 className="mt-4 text-center font-weight-bold">Or continue with social account</h6>
 
-                        <Button className="loginWithGoogle mt-2" variant="outlined"><img src={GoogleImg} alt="google" /> Sign In with Google</Button>
+                        <Button className="loginWithGoogle mt-2" variant="outlined" onClick={signInWithGoogle}><img src={GoogleImg} alt="google" /> Sign In with Google</Button>
                     </form>
 
                 </div>

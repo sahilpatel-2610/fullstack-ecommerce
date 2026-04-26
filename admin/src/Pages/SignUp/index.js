@@ -21,6 +21,10 @@ import { IoMdHome } from "react-icons/io";
 import { postData } from '../../utils/api';
 import CircularProgress from '@mui/material/CircularProgress';
 
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { auth } from "../../firebase";
+const googleProvider = new GoogleAuthProvider();
+
 const SignUp = () => {
     const history = useNavigate();
 
@@ -42,6 +46,64 @@ const SignUp = () => {
     });
 
     const context = useContext(MyContext);
+
+    const signInWithGoogle = () => {
+        signInWithPopup(auth, googleProvider)
+            .then((result) => {
+                const user = result.user;
+
+                const fields = {
+                    name: user.displayName,
+                    email: user.email,
+                    password: null,
+                    images: user.photoURL ? [user.photoURL.replace("s96-c", "s400-c")] : [],
+                    phone: user.phoneNumber,
+                    isAdmin: true
+                }
+
+                postData("/api/user/authWithGoogle", fields).then((res) => {
+                    try {
+                        if (res.error !== true) {
+                            localStorage.setItem("token", res.token);
+                            localStorage.setItem("user", JSON.stringify(res.user));
+
+                            context.setAlertBox({
+                                open: true,
+                                error: false,
+                                msg: res.msg || "User Login Successfully!",
+                            });
+
+                            context.setIsLogin(true);
+                            context.setUser(res.user);
+
+                            setTimeout(() => {
+                                setIsLoading(false);
+                                history("/dashboard");
+                            }, 2000);
+                        } else {
+                            context.setAlertBox({
+                                open: true,
+                                error: true,
+                                msg: res.msg || "Invalid Credentials!",
+                            });
+                            setIsLoading(false);
+                        }
+                    } catch (error) {
+                        console.log(error);
+                        setIsLoading(false);
+                    }
+                });
+
+            })
+            .catch((error) => {
+                const errorMessage = error.message;
+                context.setAlertBox({
+                    open: true,
+                    error: true,
+                    msg: errorMessage,
+                });
+            });
+    };
 
     useEffect(() => {
         context.setisHideSidebarAndHeader(true);
@@ -239,7 +301,7 @@ const SignUp = () => {
 
                                     </div>
 
-                                    <FormControlLabel control={<Checkbox checked={formfildes.terms} onChange={(e) => setFormfildes((prev) => ({ ...prev, terms: e.target.checked }))} />} label="I agree to all Terms & Conditions" />
+                                    <FormControlLabel sx={{ '& .MuiFormControlLabel-label': { fontSize: '14px', whiteSpace: 'nowrap' } }} control={<Checkbox checked={formfildes.terms} onChange={(e) => setFormfildes((prev) => ({ ...prev, terms: e.target.checked }))} />} label="I agree to all Terms & Conditions" />
 
 
                                     <div className='form-group'>
@@ -257,7 +319,7 @@ const SignUp = () => {
                                             <span className='line'></span>
                                         </div>
 
-                                        <Button variant="outlined" className='w-100 btn-lg btn-big loginWithGooogle'>
+                                        <Button variant="outlined" onClick={signInWithGoogle} className='w-100 btn-lg btn-big loginWithGooogle'>
                                             <img src={googleicon} width="25px" /> &nbsp; Sign In with Google
                                         </Button>
 

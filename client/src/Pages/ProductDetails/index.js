@@ -441,13 +441,16 @@ const ProductDetails = (props) => {
       }));
     }
 
-    const userData = JSON.parse(localStorage.getItem("user"));
+    const userStr = localStorage.getItem("user");
+    if (userStr && userStr !== "undefined") {
+      const userData = JSON.parse(userStr);
 
-    fetchDataFromApi(`/api/my-list?productId=${id}&userId=${userData?._id}`).then((res) => {
-      if (res.length !== 0) {
-        setIsAddedToMyList(true);
-      }
-    })
+      fetchDataFromApi(`/api/my-list?productId=${id}&userId=${userData?._id || userData?.id}`).then((res) => {
+        if (res !== undefined && res?.length !== 0) {
+          setIsAddedToMyList(true);
+        }
+      })
+    }
 
   }, [id, context.isLogin, context.user])
 
@@ -475,8 +478,12 @@ const ProductDetails = (props) => {
       return;
     }
 
-    const user = JSON.parse(localStorage.getItem("user"));
-
+    const userStr = localStorage.getItem("user");
+    let user = null;
+    if (userStr && userStr !== "undefined") {
+      user = JSON.parse(userStr);
+    }
+ 
     cartFields.productTitle = productData?.name;
     cartFields.images = productData?.images?.length > 0 ? productData?.images[0] : "";
     cartFields.rating = productData?.rating;
@@ -484,7 +491,7 @@ const ProductDetails = (props) => {
     cartFields.quantity = productQuantity;
     cartFields.subTotal = parseInt(productData?.price * productQuantity);
     cartFields.productId = productData?._id;
-    cartFields.userId = user?._id;
+    cartFields.userId = user?._id || user?.id;
 
     cartFields.ram = productData?.productRam?.length > 0 ? productData?.productRam[activeRam] : "";
     cartFields.size = productData?.size?.length > 0 ? productData?.size[activeSize] : "";
@@ -602,14 +609,18 @@ const ProductDetails = (props) => {
       return;
     }
 
-    const userData = JSON.parse(localStorage.getItem("user"));
+    const userStr = localStorage.getItem("user");
+    let userData = null;
+    if (userStr && userStr !== "undefined") {
+      userData = JSON.parse(userStr);
+    }
     const data = {
       productTitle: productData?.name,
       images: productData?.images?.length > 0 ? productData?.images[0] : "",
       rating: productData?.rating,
       price: productData?.price,
       productId: id,
-      userId: userData?._id
+      userId: userData?._id || userData?.id
     }
 
     postData("/api/my-list/add", data).then((res) => {

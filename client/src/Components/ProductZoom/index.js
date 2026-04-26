@@ -41,7 +41,8 @@ const ProductZoom = (props) => {
                 <SwiperSlide key={index}>
                   <InnerImageZoom
                     zoomType="hover"
-                    zoomScale={1}
+                    zoomScale={0.3}
+                    moveType="pan"
                     src={img}
                   />
                 </SwiperSlide>

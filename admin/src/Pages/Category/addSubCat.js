@@ -109,7 +109,6 @@ const AddSubCat = () => {
 
             postData('/api/category/create', data).then(res => {
                 setIsLoading(false);
-                context.fetchCategory();
 
                 deleteData("/api/imageUpload/deleteAllImages");
 

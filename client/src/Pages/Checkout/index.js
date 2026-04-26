@@ -100,7 +100,11 @@ const Checkout = () => {
             description: "Shopping Payment",
             handler: function (response) {
                 const paymentId = response.razorpay_payment_id;
-                const userData = JSON.parse(localStorage.getItem("user"));
+                const userStr = localStorage.getItem("user");
+                let userData = null;
+                if (userStr && userStr !== "undefined") {
+                    userData = JSON.parse(userStr);
+                }
 
                 const payLoad = {
                     name: formFilleds.fullName,
@@ -110,7 +114,7 @@ const Checkout = () => {
                     amount: totalAmount,
                     paymentId: paymentId,
                     email: formFilleds.email,
-                    userId: userData?._id,
+                    userId: userData?._id || userData?.id,
                     products: context.cartData?.map((item) => ({
                         productId: item.productId,
                         productTitle: item.productTitle,

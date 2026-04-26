@@ -7,8 +7,9 @@ const userSchema = new mongoose.Schema({
     },
     phone: {
         type: String,
-        required: true,
-        unique: true
+        required: false,
+        unique: true,
+        sparse: true
     },
     email: {
         type: String,
@@ -21,10 +22,13 @@ const userSchema = new mongoose.Schema({
     },
     images: [
         {
-            type: String,
-            required: true
+            type: String
         }
-    ]
+    ],
+    isAdmin: {
+        type: Boolean,
+        default: false
+    }
 }, { timestamps: true });
 
 userSchema.virtual('id').get(function () {

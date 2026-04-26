@@ -1417,12 +1417,16 @@ body.dark .productZoomBig {
   background-color: #112143;
 }
 
-.productZoomBig img,
 .productZoomBig .iiz {
+  width: 100% !important;
+  display: block !important;
+  cursor: zoom-in;
+}
+
+.productZoomBig .iiz__img {
   height: 370px !important;
   width: 100% !important;
   object-fit: cover !important;
-  display: block !important;
 }
 
 .productDetails .productZoomBig {

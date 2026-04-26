@@ -17,31 +17,40 @@ const Orders = () => {
 
     useEffect(() => {
         window.scrollTo(0, 0);
-        const userData = JSON.parse(localStorage.getItem("user"));
-        fetchDataFromApi(`/api/orders?userId=${userData?._id}&page=1&perPage=8`).then((res) => {
-            setOrders(res);
-        });
+        const userStr = localStorage.getItem("user");
+        if (userStr && userStr !== "undefined") {
+            const userData = JSON.parse(userStr);
+            fetchDataFromApi(`/api/orders?userId=${userData?._id || userData?.id}&page=1&perPage=8`).then((res) => {
+                setOrders(res);
+            });
+        }
     }, []);
 
     const deleteOrder = (id) => {
         deleteData(`/api/orders/${id}`).then((res) => {
-            const userData = JSON.parse(localStorage.getItem("user"));
-            fetchDataFromApi(`/api/orders?userId=${userData?._id}&page=${page}&perPage=8`).then((res) => {
-                setOrders(res);
-            });
+            const userStr = localStorage.getItem("user");
+            if (userStr && userStr !== "undefined") {
+                const userData = JSON.parse(userStr);
+                fetchDataFromApi(`/api/orders?userId=${userData?._id || userData?.id}&page=${page}&perPage=8`).then((res) => {
+                    setOrders(res);
+                });
+            }
         });
     }
 
     const handleChange = (event, value) => {
         setPage(value);
-        const userData = JSON.parse(localStorage.getItem("user"));
-        fetchDataFromApi(`/api/orders?userId=${userData?._id}&page=${value}&perPage=8`).then((res) => {
-            setOrders(res);
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
+        const userStr = localStorage.getItem("user");
+        if (userStr && userStr !== "undefined") {
+            const userData = JSON.parse(userStr);
+            fetchDataFromApi(`/api/orders?userId=${userData?._id || userData?.id}&page=${value}&perPage=8`).then((res) => {
+                setOrders(res);
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
             });
-        });
+        }
     }
 
     const showProducts = (id) => {

@@ -112,16 +112,23 @@ const MyAccount = () => {
             }
         })
 
-        const user = JSON.parse(localStorage.getItem("user"));
+        const userStr = localStorage.getItem("user");
+        if (userStr && userStr !== "undefined") {
+            const user = JSON.parse(userStr);
 
         fetchDataFromApi(`/api/user/${user?._id || user?.id}`).then((res) => {
-            setFormFields({
-                name: res.name || "",
-                email: res.email || "",
-                phone: res.phone || ""
-            });
-            setPreviews(res.images || []);
+            if (res && !res.error) {
+                setFormFields({
+                    name: res.name || "",
+                    email: res.email || "",
+                    phone: res.phone || ""
+                });
+                setPreviews(res.images || []);
+            } else {
+                console.error("Failed to fetch user details:", res?.msg);
+            }
         });
+        }
     }, [history]);
 
 
@@ -220,22 +227,21 @@ const MyAccount = () => {
 
 
         if (formFields.name !== "" && formFields.email !== "" && formFields.phone !== "") {
-            const user = JSON.parse(localStorage.getItem("user"));
+            const userStr = localStorage.getItem("user");
+            if (userStr && userStr !== "undefined") {
+                const user = JSON.parse(userStr);
 
-            editData(`/api/user/${user?._id || user?.id}`, updatedFields).then(res => {
-                context.fetchUser();
-
-                deleteImage("/api/imageUpload/deleteAllImages");
-
-                context.setAlertBox({
-                    open: true,
-                    error: false,
-                    msg: "User Updated Successfully!"
+                editData(`/api/user/${user?._id || user?.id}`, updatedFields).then(res => {
+                    context.fetchUser();
+                    deleteImage("/api/imageUpload/deleteAllImages");
+                    context.setAlertBox({
+                        open: true,
+                        error: false,
+                        msg: "User Updated Successfully!"
+                    })
                 })
-            })
-        }
-
-        else {
+            }
+        } else {
             context.setAlertBox({
                 open: true,
                 error: true,
@@ -261,7 +267,11 @@ const MyAccount = () => {
                 return false;
             }
 
-            const user = JSON.parse(localStorage.getItem("user"));
+            const userStr = localStorage.getItem("user");
+            let user = null;
+            if (userStr && userStr !== "undefined") {
+                user = JSON.parse(userStr);
+            }
             const userId = user?._id || user?.id;
 
             if (!userId) {
@@ -323,7 +333,7 @@ const MyAccount = () => {
                                             previews?.length > 0 ?
                                                 isVideo(previews[0]) ?
                                                     <video autoPlay loop muted key={previews[0].split('#')[0]} src={previews[0].split('#')[0]} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '100%' }} /> :
-                                                    <img src={previews[0].split('#')[0]} alt="profile" />
+                                                    <img src={previews[0].split('#')[0]} referrerPolicy="no-referrer" alt="profile" />
                                                 :
                                                 <img src={NoUserImg} alt="profile placeholder" />
                                         }
