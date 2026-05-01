@@ -77,7 +77,26 @@ function App() {
   const [selectedLocation, setSelectedLocation] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
 
+  useEffect(() => {
+    getCountry("https://countriesnow.space/api/v0.1/countries/");
+  }, []);
 
+  const countryListArr = [];
+  const getCountry = async (url) => {
+    const responsive = await axios.get(url).then((res) => {
+
+      if (res !== null) {
+        res.data.data.map((item, index) => {
+          countryListArr.push({
+            value: item?.iso2,
+            label: item?.country,
+          });
+        });
+
+        setCountryList(countryListArr);
+      }
+    });
+  };
 
   useEffect(() => {
 
@@ -107,7 +126,13 @@ function App() {
 
 
   useEffect(() => {
-    setCountryList(countriesData);
+    const list = countriesData.map((item) => {
+      return {
+        label: item.country,
+        value: item.country
+      }
+    });
+    setCountryList([{ label: "All", value: "All" }, ...list]);
   }, []);
 
 

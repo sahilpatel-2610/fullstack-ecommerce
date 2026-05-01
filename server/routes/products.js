@@ -124,7 +124,7 @@ router.get(`/`, async (req, res) => {
         }
 
         if (req.query.location !== undefined && req.query.location !== null && req.query.location !== "All") {
-            query.location = req.query.location;
+            query['location.label'] = req.query.location;
         }
 
         if (req.query.minPrice !== undefined && req.query.maxPrice !== undefined) {
@@ -136,7 +136,7 @@ router.get(`/`, async (req, res) => {
         }
 
         if (req.query.location !== undefined && req.query.location !== null && req.query.location !== "All") {
-            query.location = req.query.location;
+            query['location.label'] = req.query.location;
         }
 
 
@@ -177,7 +177,7 @@ router.get(`/featured`, async (req, res) => {
     let productList = [];
 
     if (req.query.location !== undefined && req.query.location !== null && req.query.location !== "All") {
-        productList = await Product.find({ isFeatured: true, location: req.query.location });
+        productList = await Product.find({ isFeatured: true, 'location.label': req.query.location });
     }
     else {
         productList = await Product.find({ isFeatured: true });
@@ -312,7 +312,7 @@ router.post(`/create`, async (req, res) => {
         productRam: req.body.productRam,
         size: req.body.size,
         productWeight: req.body.productWeight,
-        location: req.body.location !== "" ? req.body.location : "All",
+        location: Array.isArray(req.body.location) ? req.body.location : [],
     });
 
     try {
@@ -444,7 +444,7 @@ router.put('/:id', async (req, res) => {
                 productRam: req.body.productRam,
                 size: req.body.size,
                 productWeight: req.body.productWeight,
-                location: req.body.location,
+                location: Array.isArray(req.body.location) ? req.body.location : [],
             },
             { new: true }
         );

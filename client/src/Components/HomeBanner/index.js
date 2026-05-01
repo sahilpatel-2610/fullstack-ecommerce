@@ -9,10 +9,10 @@ import "swiper/css/pagination";
 
 const HomeBanner = (props) => {
   return (
-    <div className="container-fluid mt-1">
+    <div className="container-fluid px-0 mt-1">
       <div className="homeBannerSection">
         <Swiper
-          slidesPerView={1.15}
+          slidesPerView={1}
           spaceBetween={20}
           navigation={true}
           loop={true}

@@ -27,6 +27,7 @@ import { useNavigate } from "react-router-dom";
 import { Link, useParams } from "react-router-dom";
 import axios from 'axios';
 import CountryDropdown from "../../components/CountryDropdown";
+import Select2 from "react-select";
 
 
 //breadcrumb code
@@ -90,6 +91,9 @@ const EditUpload = () => {
     const [isSelectedFiles, setIsSelectedFiles] = useState(false);
     const [isSelectedImages, setIsSelectedImages] = useState(false);
 
+    const [selectedLocation, setSelectedLocation] = useState([]);
+    const [countryList, setCountryList] = useState([]);
+
 
 
     let { id } = useParams();
@@ -113,7 +117,7 @@ const EditUpload = () => {
         productRam: [],
         size: [],
         productWeight: [],
-        location: ''
+        location: []
     });
 
     const productImages = useRef();
@@ -149,6 +153,22 @@ const EditUpload = () => {
                 location: res.location
             });
 
+            let locationArr = [];
+            if (Array.isArray(res.location)) {
+                locationArr = res.location.map((item) => ({
+                    label: item.label,
+                    value: item.label
+                }));
+            } else if (res.location && typeof res.location === 'string') {
+                const arr = res.location.split(',');
+                locationArr = arr.map((item) => ({
+                    label: item.trim(),
+                    value: item.trim()
+                }));
+            }
+
+            setSelectedLocation(locationArr);
+
             setRatingValue(res.rating);
             setCategoryVal(res.category);
             setSubCatVal(res.subCat);
@@ -180,6 +200,20 @@ const EditUpload = () => {
 
 
     }, []);
+
+
+    useEffect(() => {
+        formFields.location = context.selectedCountry;
+    }, [context.selectedCountry]);
+
+    useEffect(() => {
+        setCountryList(context.countryList);
+    }, [context.countryList]);
+
+    const handleChangeLocation = (selectedOptions) => {
+        setSelectedLocation(selectedOptions);
+    };
+
 
     useEffect(() => {
         const subCatArr = [];
@@ -398,6 +432,7 @@ const EditUpload = () => {
     const editProduct = (e) => {
         e.preventDefault();
 
+        formFields.location = selectedLocation;
 
         formdata.append('name', formFields.name);
         formdata.append('description', formFields.description);
@@ -417,6 +452,7 @@ const EditUpload = () => {
         formdata.append('productWeight', formFields.productWeight);
         formdata.append('location', formFields.location);
 
+        formFields.location = selectedLocation;
 
 
         if (formFields.name === "") {
@@ -809,16 +845,21 @@ const EditUpload = () => {
 
 
                                     <div className="row">
-                                        <div className='col-md-4'>
+                                        <div className='col-md-12'>
                                             <div className='form-group'>
                                                 <h6>LOCATION</h6>
-                                                {
-                                                    context.countryList?.length > 0 && <CountryDropdown countryList={context.countryList} selectedLocation={formFields.location} onSelect={(country) => setFormFields({ ...formFields, location: country })} />
-
-                                                }
+                                                <Select2
+                                                    value={selectedLocation}
+                                                    isMulti
+                                                    name="location"
+                                                    options={countryList}
+                                                    className="basic-multi-select"
+                                                    classNamePrefix="select"
+                                                    onChange={handleChangeLocation}
+                                                    placeholder="Select Location..."
+                                                />
                                             </div>
                                         </div>
-
                                     </div>
 
                                 </div>

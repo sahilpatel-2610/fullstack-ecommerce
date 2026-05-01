@@ -120,10 +120,9 @@ const HomeCat = (props) => {
                                     <Link to={`/products/category/${cat._id}`}>
                                         <div
                                             className={`item text-center cursor ${props.activeIndex === index ? 'active' : ''}`}
-                                            style={{ background: cat.color ? cat.color : itemBg[index % itemBg.length] }}
                                             onClick={() => props.onSelect(index)}
                                         >
-                                            <div className="img_wrapper">
+                                            <div className="img_wrapper" style={{ background: cat.color ? cat.color : itemBg[index % itemBg.length] }}>
                                                 <img
                                                     src={cat.images?.[0]}
                                                     alt={cat.name}

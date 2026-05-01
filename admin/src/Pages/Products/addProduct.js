@@ -27,7 +27,7 @@ import { useNavigate, Link } from "react-router-dom";
 
 import axios from "axios";
 import CountryDropdown from "../../components/CountryDropdown";
-
+import Select2 from "react-select";
 
 
 //breadcrumb code
@@ -105,6 +105,9 @@ const ProductUpload = () => {
 
     const [previews, setPreviews] = useState([]);
 
+    const [selectedLocation, setSelectedLocation] = useState([]);
+    const [countryList, setCountryList] = useState([]);
+
     const history = useNavigate();
 
     const [formFields, setFormFields] = useState({
@@ -124,7 +127,7 @@ const ProductUpload = () => {
         productRam: [],
         size: [],
         productWeight: [],
-        location: ''
+        location: []
     });
 
     const productImages = useRef();
@@ -132,6 +135,14 @@ const ProductUpload = () => {
     const context = useContext(MyContext);
 
     const formdata = new FormData();
+
+    useEffect(() => {
+        formFields.location = context.selectedCountry;
+    }, [context.selectedCountry]);
+
+    useEffect(() => {
+        setCountryList(context.countryList);
+    }, [context.countryList]);
 
 
     useEffect(() => {
@@ -307,7 +318,7 @@ const ProductUpload = () => {
             for (var i = 0; i < files.length; i++) {
 
                 //validate file type
-                if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png' || files[i].type === 'image/webp')) {
+                if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png' || files[i].type === 'image/webp' || files[i].type === 'image/avif')) {
 
                     const file = files[i];
 
@@ -406,6 +417,7 @@ const ProductUpload = () => {
         formdata.append('productWeight', formFields.productWeight);
         formdata.append('location', formFields.location);
 
+        formFields.location = selectedLocation;
 
         formFields.images = appendedArray;
 
@@ -543,6 +555,10 @@ const ProductUpload = () => {
             }
         })
     }
+
+    const handleChangeLocation = (selectedOptions) => {
+        setSelectedLocation(selectedOptions);
+    };
 
     return (
         <>
@@ -797,13 +813,20 @@ const ProductUpload = () => {
 
 
                                     <div className="row">
-                                        <div className='col-md-4'>
+                                        <div className='col-md-12'>
                                             <div className='form-group'>
                                                 <h6>LOCATION</h6>
-                                                {
-                                                    context.countryList?.length > 0 && <CountryDropdown countryList={context.countryList} selectedLocation={formFields.location} onSelect={(country) => setFormFields({ ...formFields, location: country })} />
-
-                                                }
+                                                <Select2
+                                                    value={selectedLocation}
+                                                    isMulti
+                                                    name="location"
+                                                    options={countryList}
+                                                    className="basic-multi-select"
+                                                    classNamePrefix="select"
+                                                    onChange={handleChangeLocation}
+                                                    components={{ IndicatorSeparator: () => null }}
+                                                    placeholder="Select Location..."
+                                                />
                                             </div>
                                         </div>
 

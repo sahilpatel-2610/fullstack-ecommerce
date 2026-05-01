@@ -77,10 +77,16 @@ const peoductSchema = mongoose.Schema({
             default: null,
         }
     ],
-    location: {
-        type: String,
-        default: 'All',
-    },
+    location: [
+        {
+            value: {
+                type: String,
+            },
+            label: {
+                type: String,
+            }
+        },
+    ],
     dateCreated: {
         type: Date,
         default: Date.now,

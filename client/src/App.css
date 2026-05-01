@@ -612,6 +612,32 @@ nav .navpart2 ul li a button {
   border-radius: 20px;
 }
 
+nav .navpart2 ul li a button .catIcon {
+  width: 25px !important;
+  height: 25px !important;
+  margin-right: 10px !important;
+}
+
+nav .navpart2 ul li a button img.catIcon {
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+nav .navpart2 ul li a button svg.catIcon {
+  font-size: 25px !important;
+  opacity: 0.8;
+}
+
+nav .sidebarNav ul li button .catIcon {
+  width: 30px !important;
+  height: 30px !important;
+  object-fit: cover;
+  margin-right: 15px !important;
+  border-radius: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
 nav .navpart2 ul li a svg {
   font-size: 20px;
 }
@@ -673,14 +699,14 @@ nav .navpart2 ul li:hover .submenu {
 
 .homeBannerSection .swiper {
   overflow: hidden !important;
-  border-radius: 10px;
+  border-radius: 5px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 .homeBannerSection .swiper .item {
   overflow: hidden;
-  border-radius: 10px;
-  height: 350px;
+  border-radius: 5px;
+  height: 400px;
 }
 
 .homeBannerSection .swiper .item img {
@@ -696,7 +722,7 @@ nav .navpart2 ul li:hover .submenu {
 
 
 .swiper-button-next {
-  right: 10% !important;
+  right: 20px !important;
   position: absolute;
   top: 45%;
   z-index: 100;
@@ -714,7 +740,7 @@ nav .navpart2 ul li:hover .submenu {
 }
 
 .swiper-button-prev {
-  left: 10% !important;
+  left: 20px !important;
   position: absolute;
   top: 45%;
   z-index: 100;
@@ -1130,39 +1156,47 @@ nav .navpart2 ul li:hover .submenu {
 }
 
 .homeCat .swiper .item {
-  padding: 15px;
+  padding: 0px;
   width: 100%;
   height: auto;
-  border-radius: 10px;
+  border-radius: 0px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease-in-out;
-}
-
-.homeCat .swiper .item:hover {
-  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+  background: transparent !important;
 }
 
 .homeCat .swiper .item .img_wrapper {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0px;
   transition: all 0.3s ease-in-out;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .homeCat .swiper .item:hover .img_wrapper {
-  transform: scale(1.1);
+  transform: scale(1.05);
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .homeCat .swiper .item img {
   width: 100%;
-  max-width: 65px;
+  max-width: 80px;
+  object-fit: contain;
 }
 
 .homeCat .item h6 {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: #2b2b2b;
-  margin-top: 10px;
+  margin-top: 15px;
   text-transform: capitalize;
 }
 
@@ -2769,12 +2803,12 @@ a:hover {
   pointer-events: none;
 }
 
-.homeCat .item.active {
+/* .homeCat .item.active {
   /* border: 2px solid #2bbef9 !important; */
-  background: #fff !important;
-  box-shadow: 0px 5px 15px rgba(43, 190, 249, 0.2) !important;
-  transform: translateY(-5px);
-}
+/* background: #fff !important; */
+/* box-shadow: 0px 5px 15px rgba(43, 190, 249, 0.2) !important; */
+/* transform: translateY(-5px); */
+/* } */
 
 .homeCat .item.active h6 {
   color: #6d4aae !important;

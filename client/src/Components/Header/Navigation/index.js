@@ -30,7 +30,13 @@ const Navigation = (props) => {
                                             return (
                                                 <li key={index}>
                                                     <Link to={`/products/category/${item._id}`}>
-                                                        <Button>{item.name} <FaAngleRight className='ml-auto' /></Button>
+                                                        <Button>
+                                                            {
+                                                                item?.images?.length !== 0 &&
+                                                                <img src={item?.images[0]} className='catIcon' />
+                                                            }
+                                                            {item.name} <FaAngleRight className='ml-auto' />
+                                                        </Button>
                                                     </Link>
                                                     <div className='submenu'>
                                                         {
@@ -53,13 +59,20 @@ const Navigation = (props) => {
                     </div>
 
                     <div className='col-sm-10 navpart2 d-flex align-items-center'>
-                        <ul className='list list-inline ml-auto'>
-                            <li className='list-inline-item'><Link to="/"><Button>Home</Button></Link></li>
+                        <ul className='list list-inline'>
                             {
                                 props.navData?.length > 0 && props.navData?.map((item, index) => {
                                     return (
-                                        <li className='list-inline-item'>
-                                            <Link to={item?.parentId ? `/products/subCat/${item?._id}` : `/products/category/${item?._id}`}><Button>{item?.name}</Button></Link>
+                                        <li className='list-inline-item' key={index}>
+                                            <Link to={item?.parentId ? `/products/subCat/${item?._id}` : `/products/category/${item?._id}`}>
+                                                <Button>
+                                                    {
+                                                        item?.images?.length !== 0 &&
+                                                        <img src={item?.images[0]} className='catIcon' />
+                                                    }
+                                                    {item?.name}
+                                                </Button>
+                                            </Link>
                                             <div className='submenu'>
                                                 {
                                                     item.children?.length !== 0 && item.children?.map((subCat, index) => {

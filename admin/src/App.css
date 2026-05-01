@@ -2538,7 +2538,7 @@ body.dark .countryDrop:hover {
 .countryDrop .label {
     font-size: 12px !important;
     text-transform: capitalize !important;
-    color: rgba(255, 255, 255, 0.7) !important;
+    color: rgba(0, 0, 0, 0.7) !important;
     line-height: 16px;
 }
 
@@ -2553,6 +2553,10 @@ body.light .countryDrop .label {
     font-weight: 700;
     line-height: 16px;
     white-space: nowrap !important;
+}
+
+body.light .countryDrop .name {
+    color: rgba(0, 0, 0, 0.8) !important;
 }
 
 .countryDrop span.ml-auto svg {
@@ -2738,4 +2742,13 @@ body.dark .headerSearch {
 
 .res-show {
     display: none !important;
+}
+
+.select_input {
+    height: 45px !important;
+    border: 0px !important;
+}
+
+.form .form-group .input.select_input {
+    border: 0px !important;
 }
