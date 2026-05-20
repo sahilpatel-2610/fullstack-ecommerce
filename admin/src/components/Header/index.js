@@ -101,11 +101,11 @@ const Header = () => {
                 context.theme === true ? <MdOutlineLightMode /> : <MdDarkMode />
               }
             </Button>
-      
-            
-           
-            
 
+            <a href="https://fullstack-ecomm-app.netlify.app" target="_blank" rel="noopener noreferrer">
+               <Button className="btn-blue btn-round me-3" style={{ padding: '8px 20px', borderRadius: '30px' }}>View Shop</Button>
+            </a>
+      
             <div className="dropdownWrapper position-relative">
               <Button className="rounded-circle me-3" onClick={handleOpennotificationsDrop}><FaRegBell /></Button>
 
