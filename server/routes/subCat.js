@@ -6,27 +6,42 @@ router.get(`/`, async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const perPage = parseInt(req.query.perPage);
-        let SubCategoryList = [];
-        let totalPages = 0;
 
-        const query = { parentId: { $exists: true, $ne: null, $ne: "" } };
+        const allCategories = await Category.find().sort({ createdAt: -1 });
+        const subCats = allCategories.filter(c => c.parentId && c.parentId !== "" && c.parentId !== "null" && c.parentId !== "undefined");
+        
+        const enrichedList = subCats.map(sub => {
+            const parent = allCategories.find(p => p._id.toString() === (sub.parentId || '').toString());
+            return {
+                _id: sub._id,
+                id: sub._id,
+                name: sub.name,
+                subCat: sub.name,
+                category: parent ? { _id: parent._id, name: parent.name, images: parent.images, color: parent.color } : { _id: sub.parentId, name: "" },
+                parentId: sub.parentId,
+                slug: sub.slug,
+                color: sub.color || '',
+                images: sub.images || [],
+                createdAt: sub.createdAt || sub.dateCreated || new Date(),
+                updatedAt: sub.updatedAt || new Date(),
+                dateCreated: sub.dateCreated || sub.createdAt || new Date()
+            };
+        });
 
-        if (req.query.page !== undefined && req.query.perPage !== undefined && perPage > 0) {
-            const totalPosts = await Category.countDocuments(query);
-            totalPages = Math.ceil(totalPosts / perPage) || 1;
-
-            SubCategoryList = await Category.find(query)
-                .skip((page - 1) * perPage)
-                .limit(perPage)
-                .exec();
-        } else {
-            SubCategoryList = await Category.find(query);
+        if (perPage && perPage > 0) {
+            const totalPosts = enrichedList.length;
+            const totalPages = Math.ceil(totalPosts / perPage) || 1;
+            const paginated = enrichedList.slice((page - 1) * perPage, page * perPage);
+            return res.status(200).json({
+                subCategoryList: paginated,
+                totalPages: totalPages,
+                page: page,
+                totalPosts: totalPosts
+            });
         }
 
         return res.status(200).json({
-            subCategoryList: SubCategoryList,
-            totalPages: totalPages,
-            page: page
+            subCategoryList: enrichedList
         });
     } catch (error) {
         console.error("SubCategory list error:", error);
@@ -40,7 +55,24 @@ router.get('/:id', async (req, res) => {
         if (!subCat) {
             return res.status(404).json({ success: false, message: 'Sub category not found' });
         }
-        return res.status(200).send(subCat);
+        let parentCat = null;
+        if (subCat.parentId) {
+            parentCat = await Category.findById(subCat.parentId);
+        }
+        return res.status(200).json({
+            _id: subCat._id,
+            id: subCat._id,
+            name: subCat.name,
+            subCat: subCat.name,
+            category: parentCat ? { _id: parentCat._id, name: parentCat.name, images: parentCat.images } : { _id: subCat.parentId, name: "" },
+            parentId: subCat.parentId,
+            slug: subCat.slug,
+            color: subCat.color || '',
+            images: subCat.images || [],
+            createdAt: subCat.createdAt || sub.dateCreated || new Date(),
+            updatedAt: subCat.updatedAt || new Date(),
+            dateCreated: subCat.dateCreated || subCat.createdAt || new Date()
+        });
     } catch (error) {
         console.error("Error fetching subCategory:", error);
         return res.status(500).json({ success: false, error: error.message });
@@ -70,7 +102,8 @@ router.post('/create', async (req, res) => {
             parentId: parentId,
             slug: slug,
             color: req.body.color || '',
-            images: req.body.images || []
+            images: req.body.images || [],
+            dateCreated: new Date()
         });
 
         subCat = await subCat.save();
@@ -115,7 +148,9 @@ router.put('/:id', async (req, res) => {
             }
         }
 
-        const updateData = {};
+        const updateData = {
+            updatedAt: new Date()
+        };
         if (name) updateData.name = name;
         if (parentId) updateData.parentId = parentId;
         if (slug) updateData.slug = slug;

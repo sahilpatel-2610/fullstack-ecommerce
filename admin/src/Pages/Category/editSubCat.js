@@ -49,19 +49,19 @@ const EditSubCat = () => {
     const history = useNavigate();
     const context = useContext(MyContext);
 
-    let { id } = useParams();
-
     useEffect(() => {
         fetchDataFromApi(`/api/subCat/${id}`).then((res) => {
-            setData(res);
-            setCategoryVal(res.category._id);
-            setFormFields(() => ({
-                ...formFields,
-                category: res.category._id,
-                subCat: res.subCat
-            }))
-        })
-    }, []);
+            if (res) {
+                setData(res);
+                const parentCatId = (res.category && res.category._id) ? res.category._id : (res.parentId || '');
+                setCategoryVal(parentCatId);
+                setFormFields({
+                    category: parentCatId,
+                    subCat: res.subCat || res.name || ''
+                });
+            }
+        });
+    }, [id]);
 
     const inputChange = (e) => {
         setFormFields(() => ({
