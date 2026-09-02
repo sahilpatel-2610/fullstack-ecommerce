@@ -99,20 +99,10 @@ const EditCategory = () => {
 
         fetchDataFromApi(`/api/category/${id}`).then((res) => {
             setcategory(res);
-            if (res.parentId !== undefined && res.parentId !== null && res.parentId !== "") {
-                setFormFields({
-                    name: res.parentId,
-                    subCat: res.name,
-                    color: res.color
-                });
-            } else {
-                setFormFields({
-                    name: res.name,
-                    subCat: '',
-                    color: res.color
-                });
-            }
-
+            setFormFields({
+                name: res.name || '',
+                color: res.color || ''
+            });
             setPreviews(res.images);
             context.setProgress(100);
         });
@@ -201,9 +191,8 @@ const EditCategory = () => {
             setIsLoading(true);
 
             const data = {
-                name: formFields.subCat !== "" ? formFields.subCat : formFields.name,
+                name: formFields.name,
                 color: formFields.color,
-                parentId: formFields.subCat !== "" ? formFields.name : undefined,
                 images: previews
             }
 

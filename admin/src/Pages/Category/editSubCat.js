@@ -107,7 +107,18 @@ const EditSubCat = () => {
 
         editData(`/api/subCat/${id}`, formFields).then(res => {
             setIsLoading(false);
+            if (typeof context.fetchCategory === 'function') {
+                context.fetchCategory();
+            }
+            context.setAlertBox({
+                open: true,
+                error: false,
+                msg: 'Sub Category Updated Successfully!'
+            });
             history('/subCategory');
+        }).catch(err => {
+            setIsLoading(false);
+            console.error(err);
         });
     }
 
