@@ -141,17 +141,13 @@ const Sidebar = ({ filterByPrice, filterByRating, categoryId }) => {
 
 
                 {
-                    sidebarBanners?.length > 0 ? (
+                    sidebarBanners?.length > 0 && (
                         <Link to={`/banner-products/${sidebarBanners[0]._id || 'sidebar-banner'}`} state={{ banner: sidebarBanners[0], imgUrl: Array.isArray(sidebarBanners[0].images) ? sidebarBanners[0].images[0] : sidebarBanners[0].images }}>
                             <img
                                 src={Array.isArray(sidebarBanners[0].images) ? sidebarBanners[0].images[0] : sidebarBanners[0].images}
                                 className="w-100"
                                 alt="sidebar banner"
                             />
-                        </Link>
-                    ) : (
-                        <Link to="/banner-products/sidebar-banner-default" state={{ imgUrl: 'https://klbtheme.com/bacola/wp-content/uploads/2021/05/sidebar-banner.gif' }}>
-                            <img src='https://klbtheme.com/bacola/wp-content/uploads/2021/05/sidebar-banner.gif' className='w-100' alt="sidebar banner" />
                         </Link>
                     )
                 }

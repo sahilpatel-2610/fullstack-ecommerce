@@ -131,37 +131,23 @@ const Home = () => {
             <div className="col-md-3">
               <div className="sticky">
                 {
-                  homeSideBanners?.length > 0 ? (
+                  homeSideBanners?.length > 0 && (
                     homeSideBanners.map((item, index) => {
                       const linkTo = resolveSmartLink(item, index);
-                      const fallbackImg = index % 2 === 0 ? banner1 : banner2;
-                      const imgUrl = formatImageUrl(item.images, fallbackImg);
+                      const imgUrl = formatImageUrl(item.images, "");
+                      if (!imgUrl) return null;
                       return (
                         <div className="banner mb-4" key={item._id || index}>
                           <Link to={linkTo} state={{ banner: item, imgUrl }}>
                             <img
                               src={imgUrl}
                               className="w-100 cursor"
-                              alt={`Side Banner ${index + 1}`}
-                              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = fallbackImg; }}
+                              alt={item.bannerTitle || item.name || `Side Banner ${index + 1}`}
                             />
                           </Link>
                         </div>
                       );
                     })
-                  ) : (
-                    <>
-                      <div className="banner mb-4">
-                        <Link to="/banner-products/side-banner-1" state={{ imgUrl: banner1 }}>
-                          <img src={banner1} className="w-100 cursor" alt="Banner1" />
-                        </Link>
-                      </div>
-                      <div className="banner">
-                        <Link to="/banner-products/side-banner-2" state={{ imgUrl: banner2 }}>
-                          <img src={banner2} className="w-100 cursor" alt="Banner2" />
-                        </Link>
-                      </div>
-                    </>
                   )
                 }
               </div>
@@ -223,70 +209,45 @@ const Home = () => {
 
               </Swiper>
 
-              <div className="bannerSec mt-4 mb-4">
-                <Swiper
-                  slidesPerView={3}
-                  spaceBetween={15}
-                  navigation={true}
-                  autoplay={{
-                    delay: 2500,
-                    disableOnInteraction: false,
-                  }}
-                  loop={homeBottomBanners?.length > 3}
-                  modules={[Navigation, Autoplay]}
-                  className="mySwiper"
-                >
-                  {
-                    homeBottomBanners?.length > 0 ? (
-                      homeBottomBanners.map((item, index) => {
-                        const linkTo = resolveSmartLink(item, index + 2);
-                        const fallbackImg = index % 2 === 0 ? banner3 : banner4;
-                        const imgUrl = formatImageUrl(item.images, fallbackImg);
-                        return (
-                          <SwiperSlide key={item._id || index}>
-                            <div className="banner">
-                              <Link to={linkTo} state={{ banner: item, imgUrl }}>
-                                <img
-                                  src={imgUrl}
-                                  className="w-100 cursor"
-                                  alt={`Bottom Banner ${index + 1}`}
-                                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = fallbackImg; }}
-                                />
-                              </Link>
-                            </div>
-                          </SwiperSlide>
-                        );
-                      })
-                    ) : (
-                      <>
-                        <SwiperSlide>
-                          <div className="banner">
-                            <Link to="/banner-products/bottom-banner-1" state={{ imgUrl: banner3 }}>
-                              <img src={banner3} className="w-100 cursor" alt="Banner3" />
-                            </Link>
-                          </div>
-                        </SwiperSlide>
-
-                        <SwiperSlide>
-                          <div className="banner">
-                            <Link to="/banner-products/bottom-banner-2" state={{ imgUrl: banner4 }}>
-                              <img src={banner4} className="w-100 cursor" alt="Banner4" />
-                            </Link>
-                          </div>
-                        </SwiperSlide>
-
-                        <SwiperSlide>
-                          <div className="banner">
-                            <Link to="/banner-products/bottom-banner-3" state={{ imgUrl: banner4 }}>
-                              <img src={banner4} className="w-100 cursor" alt="Banner4" />
-                            </Link>
-                          </div>
-                        </SwiperSlide>
-                      </>
-                    )
-                  }
-                </Swiper>
-              </div>
+              {
+                homeBottomBanners?.length > 0 && (
+                  <div className="bannerSec mt-4 mb-4">
+                    <Swiper
+                      slidesPerView={3}
+                      spaceBetween={15}
+                      navigation={true}
+                      autoplay={{
+                        delay: 2500,
+                        disableOnInteraction: false,
+                      }}
+                      loop={homeBottomBanners?.length > 3}
+                      modules={[Navigation, Autoplay]}
+                      className="mySwiper"
+                    >
+                      {
+                        homeBottomBanners.map((item, index) => {
+                          const linkTo = resolveSmartLink(item, index + 2);
+                          const imgUrl = formatImageUrl(item.images, "");
+                          if (!imgUrl) return null;
+                          return (
+                            <SwiperSlide key={item._id || index}>
+                              <div className="banner">
+                                <Link to={linkTo} state={{ banner: item, imgUrl }}>
+                                  <img
+                                    src={imgUrl}
+                                    className="w-100 cursor"
+                                    alt={item.bannerTitle || item.name || `Bottom Banner ${index + 1}`}
+                                  />
+                                </Link>
+                              </div>
+                            </SwiperSlide>
+                          );
+                        })
+                      }
+                    </Swiper>
+                  </div>
+                )
+              }
 
 
               {/* -------- NEW PRODUCTS -------- */}
