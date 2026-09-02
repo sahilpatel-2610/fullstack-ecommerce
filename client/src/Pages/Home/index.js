@@ -1,6 +1,4 @@
 import HomeBanner from "../../Components/HomeBanner";
-import banner1 from "../../assets/images/banner1.jpg";
-import banner2 from "../../assets/images/banner2.jpg";
 import Button from '@mui/material/Button';
 import { IoIosArrowRoundForward } from "react-icons/io";
 import React from "react";
@@ -10,9 +8,6 @@ import 'swiper/css/navigation';
 import { Navigation, Autoplay } from 'swiper/modules';
 import ProductItem from "../../Components/ProductItem";
 import HomeCat from "../../Components/HomeCat";
-
-import banner3 from "../../assets/images/banner3.jpg";
-import banner4 from "../../assets/images/banner4.jpg";
 import newsLetterImg from "../../assets/images/coupon.png";
 import { IoMailOutline } from "react-icons/io5";
 import { fetchDataFromApi } from "../../utils/api";
