@@ -47,6 +47,19 @@ const Home = () => {
     }
   };
 
+  const formatImageUrl = (img, fallback) => {
+    if (!img) return fallback;
+    let url = Array.isArray(img) ? img[0] : img;
+    if (typeof url !== 'string') return fallback;
+    if (url.startsWith('http://localhost:4000')) {
+      const isLocal = window.location.hostname === 'localhost';
+      if (!isLocal) {
+        url = url.replace('http://localhost:4000', 'https://fullstack-ecommerce-server-do5l.onrender.com');
+      }
+    }
+    return url;
+  };
+
   const resolveSmartLink = (item, index) => {
     if (item?._id) return `/banner-products/${item._id}`;
     if (item?.subCatId && item?.subCatId !== "" && item?.subCatId !== "all") return `/products/subCat/${item.subCatId}`;
@@ -121,11 +134,17 @@ const Home = () => {
                   homeSideBanners?.length > 0 ? (
                     homeSideBanners.map((item, index) => {
                       const linkTo = resolveSmartLink(item, index);
-                      const imgUrl = Array.isArray(item.images) ? item.images[0] : item.images;
+                      const fallbackImg = index % 2 === 0 ? banner1 : banner2;
+                      const imgUrl = formatImageUrl(item.images, fallbackImg);
                       return (
                         <div className="banner mb-4" key={item._id || index}>
                           <Link to={linkTo} state={{ banner: item, imgUrl }}>
-                            <img src={imgUrl} className="w-100 cursor" alt={`Side Banner ${index + 1}`} />
+                            <img
+                              src={imgUrl}
+                              className="w-100 cursor"
+                              alt={`Side Banner ${index + 1}`}
+                              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = fallbackImg; }}
+                            />
                           </Link>
                         </div>
                       );
@@ -221,12 +240,18 @@ const Home = () => {
                     homeBottomBanners?.length > 0 ? (
                       homeBottomBanners.map((item, index) => {
                         const linkTo = resolveSmartLink(item, index + 2);
-                        const imgUrl = Array.isArray(item.images) ? item.images[0] : item.images;
+                        const fallbackImg = index % 2 === 0 ? banner3 : banner4;
+                        const imgUrl = formatImageUrl(item.images, fallbackImg);
                         return (
                           <SwiperSlide key={item._id || index}>
                             <div className="banner">
                               <Link to={linkTo} state={{ banner: item, imgUrl }}>
-                                <img src={imgUrl} className="w-100 cursor" alt={`Bottom Banner ${index + 1}`} />
+                                <img
+                                  src={imgUrl}
+                                  className="w-100 cursor"
+                                  alt={`Bottom Banner ${index + 1}`}
+                                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = fallbackImg; }}
+                                />
                               </Link>
                             </div>
                           </SwiperSlide>
