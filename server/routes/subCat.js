@@ -17,12 +17,12 @@ router.get(`/`, async (req, res) => {
 
             subCategoryList = await SubCategory.find({})
                 .populate('category')
-                .sort({ createdAt: -1 })
+                .sort({ createdAt: 1 })
                 .skip((page - 1) * perPage)
                 .limit(perPage)
                 .exec();
         } else {
-            subCategoryList = await SubCategory.find({}).populate('category').sort({ createdAt: -1 });
+            subCategoryList = await SubCategory.find({}).populate('category').sort({ createdAt: 1 });
         }
 
         const formattedList = subCategoryList.map(item => ({

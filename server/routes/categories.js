@@ -74,8 +74,8 @@ router.get(`/`, async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const perPage = parseInt(req.query.perPage);
 
-        const categoryList = await Category.find().sort({ createdAt: -1 });
-        const allSubCats = await SubCategory.find().sort({ createdAt: -1 });
+        const categoryList = await Category.find().sort({ createdAt: 1 });
+        const allSubCats = await SubCategory.find().sort({ createdAt: 1 });
 
         if (!categoryList) {
             return res.status(500).json({ success: false });
