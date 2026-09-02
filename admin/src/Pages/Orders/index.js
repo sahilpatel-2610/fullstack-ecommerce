@@ -131,6 +131,23 @@ const Orders = () => {
         });
     }
 
+    const getOrderProductImage = (item) => {
+        let img = item?.images || item?.image || item?.productImage || "";
+        if (Array.isArray(img)) {
+            img = img.find(i => typeof i === 'string' && i.trim() !== '') || img[0] || "";
+        }
+        if (typeof img !== 'string') {
+            img = "";
+        }
+        img = img.trim();
+        if (!img) {
+            return "https://via.placeholder.com/100?text=No+Image";
+        }
+        if (!img.startsWith('http://') && !img.startsWith('https://') && !img.startsWith('data:')) {
+            return `http://localhost:4000${img.startsWith('/') ? '' : '/'}${img}`;
+        }
+        return img;
+    };
 
     return (
         <>
@@ -267,8 +284,17 @@ const Orders = () => {
                                             </span>
                                         </td>
                                         <td>
-                                            <div className="img">
-                                                <img src={item?.images} />
+                                            <div className="img" style={{ width: '60px', height: '60px', overflow: 'hidden', borderRadius: '6px', backgroundColor: '#1a2745' }}>
+                                                <img 
+                                                    src={getOrderProductImage(item)} 
+                                                    alt={item?.productTitle || 'product'} 
+                                                    className="w-100 h-100" 
+                                                    style={{ objectFit: 'cover' }}
+                                                    onError={(e) => {
+                                                        e.target.onerror = null;
+                                                        e.target.src = "https://via.placeholder.com/100?text=No+Image";
+                                                    }}
+                                                />
                                             </div>
                                         </td>
                                         <td>{item?.quantity}</td>

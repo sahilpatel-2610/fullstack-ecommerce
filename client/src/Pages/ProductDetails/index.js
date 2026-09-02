@@ -459,8 +459,17 @@ const ProductDetails = (props) => {
   }
 
   const addtoCart = (data) => {
+    const userStr = localStorage.getItem("user");
+    let userData = null;
+    if (userStr && userStr !== "undefined") {
+      try {
+        userData = JSON.parse(userStr);
+      } catch (e) {}
+    }
 
-    if (context.isLogin !== true) {
+    const userId = userData?._id || userData?.id || userData?.userId || context.user?._id || context.user?.id || context.user?.userId;
+
+    if (context.isLogin !== true || !userId) {
       context.setAlertBox({
         open: true,
         error: true,
@@ -478,27 +487,22 @@ const ProductDetails = (props) => {
       return;
     }
 
-    const userStr = localStorage.getItem("user");
-    let user = null;
-    if (userStr && userStr !== "undefined") {
-      user = JSON.parse(userStr);
-    }
- 
-    cartFields.productTitle = productData?.name;
-    cartFields.images = productData?.images?.length > 0 ? productData?.images[0] : "";
-    cartFields.rating = productData?.rating;
-    cartFields.price = productData?.price;
-    cartFields.quantity = productQuantity;
-    cartFields.subTotal = parseInt(productData?.price * productQuantity);
-    cartFields.productId = productData?._id;
-    cartFields.userId = user?._id || user?.id;
+    const qty = productQuantity || 1;
+    const itemData = {
+      productTitle: productData?.name,
+      images: productData?.images?.length > 0 ? productData?.images[0] : "",
+      rating: productData?.rating,
+      price: productData?.price,
+      quantity: qty,
+      subTotal: parseInt((productData?.price || 0) * qty),
+      productId: productData?._id,
+      userId: userId,
+      ram: (productData?.productRam?.length > 0 && activeRam !== null) ? productData?.productRam[activeRam] : "",
+      size: (productData?.size?.length > 0 && activeSize !== null) ? productData?.size[activeSize] : "",
+      weight: (productData?.productWeight?.length > 0 && activeWeight !== null) ? productData?.productWeight[activeWeight] : ""
+    };
 
-    cartFields.ram = productData?.productRam?.length > 0 ? productData?.productRam[activeRam] : "";
-    cartFields.size = productData?.size?.length > 0 ? productData?.size[activeSize] : "";
-    cartFields.weight = productData?.productWeight?.length > 0 ? productData?.productWeight[activeWeight] : "";
-
-
-    context.addtoCart(cartFields);
+    context.addtoCart(itemData);
   }
 
   const selectedItem = (item, quantity) => {
@@ -564,7 +568,7 @@ const ProductDetails = (props) => {
     const reviewData = {
       productId: id,
       customerName: reviews.customerName,
-      customerId: context.user?._id,
+      customerId: context.user?._id || context.user?.id || context.user?.userId,
       review: reviews.review,
       customerRating: rating
     };
@@ -600,7 +604,16 @@ const ProductDetails = (props) => {
   }
 
   const addToMyList = (id) => {
-    if (context.isLogin !== true) {
+    const userStr = localStorage.getItem("user");
+    let userData = null;
+    if (userStr && userStr !== "undefined") {
+      try {
+        userData = JSON.parse(userStr);
+      } catch (e) {}
+    }
+    const userId = userData?._id || userData?.id || userData?.userId || context.user?._id || context.user?.id || context.user?.userId;
+
+    if (context.isLogin !== true || !userId) {
       context.setAlertBox({
         open: true,
         error: true,
@@ -609,18 +622,13 @@ const ProductDetails = (props) => {
       return;
     }
 
-    const userStr = localStorage.getItem("user");
-    let userData = null;
-    if (userStr && userStr !== "undefined") {
-      userData = JSON.parse(userStr);
-    }
     const data = {
       productTitle: productData?.name,
       images: productData?.images?.length > 0 ? productData?.images[0] : "",
       rating: productData?.rating,
       price: productData?.price,
       productId: id,
-      userId: userData?._id || userData?.id
+      userId: userId
     }
 
     postData("/api/my-list/add", data).then((res) => {
@@ -632,8 +640,8 @@ const ProductDetails = (props) => {
         })
         context.getMyListData();
 
-        fetchDataFromApi(`/api/my-list?productId=${id}&userId=${userData?._id}`).then((res) => {
-          if (res.length !== 0) {
+        fetchDataFromApi(`/api/my-list?productId=${id}&userId=${userId}`).then((res) => {
+          if (res && res.length !== 0) {
             setIsAddedToMyList(true);
           }
         })
@@ -855,105 +863,71 @@ const ProductDetails = (props) => {
                 <div className="tabContent">
                   <div className="table-responsive">
                     <table className="table table-bordered">
-                      {/* <tbody>
-                        <tr>
-                          <th>Frame</th>
-                          <td>Aluminum</td>
-                        </tr>
-                        <tr>
-                          <th>Color</th>
-                          <td>Black, Blue, Red, White</td>
-                        </tr>
-                        <tr>
-                          <th>Size</th>
-                          <td>M, S</td>
-                        </tr>
-                      </tbody> */}
                       <tbody>
-                        <tr class="stand-up">
-                          <th>Stand Up</th>
-                          <td>
-                            <p>35″L x 24″W x 37-45″H(front to back wheel)</p>
-                          </td>
-                        </tr>
-                        <tr className="folded-wo-wheels">
-                          <th>Folded (w/o wheels)</th>
-                          <td>
-                            <p>32.5″L x 18.5″W x 16.5″H</p>
-                          </td>
-                        </tr>
-                        <tr className="folded-w-wheels">
-                          <th>Folded (w/ wheels)</th>
-                          <td>
-                            <p>32.5″L x 24″W x 18.5″H</p>
-                          </td>
-                        </tr>
-                        <tr class="door-pass-through">
-                          <th>Door Pass Through</th>
-                          <td>
-                            <p>24</p>
-                          </td>
-                        </tr>
-                        <tr class="frame">
-                          <th>Frame</th>
-                          <td>
-                            <p>Aluminum</p>
-                          </td>
-                        </tr>
-                        <tr class="weight-wo-wheels">
-                          <th>Weight (w/o wheels)</th>
-                          <td>
-                            <p>20 LBS</p>
-                          </td>
-                        </tr>
-                        <tr class="weight-capacity">
-                          <th>Weight Capacity</th>
-                          <td>
-                            <p>60 LBS</p>
-                          </td>
-                        </tr>
-                        <tr class="width">
-                          <th>Width</th>
-                          <td>
-                            <p>24″</p>
-                          </td>
-                        </tr>
-                        <tr class="handle-height-ground-to-handle">
-                          <th>Handle height (ground to handle)</th>
-                          <td>
-                            <p>37-45″</p>
-                          </td>
-                        </tr>
-                        <tr class="wheels">
-                          <th>Wheels</th>
-                          <td>
-                            <p>12″ air / wide track slick tread</p>
-                          </td>
-                        </tr>
-                        <tr class="seat-back-height">
-                          <th>Seat back height</th>
-                          <td>
-                            <p>21.5″</p>
-                          </td>
-                        </tr>
-                        <tr class="head-room-inside-canopy">
-                          <th>Head room (inside canopy)</th>
-                          <td>
-                            <p>25″</p>
-                          </td>
-                        </tr>
-                        <tr class="pa_color">
-                          <th>Color</th>
-                          <td>
-                            <p>Black, Blue, Red, White</p>
-                          </td>
-                        </tr>
-                        <tr class="pa_size">
-                          <th>Size</th>
-                          <td>
-                            <p>M, S</p>
-                          </td>
-                        </tr>
+                        {productData?.brand && (
+                          <tr className="stand-up">
+                            <th>Brand</th>
+                            <td>
+                              <p>{productData?.brand}</p>
+                            </td>
+                          </tr>
+                        )}
+                        {productData?.catName && (
+                          <tr className="frame">
+                            <th>Category</th>
+                            <td>
+                              <p>{productData?.catName}</p>
+                            </td>
+                          </tr>
+                        )}
+                        {productData?.size && productData?.size?.length > 0 && (
+                          <tr className="pa_size">
+                            <th>Size</th>
+                            <td>
+                              <p>{productData?.size?.join(', ')}</p>
+                            </td>
+                          </tr>
+                        )}
+                        {productData?.productRam && productData?.productRam?.length > 0 && (
+                          <tr className="ram">
+                            <th>RAM</th>
+                            <td>
+                              <p>{productData?.productRam?.join(', ')}</p>
+                            </td>
+                          </tr>
+                        )}
+                        {productData?.productWeight && productData?.productWeight?.length > 0 && (
+                          <tr className="weight">
+                            <th>Weight</th>
+                            <td>
+                              <p>{productData?.productWeight?.join(', ')}</p>
+                            </td>
+                          </tr>
+                        )}
+                        {productData?.discount !== undefined && productData?.discount !== null && (
+                          <tr className="discount">
+                            <th>Discount</th>
+                            <td>
+                              <p>{productData?.discount}% OFF</p>
+                            </td>
+                          </tr>
+                        )}
+                        {productData?.countInStock !== undefined && productData?.countInStock !== null && (
+                          <tr className="stock">
+                            <th>Stock Status</th>
+                            <td>
+                              <p>{productData?.countInStock > 0 ? `${productData?.countInStock} Units Available` : 'Out of Stock'}</p>
+                            </td>
+                          </tr>
+                        )}
+                        {productData?.rating !== undefined && productData?.rating !== null && (
+                          <tr className="rating">
+                            <th>Rating</th>
+                            <td>
+                              <p>{productData?.rating} out of 5 Stars</p>
+                            </td>
+                          </tr>
+                        )}
                       </tbody>
                     </table>
                   </div>

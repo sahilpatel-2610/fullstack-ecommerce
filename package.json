@@ -3,16 +3,14 @@
   "version": "1.0.0",
   "description": "Root folder to manage client, admin, and server",
   "scripts": {
-    "start": "concurrently \"npm run server\" \"npm run client\" \"npm run admin\"",
+    "start": "node run.js",
+    "dev": "node run.js",
     "server": "cd server && npm start",
     "client": "cd client && npm start",
     "admin": "cd admin && npm start",
-    "install-all": "npm install && cd server && npm install && cd ../client && npm install && cd ../admin && npm install"
-  },
-  "devDependencies": {
-    "concurrently": "^8.2.2"
+    "seed": "cd server && node seed.js"
   },
   "dependencies": {
-    "firebase": "^12.12.1"
+    "concurrently": "^8.2.2"
   }
 }

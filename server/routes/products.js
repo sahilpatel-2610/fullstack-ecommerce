@@ -45,65 +45,45 @@ const upload = multer({ storage: storage });
 
 
 router.post(`/upload`, upload.array("images"), async (req, res) => {
-    imagesArr = [];
-
-    // if (productEditId !== undefined) {
-
-    //     const product = await Product.findById(productEditId);
-
-    //     if (product) {
-    //         images = product.images;
-    //     }
-
-    //     if (images.length !== 0) {
-    //         for (image of images) {
-    //             console.log(image);
-    //             fs.unlinkSync(`uploads/${image}`);
-    //         }
-    //         productEditId="";
-    //     }
-    // }
-
-
-
-    // imagesArr = [];
-    // const files = req.files;
-
-
-    // for(let i = 0; i < files.length; i++) {
-    //     imagesArr.push(files[i].filename);
-    // }
-
-    // res.send(imagesArr);
-
+    let imagesArr = [];
     try {
-        for (let i = 0; i < req.files.length; i++) {
-
-            const options = {
-                use_filename: true,
-                unique_filename: false,
-                overwrite: false,
-            };
-
-            const img = await cloudinary.uploader.upload(req.files[i].path, options);
-            imagesArr.push(img.secure_url);
-            fs.unlinkSync(`uploads/${req.files[i].filename}`);
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ error: true, msg: "No image files provided." });
         }
 
-        let imagesUploaded = new ImageUpload({
-            images: imagesArr,
-        });
+        for (let i = 0; i < req.files.length; i++) {
+            const file = req.files[i];
+            try {
+                const options = {
+                    use_filename: true,
+                    unique_filename: false,
+                    overwrite: false,
+                };
+                const img = await cloudinary.uploader.upload(file.path, options);
+                imagesArr.push(img.secure_url);
+                if (fs.existsSync(`uploads/${file.filename}`)) {
+                    fs.unlinkSync(`uploads/${file.filename}`);
+                }
+            } catch (cloudErr) {
+                console.error("Cloudinary upload failed, using local storage fallback:", cloudErr.message || cloudErr);
+                const localUrl = `${req.protocol}://${req.get('host')}/uploads/${file.filename}`;
+                imagesArr.push(localUrl);
+            }
+        }
 
-        imagesUploaded = await imagesUploaded.save();
+        try {
+            const imagesUploaded = new ImageUpload({ images: imagesArr });
+            await imagesUploaded.save();
+        } catch (dbErr) {
+            console.warn("Could not log upload to ImageUpload collection:", dbErr.message);
+        }
 
         return res.status(200).json(imagesArr);
-
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: true, msg: "Images Upload Failed", details: error });
+        console.error("Products Upload Route Error:", error);
+        return res.status(500).json({ error: true, msg: error.message || "Images Upload Failed" });
     }
 });
-
 
 router.get(`/`, async (req, res) => {
     try {
@@ -111,20 +91,86 @@ router.get(`/`, async (req, res) => {
         const perPage = parseInt(req.query.perPage) || 10;
 
         let query = {};
+        const andConditions = [];
+
         if (req.query.catName && req.query.catName !== "undefined") {
             query.catName = req.query.catName;
         }
 
-        if (req.query.category && req.query.category !== "undefined") {
-            query.category = req.query.category;
+        if (req.query.category && req.query.category !== "undefined" && req.query.category !== "null" && req.query.category !== "all") {
+            const catVal = decodeURIComponent(req.query.category);
+            const { Category } = require('../models/category');
+            
+            let catObj = null;
+            if (mongoose.Types.ObjectId.isValid(catVal)) {
+                catObj = await Category.findById(catVal).catch(() => null);
+            }
+            
+            const catNameStr = catObj ? catObj.name : catVal;
+
+            const categoryConditions = [
+                { catName: new RegExp(`^${catNameStr}$`, "i") },
+                { categoryName: new RegExp(`^${catNameStr}$`, "i") },
+                { catName: new RegExp(catNameStr, "i") },
+                { categoryName: new RegExp(catNameStr, "i") }
+            ];
+
+            if (mongoose.Types.ObjectId.isValid(catVal)) {
+                categoryConditions.push({ category: new mongoose.Types.ObjectId(catVal) });
+                categoryConditions.push({ category: String(catVal) });
+                categoryConditions.push({ catId: String(catVal) });
+            }
+
+            andConditions.push({ $or: categoryConditions });
         }
 
-        if (req.query.subCatId && req.query.subCatId !== "undefined") {
-            query.subCatId = req.query.subCatId;
+        if (req.query.subCatId && req.query.subCatId !== "undefined" && req.query.subCatId !== "null" && req.query.subCatId !== "all") {
+            const subVal = decodeURIComponent(req.query.subCatId);
+            const { Category } = require('../models/category');
+
+            let subObj = null;
+            if (mongoose.Types.ObjectId.isValid(subVal)) {
+                subObj = await Category.findById(subVal).catch(() => null);
+            }
+            const subNameStr = subObj ? subObj.name : subVal;
+
+            const subConditions = [
+                { subCatName: new RegExp(subNameStr, "i") },
+                { subCatName: new RegExp(`^${subNameStr}$`, "i") },
+                { catName: new RegExp(subNameStr, "i") }
+            ];
+
+            if (mongoose.Types.ObjectId.isValid(subVal)) {
+                subConditions.push({ subCatId: String(subVal) });
+                subConditions.push({ subCat: new mongoose.Types.ObjectId(subVal) });
+                subConditions.push({ subCat: String(subVal) });
+                if (subObj) {
+                    subConditions.push({ subCatId: String(subObj._id) });
+                    subConditions.push({ subCat: subObj._id });
+                    subConditions.push({ subCatName: new RegExp(subObj.name, "i") });
+                    subConditions.push({ catName: new RegExp(subObj.name, "i") });
+                }
+            } else {
+                subConditions.push({ subCatId: subVal });
+                subConditions.push({ subCatName: new RegExp(subVal, "i") });
+            }
+
+            andConditions.push({ $or: subConditions });
         }
 
-        if (req.query.location !== undefined && req.query.location !== null && req.query.location !== "All") {
-            query['location.label'] = req.query.location;
+        const location = req.query.location;
+        if (location && location !== "All" && location !== "undefined" && location !== "null") {
+            andConditions.push({
+                $or: [
+                    { 'location.label': location },
+                    { location: { $size: 0 } },
+                    { location: { $exists: false } }
+                ]
+            });
+        }
+
+        if (andConditions.length > 0) {
+            query.$and = andConditions;
         }
 
         if (req.query.minPrice !== undefined && req.query.maxPrice !== undefined) {
@@ -134,11 +180,6 @@ router.get(`/`, async (req, res) => {
         if (req.query.rating !== undefined) {
             query.rating = parseInt(req.query.rating);
         }
-
-        if (req.query.location !== undefined && req.query.location !== null && req.query.location !== "All") {
-            query['location.label'] = req.query.location;
-        }
-
 
         const totalPosts = await Product.countDocuments(query);
         const totalPages = Math.ceil(totalPosts / perPage);
@@ -153,13 +194,9 @@ router.get(`/`, async (req, res) => {
             .limit(perPage)
             .exec();
 
-        if (!productList) {
-            return res.status(500).json({ success: false });
-        }
-
         return res.status(200).json({
-            "products": productList,
-            "totalPages": totalPages,
+            "products": productList || [],
+            "totalPages": totalPages || 1,
             "page": page,
             "totalPosts": totalPosts
         });
@@ -173,22 +210,34 @@ router.get(`/`, async (req, res) => {
 
 
 router.get(`/featured`, async (req, res) => {
+    try {
+        let productList = [];
+        const location = req.query.location;
 
-    let productList = [];
+        if (location && location !== "All" && location !== "undefined" && location !== "null") {
+            productList = await Product.find({
+                isFeatured: true,
+                $or: [
+                    { 'location.label': location },
+                    { location: { $size: 0 } },
+                    { location: { $exists: false } }
+                ]
+            }).populate('category subCat');
+        }
+        else {
+            productList = await Product.find({ isFeatured: true }).populate('category subCat');
+        }
 
-    if (req.query.location !== undefined && req.query.location !== null && req.query.location !== "All") {
-        productList = await Product.find({ isFeatured: true, 'location.label': req.query.location });
+
+        if (!productList) {
+            return res.status(500).json({ success: false });
+        }
+
+        return res.status(200).json(productList);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: error.message });
     }
-    else {
-        productList = await Product.find({ isFeatured: true });
-    }
-
-
-    if (!productList) {
-        res.status(500).json({ success: false })
-    }
-
-    return res.status(200).json(productList);
 });
 
 

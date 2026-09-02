@@ -106,6 +106,8 @@ const Checkout = () => {
                     userData = JSON.parse(userStr);
                 }
 
+                const userId = userData?._id || userData?.id || userData?.userId || context.user?._id || context.user?.id || context.user?.userId;
+
                 const payLoad = {
                     name: formFilleds.fullName,
                     phoneNumber: formFilleds.phoneNumber,
@@ -114,13 +116,13 @@ const Checkout = () => {
                     amount: totalAmount,
                     paymentId: paymentId,
                     email: formFilleds.email,
-                    userId: userData?._id || userData?.id,
+                    userId: userId,
                     products: context.cartData?.map((item) => ({
                         productId: item.productId,
                         productTitle: item.productTitle,
                         quantity: item.quantity,
                         price: item.price,
-                        images: Array.isArray(item.images) ? (item.images.length > 0 ? item.images[0] : "") : (item.images || ""),
+                        images: Array.isArray(item.images) ? (item.images.length > 0 ? item.images[0] : "") : (item.images || item.image || ""),
                         subTotal: item.subTotal
                     })),
                     status: "Pending",
@@ -128,17 +130,25 @@ const Checkout = () => {
                 };
 
                 postData(`/api/orders/create`, payLoad).then((res) => {
-                    // Clear Cart
-                    deleteData(`/api/cart/user/${userData?._id}`).then(() => {
-                        context.getCartData(); // Refresh cart context
-                    });
+                    // 1. Immediately reset cart state in UI so header badge becomes 0
+                    context.setCartData([]);
+
+                    // 2. Clear backend cart database for this user
+                    if (userId) {
+                        deleteData(`/api/cart/user/${userId}`).then(() => {
+                            context.getCartData();
+                        }).catch(() => {});
+                    }
 
                     context.setAlertBox({
                         open: true,
                         error: false,
                         msg: "Order placed successfully!"
                     });
-                    history('/orders');
+
+                    setTimeout(() => {
+                        history('/orders');
+                    }, 300);
                 }).catch(err => {
                     context.setAlertBox({
                         open: true,

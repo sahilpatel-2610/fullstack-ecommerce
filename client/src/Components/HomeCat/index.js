@@ -88,25 +88,28 @@ import React from "react";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
-import { Navigation } from 'swiper/modules';
+import 'swiper/css/free-mode';
+import { Navigation, FreeMode } from 'swiper/modules';
 import { Link } from "react-router-dom";
 
 const HomeCat = (props) => {
 
     return (
-        <section className="homeCat">
+        <section className="homeCat py-3">
             <div className="container">
                 {
-                    props.hideTitle !== true && <h3 className="mb-3 hd">Featured Categories</h3>
+                    props.hideTitle !== true && <h3 className="mb-3 hd">FEATURED CATEGORIES</h3>
                 }
+            </div>
 
+            <div className="homeCatSwiperWrapper w-100 px-2 px-md-4">
                 <Swiper
-                    slidesPerView={8}
-                    spaceBetween={15}
+                    slidesPerView={'auto'}
+                    spaceBetween={18}
                     navigation={true}
-                    slidesPerGroup={3}
-                    modules={[Navigation]}
-                    className="mySwiper"
+                    freeMode={true}
+                    modules={[Navigation, FreeMode]}
+                    className="mySwiper homeCat_Swiper"
                 >
 
                     {
@@ -116,15 +119,15 @@ const HomeCat = (props) => {
                                 '#fffceb', '#ecffec', '#feefea', '#fff3eb', '#fff3ff', '#f2fce4', '#feefea', '#fffceb', '#feefea', '#ecffec'
                             ];
                             return (
-                                <SwiperSlide key={index}>
+                                <SwiperSlide key={cat._id || index} style={{ width: 'auto' }}>
                                     <Link to={`/products/category/${cat._id}`}>
                                         <div
                                             className={`item text-center cursor ${props.activeIndex === index ? 'active' : ''}`}
-                                            onClick={() => props.onSelect(index)}
+                                            onClick={() => props.onSelect && props.onSelect(index)}
                                         >
                                             <div className="img_wrapper" style={{ background: cat.color ? cat.color : itemBg[index % itemBg.length] }}>
                                                 <img
-                                                    src={cat.images?.[0]}
+                                                    src={Array.isArray(cat.images) ? cat.images?.[0] : cat.images}
                                                     alt={cat.name}
                                                     className="w-100"
                                                 />

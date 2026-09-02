@@ -15,8 +15,7 @@ import { fetchDataFromApi } from "../../utils/api";
 import { MyContext } from "../../App";
 import CircularProgress from '@mui/material/CircularProgress';
 import { useContext } from "react";
-import newsLetterImg from "../../assets/images/coupon.png";
-import { IoMailOutline } from "react-icons/io5";
+import NewsLetter from "../../Components/NewsLetter";
 
 
 const Listing = () => {
@@ -55,14 +54,21 @@ const Listing = () => {
     setFilterPrice([100, 500000]);
     setFilterRating(null);
 
-    if (location.pathname.includes("category")) {
+    if (location.pathname.includes("banner-products")) {
+      setType("banner");
+      setCurrentCategory("Exclusive Banner Collection");
+      setCurrentSubCategory("");
+    } else if (location.pathname.includes("category")) {
       setType("category");
     } else {
       setType("subCat");
     }
 
     // Synchronize Ribbon and Title
-    if (location.pathname.includes("category")) {
+    if (location.pathname.includes("banner-products")) {
+      setCurrentCategory("Exclusive Banner Collection");
+      setCurrentSubCategory("");
+    } else if (location.pathname.includes("category")) {
       if (context.categoryData?.length > 0) {
         const cat = context.categoryData.find(item => item._id === id || item.id === id);
         if (cat) {
@@ -75,15 +81,19 @@ const Listing = () => {
       }
     } else {
       if (context.subCategoryData?.length > 0) {
-        const sub = context.subCategoryData.find(item => item._id === id || item.id === id);
+        const sub = context.subCategoryData.find(item => item._id === id || item.id === id || item.name?.toLowerCase() === id?.toLowerCase() || encodeURIComponent(item.name)?.toLowerCase() === id?.toLowerCase());
         if (sub) {
           setCurrentSubCategory(sub.name);
-          const parent = context.categoryData?.find(cat => cat._id === sub.parentId);
-          setCurrentCategory(parent?.name);
+          const parent = context.categoryData?.find(cat => cat._id === sub.parentId || cat.id === sub.parentId || cat.name?.toLowerCase() === sub.category?.toLowerCase());
+          setCurrentCategory(parent?.name || sub.category || "");
           if (sub.name?.toLowerCase() === "facial" || parent?.name?.toLowerCase() === "facial" || sub.name?.toLowerCase() === "wellness" || parent?.name?.toLowerCase() === "wellness") {
             setProductView('three');
           }
+        } else {
+          setCurrentSubCategory(decodeURIComponent(id));
         }
+      } else {
+        setCurrentSubCategory(decodeURIComponent(id));
       }
     }
   }, [id, location.pathname, context.categoryData, context.subCategoryData]);
@@ -92,11 +102,14 @@ const Listing = () => {
   useEffect(() => {
     setisLoading(true);
 
+    const locationParam = context.selectedCountry && context.selectedCountry !== "All" ? `&location=${context.selectedCountry}` : '';
     let apiEndPoint = "";
     if (type === "category") {
-      apiEndPoint = `/api/products?category=${id}&page=${page}&perPage=${perPage}&minPrice=${filterPrice[0]}&maxPrice=${filterPrice[1]}&location=${context.selectedCountry}`;
+      apiEndPoint = `/api/products?category=${id}&page=${page}&perPage=${perPage}&minPrice=${filterPrice[0]}&maxPrice=${filterPrice[1]}${locationParam}`;
+    } else if (type === "banner") {
+      apiEndPoint = `/api/products?page=${page}&perPage=${perPage}&minPrice=${filterPrice[0]}&maxPrice=${filterPrice[1]}${locationParam}`;
     } else {
-      apiEndPoint = `/api/products?subCatId=${id}&page=${page}&perPage=${perPage}&minPrice=${filterPrice[0]}&maxPrice=${filterPrice[1]}&location=${context.selectedCountry}`;
+      apiEndPoint = `/api/products?subCatId=${id}&page=${page}&perPage=${perPage}&minPrice=${filterPrice[0]}&maxPrice=${filterPrice[1]}${locationParam}`;
     }
 
     if (filterRating) {
@@ -104,10 +117,10 @@ const Listing = () => {
     }
 
     fetchDataFromApi(apiEndPoint).then((res) => {
-      setProductData(res.products);
-      setTotalPages(res.totalPages);
+      setProductData(res?.products || []);
+      setTotalPages(res?.totalPages || 1);
       setisLoading(false);
-    });
+    }).catch(() => setisLoading(false));
   }, [id, type, page, perPage, filterPrice, filterRating, context.selectedCountry]);
 
 
@@ -223,29 +236,7 @@ const Listing = () => {
       <br />
       <br />
 
-      <section className="newsLetterSection mt-3 mb-3 d-flex align-items-center">
-        <div className="container">
-          <div className="row">
-            <div className="col-md-6">
-              <p className="text-white mb-1">$20 discount for your first order</p>
-              <h3 className="text-white">Join our newsletter and get...</h3>
-              <p className="text-light">Join our email subscription now to get updates on<br /> promotions and coupons.</p>
-
-
-              <form>
-                <IoMailOutline />
-                <input type="text" placeholder="Your Email Address" />
-                <Button>Subscribe</Button>
-              </form>
-
-            </div>
-
-            <div className="col-md-6">
-              <img src={newsLetterImg} alt="newsletter" />
-            </div>
-          </div>
-        </div>
-      </section>
+      <NewsLetter />
     </section>
 
 

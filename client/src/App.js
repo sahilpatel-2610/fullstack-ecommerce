@@ -21,6 +21,7 @@ import Checkout from "./Pages/Checkout";
 import Orders from "./Pages/Orders";
 import PaymentComplete from "./Pages/PaymentComplete";
 import MyAccount from "./Pages/MyAccount";
+import BannerDetails from "./Pages/BannerDetails";
 import { fetchDataFromApi, postData, deleteData, editData } from "./utils/api";
 import LoadingBar from 'react-top-loading-bar';
 
@@ -80,9 +81,10 @@ function App() {
     }
 
     fetchDataFromApi("/api/category").then((res) => {
-      setCategoryData(res?.categoryList);
-      if (res?.categoryList?.length > 0) {
-        setActiveCat(res.categoryList[0]?.name);
+      const catList = Array.isArray(res) ? res : (res?.categoryList || []);
+      setCategoryData(catList);
+      if (catList?.length > 0) {
+        setActiveCat(catList[0]?.name);
       }
     })
 
@@ -114,89 +116,109 @@ function App() {
 
   }, []);
 
+  const getCartData = () => {
+    const userStr = localStorage.getItem("user");
+    let userId = user?._id || user?.id || user?.userId;
+    if (!userId && userStr && userStr !== "undefined") {
+      try {
+        const userData = JSON.parse(userStr);
+        userId = userData?._id || userData?.id || userData?.userId;
+      } catch (e) {}
+    }
+    if (userId) {
+      fetchDataFromApi(`/api/cart?userId=${userId}`).then((res) => {
+        if (res !== undefined && !res.error && Array.isArray(res)) {
+          setCartData(res);
+        }
+      }).catch((e) => console.error(e));
+    }
+  }
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token !== "" && token !== undefined && token !== null && token !== "undefined") {
       const userStr = localStorage.getItem("user");
       if (userStr && userStr !== "undefined") {
         const userData = JSON.parse(userStr);
-        fetchDataFromApi(`/api/cart?userId=${userData?._id || userData?.id}`).then((res) => {
-          if (res !== undefined && !res.error) {
-            setCartData(res);
-          } else {
-            setCartData([]);
-          }
-        })
+        const userId = userData?._id || userData?.id || userData?.userId;
+        if (userId) {
+          getCartData();
+        }
       }
     }
   }, [isLogin]);
-
-  const getCartData = () => {
-    const userStr = localStorage.getItem("user");
-    if (userStr && userStr !== "undefined") {
-      const userData = JSON.parse(userStr);
-      fetchDataFromApi(`/api/cart?userId=${userData?._id || userData?.id}`).then((res) => {
-        if (res !== undefined && !res.error) {
-          setCartData(res);
-        } else {
-          setCartData([]);
-        }
-      })
-    }
-  }
 
   const getMyListData = () => {
     const userStr = localStorage.getItem("user");
     if (userStr && userStr !== "undefined") {
-      const userData = JSON.parse(userStr);
-      fetchDataFromApi(`/api/my-list?userId=${userData?._id || userData?.id}`).then((res) => {
-        if (res !== undefined && !res.error) {
-          setMyListData(res);
-        } else {
-          setMyListData([]);
+      try {
+        const userData = JSON.parse(userStr);
+        const userId = userData?._id || userData?.id || userData?.userId;
+        if (userId) {
+          fetchDataFromApi(`/api/my-list?userId=${userId}`).then((res) => {
+            if (res !== undefined && !res.error) {
+              setMyListData(res);
+            } else {
+              setMyListData([]);
+            }
+          });
         }
-      })
+      } catch (e) {}
     }
   }
-
-
 
   const fetchUser = () => {
     const userStr = localStorage.getItem("user");
     if (userStr && userStr !== "undefined") {
-      const userData = JSON.parse(userStr);
-      fetchDataFromApi(`/api/user/${userData?._id || userData?.id}`).then((res) => {
-        if (res && !res.error) {
-          setUser(res);
-          localStorage.setItem("user", JSON.stringify(res));
-        } else {
-          console.error("Failed to fetch user:", res?.msg);
+      try {
+        const userData = JSON.parse(userStr);
+        const userId = userData?._id || userData?.id || userData?.userId;
+        if (userId) {
+          fetchDataFromApi(`/api/user/${userId}`).then((res) => {
+            if (res && !res.error) {
+              setUser(res);
+              localStorage.setItem("user", JSON.stringify(res));
+            } else {
+              console.error("Failed to fetch user:", res?.msg);
+            }
+          });
         }
-      })
+      } catch (e) {}
     }
   }
 
   useEffect(() => {
-
     const token = localStorage.getItem("token");
-
     if (token !== "" && token !== undefined && token !== null && token !== "undefined") {
-      setisLogin(true);
-
       const userStr = localStorage.getItem("user");
       if (userStr && userStr !== "undefined") {
-        const userData = JSON.parse(userStr);
-
-        setUser(userData);
-        getMyListData();
+        try {
+          const userData = JSON.parse(userStr);
+          const userId = userData?._id || userData?.id || userData?.userId;
+          if (userId) {
+            setisLogin(true);
+            setUser(userData);
+            getCartData();
+            getMyListData();
+          } else {
+            setisLogin(false);
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+          }
+        } catch (e) {
+          setisLogin(false);
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+        }
+      } else {
+        setisLogin(false);
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
       }
     } else {
       setisLogin(false);
     }
-
   }, [isLogin]);
-
-
 
   useEffect(() => {
     if (isOpenProductModal.open === true) {
@@ -205,7 +227,6 @@ function App() {
       })
     }
   }, [isOpenProductModal]);
-
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -218,42 +239,69 @@ function App() {
   };
 
   const addtoCart = (data) => {
-    if (isLogin !== true) {
+    if (addingInCart) {
+      return;
+    }
+
+    const userStr = localStorage.getItem("user");
+    let userId = data?.userId || user?._id || user?.id || user?.userId;
+    if (!userId && userStr && userStr !== "undefined") {
+      try {
+        const u = JSON.parse(userStr);
+        userId = u?._id || u?.id || u?.userId;
+      } catch (e) {}
+    }
+
+    if (!isLogin || !userId) {
+      setisLogin(false);
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
       setAlertBox({
         open: true,
         error: true,
         msg: "Please login to add products to cart"
-      })
+      });
       return;
     }
 
     setAddingInCart(true);
 
-    postData(`/api/cart/add`, data).then((res) => {
-      if (res.status !== false && res.status !== "false" && res.success !== false && res.success !== "false") {
+    const payload = {
+      ...data,
+      userId: userId,
+      size: data?.size || "",
+      weight: data?.weight || "",
+      ram: data?.ram || ""
+    };
+
+    postData(`/api/cart/add`, payload).then((res) => {
+      if (res && res.status !== false && res.status !== "false" && res.success !== false && res.success !== "false") {
         setAlertBox({
           open: true,
           error: false,
-          msg: "Item is added in the cart"
-
-        })
-
+          msg: "Item added to cart!"
+        });
         getCartData();
-
       } else {
         setAlertBox({
           open: true,
           error: true,
-          msg: res.msg || res.error || "Failed to add item"
-
-        })
+          msg: res?.msg || res?.error || "Failed to add item"
+        });
       }
 
       setTimeout(() => {
         setAddingInCart(false);
-      }, 1000);
-    })
-  }
+      }, 500);
+    }).catch(() => {
+      setAlertBox({
+        open: true,
+        error: true,
+        msg: "Failed to add item to cart"
+      });
+      setAddingInCart(false);
+    });
+  };
 
 
   const updateCartItem = (id, data) => {
@@ -348,6 +396,8 @@ function App() {
           <Route path="/search" exact={true} element={<SearchPage />} />
           <Route path="/products/category/:id" exact={true} element={<Listing />} />
           <Route path="/products/subCat/:id" exact={true} element={<Listing />} />
+          <Route path="/banner-products/:id" exact={true} element={<BannerDetails />} />
+          <Route path="/banner/:id" exact={true} element={<BannerDetails />} />
           <Route exact={true} path="/product/:id" element={<ProductDetails />} />
           <Route exact={true} path="/cart" element={<Cart />} />
           <Route exact={true} path="/my-list" element={<MyList />} />

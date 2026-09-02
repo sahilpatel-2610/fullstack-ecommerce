@@ -146,20 +146,13 @@ const Category = () => {
 
                             <tbody>
                                 {
-                                    // catData?.categoryList?.length !== 0 && catData?.categoryList?.map((item, index) => (
-                                    catData?.categoryList?.map((item, index) => (
-                                        <tr key={item._id}>
-                                            {/* <td>
-                                                <div className="d-flex align-items-center">
-                                                    <Checkbox {...label} /> <span>#{index + 1}</span>
-                                                </div>
-                                            </td> */}
-
+                                    (Array.isArray(catData) ? catData : (catData?.categoryList || []))?.map((item, index) => (
+                                        <tr key={item._id || index}>
                                             <td>
                                                 <div className="d-flex align-items-center productBox">
                                                     <div className="imgWrapper">
                                                         <div className="img card shadow m-0">
-                                                            <img src={Array.isArray(item.images) ? item.images?.[0] : item.images} className="w-100" />
+                                                            <img src={Array.isArray(item.images) ? item.images?.[0] : item.images} className="w-100" alt={item.name} />
                                                         </div>
                                                     </div>
                                                 </div>

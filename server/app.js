@@ -1,3 +1,6 @@
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '1.1.1.1']);
+
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -33,6 +36,10 @@ const orders = require('./routes/orders.js');
 const homeBanner = require('./routes/homeBanner.js');
 const searchRoute = require('./routes/search.js');
 const subCatRoutes = require('./routes/subCat.js');
+const newsletterRoutes = require('./routes/newsletter.js');
+const homeSideBanners = require('./routes/homeSideBanners.js');
+const homeBottomBanners = require('./routes/homeBottomBanners.js');
+const sidebarBanners = require('./routes/sidebarBanners.js');
 
 
 
@@ -50,8 +57,12 @@ app.use(`/api/my-list`, myListSchema);
 app.use(`/api/checkout`, checkout);
 app.use(`/api/orders`, orders);
 app.use(`/api/homeBanner`, homeBanner);
+app.use(`/api/homeSideBanners`, homeSideBanners);
+app.use(`/api/homeBottomBanners`, homeBottomBanners);
+app.use(`/api/sidebarBanners`, sidebarBanners);
 app.use(`/api/search`, searchRoute);
 app.use(`/api/subCat`, subCatRoutes);
+app.use(`/api/newsletter`, newsletterRoutes);
 
 
 // Error Handler

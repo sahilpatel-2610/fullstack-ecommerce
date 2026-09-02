@@ -74,24 +74,24 @@ const Dashboard = () => {
         window.scrollTo(0, 0);
         context.setProgress(40);
         fetchDataFromApi(`/api/products?page=${page + 1}&perPage=${rowsPerPage}&category=${categoryVal}`).then((res) => {
-            setProductList(res);
+            setProductList(res || { products: [], totalPosts: 0 });
             context.setProgress(100);
         })
 
         fetchDataFromApi(`/api/user/get/count?period=${usersPeriod}`).then((res) => {
-            setTotalUsers(res.userCount);
+            setTotalUsers(res?.userCount ?? 0);
         })
 
         fetchDataFromApi(`/api/orders/get/count?period=${ordersPeriod}`).then((res) => {
-            setTotalOrders(res.orderCount);
+            setTotalOrders(res?.orderCount ?? 0);
         })
 
         fetchDataFromApi(`/api/products/get/count?period=${productsPeriod}`).then((res) => {
-            setTotalProducts(res.productsCount);
+            setTotalProducts(res?.productsCount ?? 0);
         })
 
         fetchDataFromApi(`/api/productReviews/get/count?period=${reviewsPeriod}`).then((res) => {
-            setTotalReviews(res.reviewsCount);
+            setTotalReviews(res?.reviewsCount ?? 0);
         })
 
     }, [page, rowsPerPage, usersPeriod, ordersPeriod, productsPeriod, reviewsPeriod, categoryVal]);

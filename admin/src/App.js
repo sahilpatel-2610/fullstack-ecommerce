@@ -30,6 +30,15 @@ import Orders from './Pages/Orders';
 import AddHomeBannerSlide from './Pages/HomeBanner/addHomeSlide';
 import HomeBannerSlideList from './Pages/HomeBanner/homeSlideList';
 import EditHomeBannerSlide from './Pages/HomeBanner/editSlide';
+import AddHomeSideBanner from './Pages/HomeSideBanners/addHomeSideBanner';
+import HomeSideBannerList from './Pages/HomeSideBanners/homeSideBannerList';
+import EditHomeSideBanner from './Pages/HomeSideBanners/editHomeSideBanner';
+import AddHomeBottomBanner from './Pages/HomeBottomBanners/addHomeBottomBanner';
+import HomeBottomBannerList from './Pages/HomeBottomBanners/homeBottomBannerList';
+import EditHomeBottomBanner from './Pages/HomeBottomBanners/editHomeBottomBanner';
+import AddSidebarBanner from './Pages/SidebarBanners/addSidebarBanner';
+import SidebarBannerList from './Pages/SidebarBanners/sidebarBannerList';
+import EditSidebarBanner from './Pages/SidebarBanners/editSidebarBanner';
 import Users from './Pages/Users';
 import Reviews from './Pages/Reviews';
 import Snackbar from '@mui/material/Snackbar';
@@ -295,6 +304,15 @@ function App() {
               <Route path="/homeBannerSlide/add" exact={true} element={<AddHomeBannerSlide />} />
               <Route path="/homeBannerSlide/list" exact={true} element={<HomeBannerSlideList />} />
               <Route path="/homeBannerSlide/edit/:id" exact={true} element={<EditHomeBannerSlide />} />
+              <Route path="/homeSideBanner/add" exact={true} element={<AddHomeSideBanner />} />
+              <Route path="/homeSideBanner/list" exact={true} element={<HomeSideBannerList />} />
+              <Route path="/homeSideBanner/edit/:id" exact={true} element={<EditHomeSideBanner />} />
+              <Route path="/homeBottomBanner/add" exact={true} element={<AddHomeBottomBanner />} />
+              <Route path="/homeBottomBanner/list" exact={true} element={<HomeBottomBannerList />} />
+              <Route path="/homeBottomBanner/edit/:id" exact={true} element={<EditHomeBottomBanner />} />
+              <Route path="/sidebarBanner/add" exact={true} element={<AddSidebarBanner />} />
+              <Route path="/sidebarBanner/list" exact={true} element={<SidebarBannerList />} />
+              <Route path="/sidebarBanner/edit/:id" exact={true} element={<EditSidebarBanner />} />
               <Route path="/users" exact={true} element={<Users />} />
               <Route path="/reviews" exact={true} element={<Reviews />} />
             </Routes>

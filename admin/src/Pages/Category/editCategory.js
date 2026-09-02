@@ -129,65 +129,75 @@ const EditCategory = () => {
         ))
     }
 
+    const [uploading, setUploading] = useState(false);
+
     const onChangeFile = async (e, apiEndPoint) => {
         try {
-            const imgArr = [];
             const files = e.target.files;
+            const formdata = new FormData();
+            setUploading(true);
 
-            // const fd = new FormData();
             for (var i = 0; i < files.length; i++) {
+                if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png' || files[i].type === 'image/webp')) {
+                    formdata.append(`images`, files[i]);
+                } else {
+                    setUploading(false);
+                    context.setAlertBox({
+                        open: true,
+                        error: true,
+                        msg: "Please select a valid JPG, PNG or WEBP image file."
+                    });
+                    return;
+                }
+            }
 
-                // Validate file type
-                if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png')) {
-                    setimgFiles(e.target.files);
-
-                    const file = files[i];
-                    imgArr.push(file);
-                    formdata.append(`images`, file);
-
-                    setFiles(imgArr);
+            postData(apiEndPoint, formdata).then((res) => {
+                setUploading(false);
+                if (Array.isArray(res) && res.length !== 0) {
+                    setPreviews(res);
                     context.setAlertBox({
                         open: true,
                         error: false,
-                        msg: "images uploaded!"
+                        msg: "Images Uploaded Successfully!"
                     });
-
-                    setIsSelectedFiles(true);
-
+                } else if (res?.images) {
+                    setPreviews(res.images);
+                    context.setAlertBox({
+                        open: true,
+                        error: false,
+                        msg: "Images Uploaded Successfully!"
+                    });
                 } else {
                     context.setAlertBox({
                         open: true,
                         error: true,
-                        msg: "Please select a valid JPG or PNG image file."
+                        msg: res?.msg || "Image Upload Failed!"
                     });
                 }
-
-            }
+            }).catch(err => {
+                setUploading(false);
+                console.error("Upload Error:", err);
+            });
 
         } catch (error) {
+            setUploading(false);
             console.log(error);
         }
-
-        postData(apiEndPoint, formdata).then((res) => {
-            context.setAlertBox({
-                open: true,
-                error: false,
-                msg: "images uploaded!"
-            });
-        });
-
     }
-
-
 
     const editCategory = (e) => {
         e.preventDefault();
 
-        formdata.append('name', formFields.name);
-        formdata.append('subCat', formFields.subCat);
-        formdata.append('color', formFields.color);
-
         if (formFields.name !== "" && formFields.color !== "") {
+            if (!previews || previews.length === 0) {
+                context.setAlertBox({
+                    open: true,
+                    error: true,
+                    msg: 'Please upload at least one category image'
+                });
+                return false;
+            }
+
             setIsLoading(true);
 
             const data = {
@@ -199,12 +209,18 @@ const EditCategory = () => {
 
             editData(`/api/category/${id}`, data).then(res => {
                 setIsLoading(false);
-                context.fetchCategory();
-                history('/category');
+                if (res.error) {
+                    context.setAlertBox({
+                        open: true,
+                        error: true,
+                        msg: res.msg || 'Category update failed!'
+                    });
+                } else {
+                    context.fetchCategory();
+                    history('/category');
+                }
             })
-        }
-
-        else {
+        } else {
             context.setAlertBox({
                 open: true,
                 error: true,
@@ -212,7 +228,6 @@ const EditCategory = () => {
             });
             return false;
         }
-
     }
 
 

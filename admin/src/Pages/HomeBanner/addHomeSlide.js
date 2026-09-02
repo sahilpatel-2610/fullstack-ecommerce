@@ -1,23 +1,20 @@
-import { Breadcrumbs, colors } from "@mui/material";
+import { Breadcrumbs } from "@mui/material";
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import HomeIcon from "@mui/icons-material/Home";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { emphasize, styled } from "@mui/material/styles";
 import Chip from "@mui/material/Chip";
-import { useState } from "react";
-import { FaCloudUploadAlt } from "react-icons/fa";
+import { useState, useContext, useEffect } from "react";
 import Button from '@mui/material/Button';
-import 'react-lazy-load-image-component/src/effects/blur.css';
-import { deleteImages, deleteData, fetchDataFromApi, postData } from "../../utils/api";
+import { deleteImages, postData, fetchDataFromApi } from "../../utils/api";
 import { useNavigate } from "react-router-dom";
 import CircularProgress from '@mui/material/CircularProgress';
 import { FaRegImages } from "react-icons/fa6";
 import { MyContext } from "../../App";
-import { useContext } from "react";
-import { useEffect } from "react";
 import { IoCloseSharp } from "react-icons/io5";
+import { FaCloudUploadAlt } from "react-icons/fa";
 
-
-//breadcrumb code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
     const backgroundColor =
         theme.palette.mode === "light"
@@ -38,148 +35,103 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
     };
 });
 
-
 const AddHomeSlide = () => {
-
     const [isLoading, setIsLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
-    const [formFields, setFormFields] = useState({
-        images: [],
-    });
-
-    const [files, setFiles] = useState([]);
+    const [bannerTitle, setBannerTitle] = useState('');
+    const [linkedCatIds, setLinkedCatIds] = useState([]);
+    const [selectedNewCat, setSelectedNewCat] = useState('');
+    const [productVal, setProductVal] = useState([]);
+    const [productList, setProductList] = useState([]);
     const [previews, setPreviews] = useState([]);
-    const [isSelectedFiles, setIsSelectedFiles] = useState(false);
-
-
-    const formdata = new FormData();
 
     const history = useNavigate();
-
     const context = useContext(MyContext);
 
+    useEffect(() => {
+        fetchDataFromApi('/api/products?page=1&perPage=500').then((res) => {
+            if (res && res.products) {
+                setProductList(res.products);
+            }
+        }).catch(() => null);
+    }, []);
 
+    const handleAppendCategory = (event) => {
+        const catId = event.target.value;
+        if (!catId) return;
+        if (!linkedCatIds.includes(catId)) {
+            setLinkedCatIds(prev => [...prev, catId]);
+        }
+        setSelectedNewCat('');
+    };
 
+    const handleRemoveLinkedCategory = (catId) => {
+        setLinkedCatIds(prev => prev.filter(cid => cid !== catId));
+    };
 
-    let img_arr = [];
-    let uniqueArray = [];
+    const handleChangeProduct = (event) => {
+        const { target: { value } } = event;
+        const selectedIds = typeof value === 'string' ? value.split(',') : value;
+        setProductVal(selectedIds);
+    };
 
     const onChangeFile = async (e, apiEndPoint) => {
         try {
-
             const files = e.target.files;
+            if (!files || files.length === 0) return;
 
             setUploading(true);
-
-            // const fd = new FormData();
-            for (var i = 0; i < files.length; i++) {
-
-                // Validate file type
-                if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png' || files[i].type === 'image/webp')) {
-
-                    const file = files[i];
-
-                    formdata.append(`images`, file);
-
-                } else {
-                    context.setAlertBox({
-                        open: true,
-                        error: true,
-                        msg: "Please select a valid JPG or PNG image file."
-                    });
-                }
-
+            const formdata = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                formdata.append(`images`, files[i]);
             }
 
+            postData(apiEndPoint, formdata).then(res => {
+                if (Array.isArray(res) && res.length !== 0) {
+                    const appendedArray = [...(previews || []), ...res];
+                    setPreviews(appendedArray);
+                    setUploading(false);
+                } else {
+                    setUploading(false);
+                }
+            });
         } catch (error) {
             console.log(error);
-        }
-
-        postData(apiEndPoint, formdata).then(res => {
-            if (Array.isArray(res) && res.length !== 0) {
-                const appendedArray = [...(previews || []), ...res];
-                setPreviews(appendedArray);
-                setTimeout(() => {
-                    setUploading(false);
-                    context.setAlertBox({
-                        open: true,
-                        error: false,
-                        msg: "Images Uploaded!"
-                    })
-                }, 200);
-            } else {
-                setUploading(false);
-                context.setAlertBox({
-                    open: true,
-                    error: true,
-                    msg: "Failed to upload images."
-                });
-            }
-        }).catch(err => {
             setUploading(false);
-            console.error("Upload Error:", err);
-        });
-
-    }
-
-    // const onChangeFile = async (e, apiEndPoint) => {
-    // try {
-    //     const files = e.target.files;
-
-    //     setUploading(true);
-
-    //     const formData = new FormData();
-
-    //     for (let i = 0; i < files.length; i++) {
-
-    //         if (
-    //             files[i].type === "image/jpeg" ||
-    //             files[i].type === "image/jpg" ||
-    //             files[i].type === "image/png" ||
-    //             files[i].type === "image/webp"
-    //         ) {
-    //             formData.append("images", files[i]);
-    //         } else {
-    //             context.setAlertBox({
-    //                 open: true,
-    //                 error: true,
-    //                 msg: "Please select a valid image file."
-    //             });
-    //         }
-    //     }
-
-    //     const res = await postData(apiEndPoint, formData);
-
-    //     // IMPORTANT: Assuming API returns uploaded image URLs
-    //     if (res?.images) {
-    //         setPreviews((prev) => [...prev, ...res.images]);
-    //     }
-
-    //     setUploading(false);
-
-    // } catch (error) {
-    //     console.log(error);
-    //     setUploading(false);
-    // }
-    // };
-
+        }
+    };
 
     const addHomeSlide = (e) => {
         e.preventDefault();
 
-        const appendedArray = [...previews];
-
-        img_arr = [];
-
-        formdata.append('images', appendedArray);
-
-        formFields.images = appendedArray
-
-        console.log(formdata);
         if (previews.length !== 0) {
             setIsLoading(true);
 
-            postData(`/api/homeBanner/create`, formFields).then(res => {
+            const catNames = linkedCatIds.map(cid => {
+                const cObj = context.catData?.categoryList?.find(c => c._id === cid);
+                return cObj ? cObj.name : cid;
+            });
+
+            const pNames = productVal.map(pid => {
+                const prod = productList.find(p => (p._id || p.id) === pid);
+                return prod ? prod.name : pid;
+            });
+
+            const postObj = {
+                images: previews,
+                bannerTitle: bannerTitle,
+                name: bannerTitle,
+                catId: linkedCatIds[0] || "",
+                catName: catNames[0] || "",
+                catIds: linkedCatIds,
+                catNames: catNames,
+                productId: productVal[0] || "",
+                productName: pNames[0] || "",
+                productIds: productVal,
+                productNames: pNames
+            };
+
+            postData(`/api/homeBanner/create`, postObj).then(res => {
                 setIsLoading(false);
                 context.setAlertBox({
                     open: true,
@@ -187,24 +139,15 @@ const AddHomeSlide = () => {
                     msg: "Slide Published Successfully!"
                 });
                 history('/homeBannerSlide/list');
-                setPreviews([]);
             });
-
-
-        }
-
-        else {
+        } else {
             context.setAlertBox({
                 open: true,
                 error: true,
-                msg: 'Please fill all the details'
+                msg: 'Please upload at least one image'
             });
-            return false;
         }
-
-    }
-
-
+    };
 
     const removeImg = (index, imgUrl) => {
         deleteImages(`/api/homeBanner/deleteImage?img=${imgUrl}`);
@@ -216,106 +159,156 @@ const AddHomeSlide = () => {
         });
     };
 
-
-
-
     return (
-        <>
-            <div className="right-content w-100">
-                <div className="card shadow border-0 w-100 flex-row p-4 mt-2">
-                    <h5 className="mb-0">Add Home Slide</h5>
-                    <Breadcrumbs aria-label="breadcrumb" className="ms-auto breadcrumbs_">
-                        <StyledBreadcrumb
-                            component="a"
-                            href="#"
-                            label="Dashboard"
-                            icon={<HomeIcon fontSize="small" />}
-                        />
-                        <StyledBreadcrumb
-                            component="a"
-                            label="Home Slide"
-                            href="#"
-                            deleteIcon={<ExpandMoreIcon />}
-                        />
-                        <StyledBreadcrumb
-                            label="Add Home Slide"
-                            deleteIcon={<ExpandMoreIcon />}
-                        />
-                    </Breadcrumbs>
-                </div>
+        <div className="right-content w-100">
+            <div className="card shadow border-0 w-100 flex-row p-4 mt-2">
+                <h5 className="mb-0">Add Home Slide</h5>
+                <Breadcrumbs aria-label="breadcrumb" className="ms-auto breadcrumbs_">
+                    <StyledBreadcrumb component="a" href="#" label="Dashboard" icon={<HomeIcon fontSize="small" />} />
+                    <StyledBreadcrumb label="Add Home Slide" deleteIcon={<ExpandMoreIcon />} />
+                </Breadcrumbs>
+            </div>
 
-                <form className="form" onSubmit={addHomeSlide}>
-                    <div className='row'>
-                        <div className="col-sm-9">
-                            <div className="card p-4 mt-0">
+            <form className="form" onSubmit={addHomeSlide}>
+                <div className='row mt-3'>
+                    <div className="col-sm-9">
+                        <div className="card p-4 mt-0 mb-3">
+                            <h5 className="mb-3">Banner Details & Linked Items</h5>
+                            
+                            <div className="form-group mb-3">
+                                <h6>Banner Name / Title (Displayed on Banner Screen)</h6>
+                                <input 
+                                    type="text" 
+                                    className="form-control" 
+                                    placeholder="Enter Custom Banner Name (e.g. Hottest Trends For Summer)" 
+                                    value={bannerTitle} 
+                                    onChange={(e) => setBannerTitle(e.target.value)} 
+                                />
+                            </div>
 
-                                {/* <div className='card p-4 mt-0'> */}
-                                <div className="imagesUploadSec">
-                                    <h5 className="mb-4">Media And Published</h5>
-
-                                    <div className="imgUploadBox d-flex align-items-center">
-
-                                        {
-                                            previews?.length !== 0 && previews?.map((img, index) => {
-                                                return (
-                                                    <div className="uploadBox" key={index}>
-                                                        <span className="remove" onClick={() => removeImg(index, img)}><IoCloseSharp /></span>
-                                                        <img src={img} className="w-100" />
-                                                    </div>
-                                                )
-                                            })
-                                        }
-
-
-
-
-                                        <div className="uploadBox">
+                            {/* Currently Linked Categories Badges */}
+                            <div className="mb-3">
+                                <h6 className="font-weight-bold">LINKED CATEGORIES ({linkedCatIds.length})</h6>
+                                {
+                                    linkedCatIds.length > 0 ? (
+                                        <div className="d-flex flex-wrap gap-2 mt-2">
                                             {
-                                                uploading === true ?
-                                                    <div className="progressBar text-center d-flex align-items-center justify-content-center flex-column">
-                                                        <CircularProgress />
-                                                        <span>Uploading...</span>
-                                                    </div>
-                                                    :
-
-                                                    <>
-                                                        <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/homeBanner/upload')} name="images" />
-                                                        <div className="info">
-                                                            <FaRegImages />
-                                                            <h5>image upload</h5>
-                                                        </div>
-                                                    </>
-
+                                                linkedCatIds.map((cid) => {
+                                                    const cObj = context.catData?.categoryList?.find(c => c._id === cid);
+                                                    return (
+                                                        <span key={cid} className="badge bg-success p-2 d-inline-flex align-items-center me-2 mb-2" style={{ fontSize: '13px' }}>
+                                                            {cObj ? cObj.name : cid}
+                                                            <IoCloseSharp 
+                                                                className="ms-2" 
+                                                                style={{ cursor: 'pointer', fontSize: '16px' }}
+                                                                onClick={() => handleRemoveLinkedCategory(cid)}
+                                                            />
+                                                        </span>
+                                                    );
+                                                })
                                             }
-
                                         </div>
+                                    ) : (
+                                        <p className="text-muted small">No categories linked to this banner yet.</p>
+                                    )
+                                }
+                            </div>
 
-
+                            <div className="row mb-3">
+                                <div className="col-md-6">
+                                    <div className="form-group">
+                                        <h6>Add / Append Category</h6>
+                                        <Select
+                                            value={selectedNewCat}
+                                            onChange={handleAppendCategory}
+                                            displayEmpty
+                                            className="w-100"
+                                        >
+                                            <MenuItem value="">
+                                                <em>+ Select Category to Add/Append</em>
+                                            </MenuItem>
+                                            {
+                                                context.catData?.categoryList?.length > 0 && context.catData?.categoryList?.map((cat) => (
+                                                    <MenuItem value={cat._id} key={cat._id}>{cat.name}</MenuItem>
+                                                ))
+                                            }
+                                        </Select>
                                     </div>
-
-
-                                    <br />
-
-                                    <Button type="submit" className="btn-blue btn-lg btn-big w-100" ><FaCloudUploadAlt /> &nbsp; {isLoading === true ? <CircularProgress color="inherit" className="loader" /> : 'PUBLISH AND VIEW'} </Button>
                                 </div>
-                                {/* </div> */}
-
-
+                                <div className="col-md-6">
+                                    <div className="form-group">
+                                        <h6>Linked Products (Multiple Allowed)</h6>
+                                        <Select
+                                            multiple
+                                            value={productVal}
+                                            onChange={handleChangeProduct}
+                                            displayEmpty
+                                            renderValue={(selected) => {
+                                                if (!selected || selected.length === 0) {
+                                                    return <em>Select Linked Products</em>;
+                                                }
+                                                return selected.map(id => {
+                                                    const p = productList.find(item => (item._id || item.id) === id);
+                                                    return p ? p.name : id;
+                                                }).join(', ');
+                                            }}
+                                            className="w-100"
+                                        >
+                                            {
+                                                productList?.length > 0 && productList.map((prod) => (
+                                                    <MenuItem value={prod._id || prod.id} key={prod._id || prod.id}>
+                                                        {prod.name} (RS: {prod.price})
+                                                    </MenuItem>
+                                                ))
+                                            }
+                                        </Select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-
-
-
+                        <div className="card p-4 mt-0">
+                            <div className="imagesUploadSec">
+                                <h5 className="mb-4">Media And Published</h5>
+                                <div className="imgUploadBox d-flex align-items-center">
+                                    {
+                                        previews?.length !== 0 && previews?.map((img, index) => (
+                                            <div className="uploadBox" key={index}>
+                                                <span className="remove" onClick={() => removeImg(index, img)}><IoCloseSharp /></span>
+                                                <img src={img} className="w-100" alt="preview" />
+                                            </div>
+                                        ))
+                                    }
+                                    <div className="uploadBox">
+                                        {
+                                            uploading === true ? (
+                                                <div className="progressBar text-center d-flex align-items-center justify-content-center flex-column">
+                                                    <CircularProgress />
+                                                    <span>Uploading...</span>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/homeBanner/upload')} name="images" />
+                                                    <div className="info">
+                                                        <FaRegImages />
+                                                        <h5>image upload</h5>
+                                                    </div>
+                                                </>
+                                            )
+                                        }
+                                    </div>
+                                </div>
+                                <br />
+                                <Button type="submit" className="btn-blue btn-lg btn-big w-100">
+                                    <FaCloudUploadAlt /> &nbsp; {isLoading === true ? <CircularProgress color="inherit" className="loader" /> : 'PUBLISH AND VIEW'}
+                                </Button>
+                            </div>
+                        </div>
                     </div>
-
-
-
-                </form>
-
-            </div>
-        </>
-    )
-}
+                </div>
+            </form>
+        </div>
+    );
+};
 
 export default AddHomeSlide;

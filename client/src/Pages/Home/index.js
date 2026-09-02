@@ -7,7 +7,7 @@ import React from "react";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
-import { Navigation } from 'swiper/modules';
+import { Navigation, Autoplay } from 'swiper/modules';
 import ProductItem from "../../Components/ProductItem";
 import HomeCat from "../../Components/HomeCat";
 
@@ -18,10 +18,13 @@ import { IoMailOutline } from "react-icons/io5";
 import { fetchDataFromApi } from "../../utils/api";
 import { useState, useEffect, useContext } from "react";
 import { MyContext } from "../../App";
+import { Link } from "react-router-dom";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 
 
+
+import NewsLetter from "../../Components/NewsLetter";
 
 const Home = () => {
 
@@ -30,6 +33,8 @@ const Home = () => {
   const [selectedCat, setSelectedCat] = useState();
   const [filterData, setFilterData] = useState([]);
   const [homeSlides, setHomeSlides] = useState([]);
+  const [homeSideBanners, setHomeSideBanners] = useState([]);
+  const [homeBottomBanners, setHomeBottomBanners] = useState([]);
 
   const context = useContext(MyContext);
 
@@ -42,19 +47,39 @@ const Home = () => {
     }
   };
 
+  const resolveSmartLink = (item, index) => {
+    if (item?._id) return `/banner-products/${item._id}`;
+    if (item?.subCatId && item?.subCatId !== "" && item?.subCatId !== "all") return `/products/subCat/${item.subCatId}`;
+    if (item?.productId && item?.productId !== "" && item?.productId !== "all") return `/product/${item.productId}`;
+    if (item?.catId && item?.catId !== "" && item?.catId !== "all") return `/products/category/${item.catId}`;
+    if (item?.catName && item?.catName !== "" && item?.catName !== "all") return `/products/category/${encodeURIComponent(item.catName)}`;
+    return `/banner-products/banner-side-${index || 0}`;
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
 
-    fetchDataFromApi(`/api/products/featured?location=${context.selectedCountry}`).then((res) => {
+    const locationQuery = context.selectedCountry && context.selectedCountry !== "All" ? `?location=${context.selectedCountry}` : '';
+    const locationParam = context.selectedCountry && context.selectedCountry !== "All" ? `&location=${context.selectedCountry}` : '';
+
+    fetchDataFromApi(`/api/products/featured${locationQuery}`).then((res) => {
       setFeaturedProducts(res);
     })
 
-    fetchDataFromApi(`/api/products?perPage=8&location=${context.selectedCountry}`).then((res) => {
+    fetchDataFromApi(`/api/products?perPage=8${locationParam}`).then((res) => {
       setProductsData(res);
     })
 
     fetchDataFromApi("/api/homeBanner").then((res) => {
       setHomeSlides(res?.bannerList);
+    })
+
+    fetchDataFromApi("/api/homeSideBanners").then((res) => {
+      setHomeSideBanners(res?.bannerList || []);
+    })
+
+    fetchDataFromApi("/api/homeBottomBanners").then((res) => {
+      setHomeBottomBanners(res?.bannerList || []);
     })
 
   }, [context.selectedCountry])
@@ -67,7 +92,8 @@ const Home = () => {
 
   useEffect(() => {
     if (selectedCat !== undefined) {
-      fetchDataFromApi(`/api/products?catName=${selectedCat}&location=${context.selectedCountry}`).then((res) => {
+      const locationParam = context.selectedCountry && context.selectedCountry !== "All" ? `&location=${context.selectedCountry}` : '';
+      fetchDataFromApi(`/api/products?catName=${selectedCat}${locationParam}`).then((res) => {
         setFilterData(res.products);
       })
     }
@@ -91,13 +117,34 @@ const Home = () => {
             {/* -------- LEFT SIDE BANNERS -------- */}
             <div className="col-md-3">
               <div className="sticky">
-                <div className="banner mb-4">
-                  <img src={banner1} className="w-100 cursor" alt="Banner1" />
-                </div>
-
-                <div className="banner">
-                  <img src={banner2} className="w-100 cursor" alt="Banner2" />
-                </div>
+                {
+                  homeSideBanners?.length > 0 ? (
+                    homeSideBanners.map((item, index) => {
+                      const linkTo = resolveSmartLink(item, index);
+                      const imgUrl = Array.isArray(item.images) ? item.images[0] : item.images;
+                      return (
+                        <div className="banner mb-4" key={item._id || index}>
+                          <Link to={linkTo} state={{ banner: item, imgUrl }}>
+                            <img src={imgUrl} className="w-100 cursor" alt={`Side Banner ${index + 1}`} />
+                          </Link>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <>
+                      <div className="banner mb-4">
+                        <Link to="/banner-products/side-banner-1" state={{ imgUrl: banner1 }}>
+                          <img src={banner1} className="w-100 cursor" alt="Banner1" />
+                        </Link>
+                      </div>
+                      <div className="banner">
+                        <Link to="/banner-products/side-banner-2" state={{ imgUrl: banner2 }}>
+                          <img src={banner2} className="w-100 cursor" alt="Banner2" />
+                        </Link>
+                      </div>
+                    </>
+                  )
+                }
               </div>
             </div>
 
@@ -157,24 +204,63 @@ const Home = () => {
 
               </Swiper>
 
-              <div className="bannerSec row mt-4 mb-4 g-3">
-                <div className="col-4">
-                  <div className="banner">
-                    <img src={banner3} className="w-100 cursor" alt="Banner3" />
-                  </div>
-                </div>
+              <div className="bannerSec mt-4 mb-4">
+                <Swiper
+                  slidesPerView={3}
+                  spaceBetween={15}
+                  navigation={true}
+                  autoplay={{
+                    delay: 2500,
+                    disableOnInteraction: false,
+                  }}
+                  loop={homeBottomBanners?.length > 3}
+                  modules={[Navigation, Autoplay]}
+                  className="mySwiper"
+                >
+                  {
+                    homeBottomBanners?.length > 0 ? (
+                      homeBottomBanners.map((item, index) => {
+                        const linkTo = resolveSmartLink(item, index + 2);
+                        const imgUrl = Array.isArray(item.images) ? item.images[0] : item.images;
+                        return (
+                          <SwiperSlide key={item._id || index}>
+                            <div className="banner">
+                              <Link to={linkTo} state={{ banner: item, imgUrl }}>
+                                <img src={imgUrl} className="w-100 cursor" alt={`Bottom Banner ${index + 1}`} />
+                              </Link>
+                            </div>
+                          </SwiperSlide>
+                        );
+                      })
+                    ) : (
+                      <>
+                        <SwiperSlide>
+                          <div className="banner">
+                            <Link to="/banner-products/bottom-banner-1" state={{ imgUrl: banner3 }}>
+                              <img src={banner3} className="w-100 cursor" alt="Banner3" />
+                            </Link>
+                          </div>
+                        </SwiperSlide>
 
-                <div className="col-4">
-                  <div className="banner">
-                    <img src={banner4} className="w-100 cursor" alt="Banner4" />
-                  </div>
-                </div>
+                        <SwiperSlide>
+                          <div className="banner">
+                            <Link to="/banner-products/bottom-banner-2" state={{ imgUrl: banner4 }}>
+                              <img src={banner4} className="w-100 cursor" alt="Banner4" />
+                            </Link>
+                          </div>
+                        </SwiperSlide>
 
-                <div className="col-4">
-                  <div className="banner">
-                    <img src={banner4} className="w-100 cursor" alt="Banner4" />
-                  </div>
-                </div>
+                        <SwiperSlide>
+                          <div className="banner">
+                            <Link to="/banner-products/bottom-banner-3" state={{ imgUrl: banner4 }}>
+                              <img src={banner4} className="w-100 cursor" alt="Banner4" />
+                            </Link>
+                          </div>
+                        </SwiperSlide>
+                      </>
+                    )
+                  }
+                </Swiper>
               </div>
 
 
@@ -246,29 +332,7 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="newsLetterSection mt-3 mb-3 d-flex align-items-center">
-        <div className="container">
-          <div className="row">
-            <div className="col-md-6">
-              <p className="text-white mb-1">$20 discount for your first order</p>
-              <h3 className="text-white">Join our newsletter and get...</h3>
-              <p className="text-light">Join our email subscription now to get updates on<br /> promotions and coupons.</p>
-
-
-              <form>
-                <IoMailOutline />
-                <input type="text" placeholder="Your Email Address" />
-                <Button>Subscribe</Button>
-              </form>
-
-            </div>
-
-            <div className="col-md-6">
-              <img src={newsLetterImg} alt="newsletter" />
-            </div>
-          </div>
-        </div>
-      </section>
+      <NewsLetter />
 
 
 

@@ -4,47 +4,73 @@ const router = express.Router();
 
 router.get(`/`, async (req, res) => {
     try {
-
         const page = parseInt(req.query.page) || 1;
-        const perPage = 8;
+        const perPage = parseInt(req.query.perPage) || 8;
 
-        let query = { ...req.query };
-        delete query.page;
-        delete query.perPage;
-
-        const totalOrder = await Order.countDocuments(query);
-        const totalPages = Math.ceil(totalOrder / perPage);
-
-        if (page > totalPages && totalPages > 0) {
-            return res.status(404).json({ message: "Page not found!" });
+        let query = {};
+        if (req.query.userId && req.query.userId !== "undefined" && req.query.userId !== "null") {
+            query.userId = String(req.query.userId);
+        } else if (req.query.email && req.query.email !== "undefined" && req.query.email !== "null") {
+            query.email = String(req.query.email);
+        } else {
+            query = { ...req.query };
+            delete query.page;
+            delete query.perPage;
         }
 
+        const totalOrder = await Order.countDocuments(query);
+        const totalPages = Math.ceil(totalOrder / perPage) || 1;
+
         const ordersList = await Order.find(query)
-            .sort({ createdAt: -1 })
+            .sort({ _id: -1 })
             .skip((page - 1) * perPage)
             .limit(perPage);
 
-        if (!ordersList) {
-            res.status(500).json({ success: false });
-        }
-
         return res.status(200).json({
-            "ordersList": ordersList,
+            "ordersList": ordersList || [],
             "totalPages": totalPages,
             "page": page
-        })
+        });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        return res.status(500).json({ success: false, error: error.message });
     }
 });
 
 router.get(`/:id`, async (req, res) => {
-    const order = await Order.findById(req.params.id);
+    try {
+        const order = await Order.findById(req.params.id);
 
-    if (!order) {
-        res.status(500).json({ success: false, message: 'The order with the given ID was not found.' });
+        if (!order) {
+            return res.status(404).json({ success: false, message: 'The order with the given ID was not found.' });
+        }
+
+        const { Product } = require('../models/products');
+        const enrichedProducts = await Promise.all(
+            (order.products || []).map(async (item) => {
+                let img = item.images || item.image || "";
+                if (Array.isArray(img)) img = img[0] || "";
+
+                if ((!img || img === "") && item.productId) {
+                    try {
+                        const prod = await Product.findById(item.productId);
+                        if (prod && prod.images && prod.images.length > 0) {
+                            img = prod.images[0];
+                        }
+                    } catch (e) {}
+                }
+
+                const itemObj = item.toObject ? item.toObject() : { ...item };
+                itemObj.images = img;
+                return itemObj;
+            })
+        );
+
+        const orderObj = order.toObject();
+        orderObj.products = enrichedProducts;
+        return res.status(200).send(orderObj);
+    } catch (error) {
+        return res.status(500).json({ success: false, error: error.message });
     }
-    res.status(200).send(order);
 });
 
 router.post('/create', async (req, res) => {

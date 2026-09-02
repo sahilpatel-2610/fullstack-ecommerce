@@ -9,11 +9,12 @@ const { error } = require('console');
 const cloudinary = require('cloudinary').v2;
 
 cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CONFIG_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_CONFIG_API_KEY,
-    api_secret: process.env.CLOUDINARY_CONFIG_API_SECRET,
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
     secure: true
 });
+
 
 
 var imagesArr = [];
@@ -34,48 +35,66 @@ const upload = multer({ storage: storage });
 
 
 router.post(`/upload`, upload.array("images"), async (req, res) => {
-
-    imagesArr = [];
+    let imagesArr = [];
     try {
-
-        for (let i = 0; i < req.files.length; i++) {
-
-            const options = {
-                use_filename: true,
-                unique_filename: false,
-                overwrite: false,
-            };
-
-            const img = await cloudinary.uploader.upload(req.files[i].path, options,
-                function (error, result) {
-                    imagesArr.push(result.secure_url);
-                    fs.unlinkSync(`uploads/${req.files[i].filename}`);
-                });
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ error: true, msg: "No image files provided." });
         }
 
-        let imagesUploaded = new ImageUpload({
-            images: imagesArr,
-        });
+        for (let i = 0; i < req.files.length; i++) {
+            const file = req.files[i];
+            try {
+                const options = {
+                    use_filename: true,
+                    unique_filename: false,
+                    overwrite: false,
+                };
+                const img = await cloudinary.uploader.upload(file.path, options);
+                imagesArr.push(img.secure_url);
+                if (fs.existsSync(`uploads/${file.filename}`)) {
+                    fs.unlinkSync(`uploads/${file.filename}`);
+                }
+            } catch (cloudErr) {
+                console.error("Cloudinary upload failed, using local storage fallback:", cloudErr.message || cloudErr);
+                const localUrl = `${req.protocol}://${req.get('host')}/uploads/${file.filename}`;
+                imagesArr.push(localUrl);
+            }
+        }
 
-        imagesUploaded = await imagesUploaded.save();
+        try {
+            const imagesUploaded = new ImageUpload({ images: imagesArr });
+            await imagesUploaded.save();
+        } catch (dbErr) {
+            console.warn("Could not log upload to ImageUpload collection:", dbErr.message);
+        }
+
         return res.status(200).json(imagesArr);
-
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: true, msg: "Images Upload Failed", details: error });
+        console.error("Categories Upload Route Error:", error);
+        return res.status(500).json({ error: true, msg: error.message || "Images Upload Failed" });
     }
-
 });
 
 
 const createCategories = (categories, parentId = null) => {
-
     const categoryList = [];
     let category;
     if (parentId == null) {
-        category = categories.filter((cat) => !cat.parentId);
+        category = categories.filter((cat) => 
+            !cat.parentId || 
+            cat.parentId === "" || 
+            cat.parentId === null || 
+            cat.parentId === "undefined" || 
+            cat.parentId === "null"
+        );
     } else {
-        category = categories.filter((cat) => cat.parentId == parentId);
+        category = categories.filter((cat) => 
+            cat.parentId && 
+            cat.parentId !== "" && 
+            cat.parentId !== "undefined" && 
+            cat.parentId !== "null" && 
+            cat.parentId.toString() === parentId.toString()
+        );
     }
 
     for (let cat of category) {
@@ -87,16 +106,16 @@ const createCategories = (categories, parentId = null) => {
             slug: cat.slug,
             parentId: cat.parentId,
             children: createCategories(categories, cat._id)
-        })
+        });
     }
 
     return categoryList;
-
-}
+};
 
 router.get(`/`, async (req, res) => {
-
     try {
+        const page = parseInt(req.query.page) || 1;
+        const perPage = parseInt(req.query.perPage);
 
         const categoryList = await Category.find();
 
@@ -104,17 +123,27 @@ router.get(`/`, async (req, res) => {
             return res.status(500).json({ success: false });
         }
 
+        const categoryData = createCategories(categoryList);
 
-        if (categoryList) {
-            const categoryData = createCategories(categoryList);
+        if (perPage && perPage > 0) {
+            const totalPosts = categoryData.length;
+            const totalPages = Math.ceil(totalPosts / perPage) || 1;
+            const paginatedList = categoryData.slice((page - 1) * perPage, page * perPage);
 
             return res.status(200).json({
-                categoryList: categoryData
+                categoryList: paginatedList,
+                totalPages: totalPages,
+                page: page,
+                totalPosts: totalPosts
             });
         }
 
+        return res.status(200).json({
+            categoryList: categoryData
+        });
     } catch (error) {
-        res.status(500).json({ success: false });
+        console.error("Fetch categories error:", error);
+        return res.status(500).json({ success: false, error: error.message });
     }
 });
 
@@ -210,52 +239,57 @@ router.delete('/:id', async (req, res) => {
 
 
 router.post('/create', async (req, res) => {
+    try {
+        const catImages = (Array.isArray(req.body.images) && req.body.images.length > 0)
+            ? req.body.images
+            : imagesArr;
 
-    let catObj = {};
+        const baseSlug = req.body.slug || req.body.name || 'category';
+        let slug = baseSlug.toString().toLowerCase().trim().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+        if (!slug) slug = `category-${Date.now()}`;
 
-    if (imagesArr.length > 0) {
-        catObj = {
+        const existingCategory = await Category.findOne({ slug });
+        if (existingCategory) {
+            slug = `${slug}-${Date.now()}`;
+        }
+
+        let catObj = {
             name: req.body.name,
-            images: imagesArr,
-            color: req.body.color,
-            slug: req.body.slug,
+            images: catImages,
+            color: req.body.color || '',
+            slug: slug,
         };
-    } else {
-        catObj = {
-            name: req.body.name,
-            slug: req.body.slug,
-        };
-    }
 
-    if (req.body.parentId) {
-        catObj.parentId = req.body.parentId;
-    }
+        if (req.body.parentId) {
+            catObj.parentId = req.body.parentId;
+        }
 
-    let category = new Category(catObj);
+        let category = new Category(catObj);
+        category = await category.save();
 
-    if (!category) {
-        res.status(500).json({
-            error: err,
+        imagesArr = [];
+
+        return res.status(201).json(category);
+    } catch (error) {
+        console.error("Create category error:", error);
+        return res.status(500).json({
+            error: error.message || error,
             success: false
         });
     }
-
-    category = await category.save();
-
-    imagesArr = [];
-
-    res.status(201).json(category);
-
 });
 
 router.put('/:id', async (req, res) => {
     try {
+        const catImages = (Array.isArray(req.body.images) && req.body.images.length > 0)
+            ? req.body.images
+            : imagesArr;
 
         const category = await Category.findByIdAndUpdate(
             req.params.id,
             {
                 name: req.body.name,
-                images: imagesArr,
+                images: catImages,
                 color: req.body.color,
                 parentId: req.body.parentId
             },
@@ -269,11 +303,11 @@ router.put('/:id', async (req, res) => {
             });
         }
 
-        res.status(200).json(category);
+        return res.status(200).json(category);
 
     } catch (error) {
         console.error("Update category error:", error);
-        res.status(500).json({ success: false, error: error.message });
+        return res.status(500).json({ success: false, error: error.message });
     }
 });
 

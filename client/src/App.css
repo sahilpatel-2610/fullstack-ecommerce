@@ -587,45 +587,114 @@ nav .allCatTab .icon2 svg {
   font-size: 10px !important;
 }
 
+nav .navpart2 {
+  position: relative;
+  padding: 4px 0;
+}
+
+nav .navpart2 .navScrollWrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+nav .navpart2 .navScrollWrapper::-webkit-scrollbar {
+  display: none !important;
+  height: 0px !important;
+  width: 0px !important;
+  background: transparent !important;
+}
+
+nav .navpart2 .navScrollBtn {
+  min-width: 28px !important;
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50% !important;
+  background: #6d4aae !important;
+  border: 1px solid #6d4aae !important;
+  box-shadow: 0 4px 10px rgba(109, 74, 174, 0.35) !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: all 0.2s ease-in-out !important;
+  padding: 0 !important;
+  color: #ffffff !important;
+  flex-shrink: 0;
+}
+
+nav .navpart2 .navScrollBtn svg {
+  color: #ffffff !important;
+  font-size: 14px !important;
+}
+
+nav .navpart2 .navScrollBtn:hover {
+  background: #553493 !important;
+  color: #ffffff !important;
+  border-color: #553493 !important;
+  transform: scale(1.15) !important;
+  box-shadow: 0 6px 14px rgba(109, 74, 174, 0.5) !important;
+}
+
 nav .navpart2 ul {
   margin-bottom: 0px;
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
+  gap: 8px;
+  padding-left: 0;
 }
 
 nav .navpart2 ul li {
-  padding-bottom: 20px;
+  padding-bottom: 0px;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
+nav .navpart2 ul li button,
 nav .navpart2 ul li a button {
-  font-size: 13px;
-  font-weight: 600 !important;
+  font-size: 12px;
+  font-weight: 700 !important;
   text-decoration: none;
-  color: #000 !important;
+  color: #333 !important;
   text-transform: uppercase !important;
   display: flex;
   align-items: center;
-  padding: 5px 10px;
+  padding: 6px 14px !important;
+  height: 38px !important;
   transition: all 0.2s ease-in-out;
-  border-radius: 20px;
+  border-radius: 20px !important;
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  white-space: nowrap;
 }
 
-nav .navpart2 ul li a button .catIcon {
-  width: 25px !important;
-  height: 25px !important;
-  margin-right: 10px !important;
+nav .navpart2 ul li button .catIcon,
+nav .navpart2 ul li a button .catIcon,
+.catIcon {
+  width: 22px !important;
+  height: 22px !important;
+  max-width: 22px !important;
+  max-height: 22px !important;
+  margin-right: 8px !important;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
+nav .navpart2 ul li button img.catIcon,
 nav .navpart2 ul li a button img.catIcon {
   object-fit: cover;
   border-radius: 50%;
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
+nav .navpart2 ul li button svg.catIcon,
 nav .navpart2 ul li a button svg.catIcon {
-  font-size: 25px !important;
+  font-size: 22px !important;
   opacity: 0.8;
 }
 
@@ -642,11 +711,150 @@ nav .navpart2 ul li a svg {
   font-size: 20px;
 }
 
+nav .navpart2 ul li a button.active,
 nav .navpart2 ul li a:hover button {
-  /* background: #ed174a !important;
-  color: #f0faff !important; */
-  transform: scale(1.05) !important;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+  background: #6d4aae !important;
+  color: #fff !important;
+  border-color: #6d4aae !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(109, 74, 174, 0.25) !important;
+}
+
+nav .navpart2 ul li a button.active *,
+nav .navpart2 ul li a:hover button * {
+  color: #fff !important;
+}
+
+.subCatModalIcon {
+  width: 28px;
+  height: 28px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid rgba(109, 74, 174, 0.2);
+}
+
+@keyframes slideDownMega {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scaleY(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+.subCategoryScreen .border-purple-light {
+  border-color: rgba(109, 74, 174, 0.15) !important;
+}
+
+.subCategoryScreen .subCatTitleIcon {
+  width: 28px;
+  height: 28px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid rgba(109, 74, 174, 0.2);
+}
+
+.subCategoryScreen .subCatTitleHeader {
+  font-size: 14px;
+  font-weight: 800;
+  color: #6d4aae;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.subCategoryScreen .subItemPill {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #333 !important;
+  background: #f8f6ff !important;
+  border: 1px solid rgba(109, 74, 174, 0.12) !important;
+  border-radius: 20px !important;
+  padding: 6px 18px !important;
+  text-transform: capitalize !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  margin: 4px;
+}
+
+.subCategoryScreen .subItemPill .bulletDot {
+  font-size: 8px;
+  color: #6d4aae;
+}
+
+.subCategoryScreen .subItemPill:hover {
+  background: #6d4aae !important;
+  color: #ffffff !important;
+  border-color: #6d4aae !important;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 15px rgba(109, 74, 174, 0.3) !important;
+}
+
+.subCategoryScreen .subItemPill:hover .bulletDot {
+  color: #ffffff !important;
+}
+
+/* Home Featured Categories Slider Styles */
+.homeCat {
+  padding: 20px 0;
+  width: 100%;
+  position: relative;
+}
+
+.homeCat .mySwiper {
+  padding: 10px 0 20px 0 !important;
+}
+
+.homeCat .swiper-slide {
+  width: auto !important;
+}
+
+.homeCat .item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: all 0.3s ease-in-out;
+  text-decoration: none !important;
+  padding: 0 6px;
+  min-width: 95px;
+}
+
+.homeCat .item .img_wrapper {
+  width: 85px;
+  height: 85px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  margin: 0 auto 10px auto;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+}
+
+.homeCat .item .img_wrapper img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: all 0.3s ease-in-out;
+}
+
+.homeCat .item:hover .img_wrapper {
+  transform: translateY(-5px) scale(1.08);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.homeCat .item h6 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100px;
 }
 
 nav .navpart2 ul li {
@@ -1151,8 +1359,13 @@ nav .navpart2 ul li:hover .submenu {
   margin-bottom: 10px;
 }
 
-.homeCat .swiper {
+.homeCatSwiperWrapper {
+  width: 100% !important;
   overflow: hidden !important;
+}
+
+.homeCat .swiper {
+  overflow: visible !important;
 }
 
 .homeCat .swiper .item {
@@ -2573,20 +2786,21 @@ a:hover {
 .homeBannerSection {
   width: 100%;
   position: relative;
-  padding: 20px 0;
+  padding: 15px 0 25px 0;
+  overflow: hidden;
 }
 
 .home_banner_Swiper {
   overflow: visible !important;
-  width: 95% !important;
-  /* Forces the peek effect */
+  width: 100% !important;
   margin: 0 auto;
+  padding-bottom: 0 !important;
 }
 
 .home_banner_Swiper .swiper-slide {
-  transition: all 0.5s ease;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
   opacity: 0.5;
-  transform: scale(0.9);
+  transform: scale(0.88);
 }
 
 .home_banner_Swiper .swiper-slide-active {
@@ -2596,55 +2810,70 @@ a:hover {
 
 .homeBannerSection .item {
   width: 100%;
-  border-radius: 12px;
+  border-radius: 18px;
   overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
-/* Circular Arrows like Photo 2 */
+.homeBannerSection .item img {
+  border-radius: 18px;
+  display: block;
+}
+
+/* Circular Arrows Placed INSIDE Wider Center Banner Edges */
 .home_banner_Swiper .swiper-button-next,
 .home_banner_Swiper .swiper-button-prev {
-  width: 50px !important;
-  height: 50px !important;
-  background: #fff !important;
+  width: 38px !important;
+  height: 38px !important;
+  background: #ffffff !important;
   border-radius: 50% !important;
-  color: #333 !important;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
+  color: #1e293b !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18) !important;
   z-index: 100 !important;
   transition: all 0.3s ease;
 }
 
 .home_banner_Swiper .swiper-button-next:hover,
 .home_banner_Swiper .swiper-button-prev:hover {
-  background: #ccc !important;
-  color: #fff !important;
+  background: #0f172a !important;
+  color: #ffffff !important;
 }
 
 .home_banner_Swiper .swiper-button-next {
-  right: 30px !important;
+  right: 5.5% !important;
 }
 
 .home_banner_Swiper .swiper-button-prev {
-  left: 30px !important;
+  left: 5.5% !important;
 }
 
 .home_banner_Swiper .swiper-button-next::after,
 .home_banner_Swiper .swiper-button-prev::after {
-  font-size: 20px !important;
+  font-size: 14px !important;
   font-weight: 800 !important;
 }
 
+/* Dots Positioned Inside Banner Image Bottom Edge */
+.home_banner_Swiper .swiper-pagination {
+  bottom: 22px !important;
+  z-index: 100 !important;
+}
+
 .home_banner_Swiper .swiper-pagination-bullet {
-  width: 12px;
-  height: 12px;
-  background: #fff !important;
-  opacity: 0.5;
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.75) !important;
+  opacity: 0.8;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
 }
 
 .home_banner_Swiper .swiper-pagination-bullet-active {
-  background: #2bbef9 !important;
+  background: #4f46e5 !important;
   opacity: 1;
-  width: 30px;
+  width: 28px;
   border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(79, 70, 229, 0.6);
 }
 
 .pagination {

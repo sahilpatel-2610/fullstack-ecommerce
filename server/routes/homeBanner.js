@@ -32,32 +32,36 @@ const upload = multer({ storage: storage });
 router.post(`/upload`, upload.array("images"), async (req, res) => {
     let imagesArr = [];
     try {
-
-        for (let i = 0; i < req.files.length; i++) {
-
-            const options = {
-                use_filename: true,
-                unique_filename: false,
-                overwrite: false,
-            };
-
-            const img = await cloudinary.uploader.upload(req.files[i].path, options);
-            imagesArr.push(img.secure_url);
-            fs.unlinkSync(`uploads/${req.files[i].filename}`);
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ error: true, msg: "No image files provided." });
         }
 
-        let imagesUploaded = new ImageUpload({
-            images: imagesArr,
-        });
+        for (let i = 0; i < req.files.length; i++) {
+            const file = req.files[i];
+            try {
+                const options = {
+                    use_filename: true,
+                    unique_filename: false,
+                    overwrite: false,
+                };
+                const img = await cloudinary.uploader.upload(file.path, options);
+                imagesArr.push(img.secure_url);
+                if (fs.existsSync(`uploads/${file.filename}`)) {
+                    fs.unlinkSync(`uploads/${file.filename}`);
+                }
+            } catch (cloudErr) {
+                console.error("Cloudinary upload failed, using local storage fallback:", cloudErr.message || cloudErr);
+                const localUrl = `${req.protocol}://${req.get('host')}/uploads/${file.filename}`;
+                imagesArr.push(localUrl);
+            }
+        }
 
-        imagesUploaded = await imagesUploaded.save();
         return res.status(200).json(imagesArr);
 
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: true, msg: "Images Upload Failed", details: error });
+        console.error("Upload Route Error:", error);
+        return res.status(500).json({ error: true, msg: error.message || "Images Upload Failed" });
     }
-
 });
 
 
@@ -180,10 +184,36 @@ router.delete('/:id', async (req, res) => {
 
 
 
+const { Product } = require('../models/products');
+
 router.post('/create', async (req, res) => {
     try {
+        let pIds = req.body.productIds || (req.body.productId ? [req.body.productId] : []);
+        let pNames = req.body.productNames || (req.body.productName ? [req.body.productName] : []);
+
+        if (Array.isArray(pIds) && pIds.length > 0) {
+            if (!pNames || pNames.length < pIds.length) {
+                const fetchedProds = await Product.find({ _id: { $in: pIds } });
+                pNames = pIds.map(pid => {
+                    const pObj = fetchedProds.find(p => p._id.toString() === pid.toString());
+                    return pObj ? pObj.name : pid;
+                });
+            }
+        }
+
         let newEntry = new HomeBanner({
             images: req.body.images,
+            bannerTitle: req.body.bannerTitle || req.body.name || "",
+            name: req.body.name || req.body.bannerTitle || "",
+            catId: req.body.catId || "",
+            subCatId: req.body.subCatId || "",
+            catName: req.body.catName || "",
+            catIds: req.body.catIds || (req.body.catId ? [req.body.catId] : []),
+            catNames: req.body.catNames || (req.body.catName ? [req.body.catName] : []),
+            productId: req.body.productId || "",
+            productName: req.body.productName || "",
+            productIds: pIds,
+            productNames: pNames
         });
 
         if (!newEntry) {
@@ -206,11 +236,34 @@ router.post('/create', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
     try {
+        let pIds = req.body.productIds || (req.body.productId ? [req.body.productId] : []);
+        let pNames = req.body.productNames || (req.body.productName ? [req.body.productName] : []);
+
+        if (Array.isArray(pIds) && pIds.length > 0) {
+            if (!pNames || pNames.length < pIds.length) {
+                const fetchedProds = await Product.find({ _id: { $in: pIds } });
+                pNames = pIds.map(pid => {
+                    const pObj = fetchedProds.find(p => p._id.toString() === pid.toString());
+                    return pObj ? pObj.name : pid;
+                });
+            }
+        }
 
         const banner = await HomeBanner.findByIdAndUpdate(
             req.params.id,
             {
                 images: req.body.images,
+                bannerTitle: req.body.bannerTitle || req.body.name || "",
+                name: req.body.name || req.body.bannerTitle || "",
+                catId: req.body.catId || "",
+                subCatId: req.body.subCatId || "",
+                catName: req.body.catName || "",
+                catIds: req.body.catIds || (req.body.catId ? [req.body.catId] : []),
+                catNames: req.body.catNames || (req.body.catName ? [req.body.catName] : []),
+                productId: req.body.productId || "",
+                productName: req.body.productName || "",
+                productIds: pIds,
+                productNames: pNames
             },
             { new: true }
         );

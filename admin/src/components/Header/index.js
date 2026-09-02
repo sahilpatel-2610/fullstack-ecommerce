@@ -102,7 +102,7 @@ const Header = () => {
               }
             </Button>
 
-            <a href="https://fullstack-ecomm-app.netlify.app" target="_blank" rel="noopener noreferrer">
+            <a href="https://fullstackecomm-app.netlify.app/" target="_blank" rel="noopener noreferrer">
                <Button className="btn-blue btn-round me-3" style={{ padding: '8px 20px', borderRadius: '30px' }}>View Shop</Button>
             </a>
       

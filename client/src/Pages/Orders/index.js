@@ -15,42 +15,52 @@ const Orders = () => {
 
     const [isOpenModal, setIdOpenModal] = useState(false);
 
-    useEffect(() => {
-        window.scrollTo(0, 0);
+    const fetchOrdersData = (pageNum = 1) => {
         const userStr = localStorage.getItem("user");
+        let userId = context.user?._id || context.user?.id || context.user?.userId;
+        let email = context.user?.email;
+
         if (userStr && userStr !== "undefined") {
-            const userData = JSON.parse(userStr);
-            fetchDataFromApi(`/api/orders?userId=${userData?._id || userData?.id}&page=1&perPage=8`).then((res) => {
-                setOrders(res);
+            try {
+                const userData = JSON.parse(userStr);
+                userId = userId || userData?._id || userData?.id || userData?.userId;
+                email = email || userData?.email;
+            } catch (e) {}
+        }
+
+        if (userId) {
+            fetchDataFromApi(`/api/orders?userId=${userId}&page=${pageNum}&perPage=8`).then((res) => {
+                if (res && res.ordersList && res.ordersList.length > 0) {
+                    setOrders(res);
+                } else if (email) {
+                    fetchDataFromApi(`/api/orders?email=${email}&page=${pageNum}&perPage=8`).then((resEmail) => {
+                        setOrders(resEmail || { ordersList: [], totalPages: 1 });
+                    });
+                } else {
+                    setOrders(res || { ordersList: [], totalPages: 1 });
+                }
             });
         }
-    }, []);
+    };
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+        fetchOrdersData(1);
+    }, [context.user]);
 
     const deleteOrder = (id) => {
         deleteData(`/api/orders/${id}`).then((res) => {
-            const userStr = localStorage.getItem("user");
-            if (userStr && userStr !== "undefined") {
-                const userData = JSON.parse(userStr);
-                fetchDataFromApi(`/api/orders?userId=${userData?._id || userData?.id}&page=${page}&perPage=8`).then((res) => {
-                    setOrders(res);
-                });
-            }
+            fetchOrdersData(page);
         });
     }
 
     const handleChange = (event, value) => {
         setPage(value);
-        const userStr = localStorage.getItem("user");
-        if (userStr && userStr !== "undefined") {
-            const userData = JSON.parse(userStr);
-            fetchDataFromApi(`/api/orders?userId=${userData?._id || userData?.id}&page=${value}&perPage=8`).then((res) => {
-                setOrders(res);
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            });
-        }
+        fetchOrdersData(value);
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
     }
 
     const showProducts = (id) => {
@@ -58,7 +68,24 @@ const Orders = () => {
             setIdOpenModal(true);
             setProducts(res.products);
         });
-    }
+    };
+    const getOrderProductImage = (item) => {
+        let img = item?.images || item?.image || item?.productImage || "";
+        if (Array.isArray(img)) {
+            img = img.find(i => typeof i === 'string' && i.trim() !== '') || img[0] || "";
+        }
+        if (typeof img !== 'string') {
+            img = "";
+        }
+        img = img.trim();
+        if (!img) {
+            return "https://via.placeholder.com/100?text=No+Image";
+        }
+        if (!img.startsWith('http://') && !img.startsWith('https://') && !img.startsWith('data:')) {
+            return `http://localhost:4000${img.startsWith('/') ? '' : '/'}${img}`;
+        }
+        return img;
+    };
 
     return (
         <>
@@ -87,10 +114,10 @@ const Orders = () => {
 
                             <tbody>
                                 {
-                                    orders?.ordersList?.length > 0 && orders?.ordersList?.map((order, index) => {
-                                        return (
-                                            <>
-                                                <tr key={index}>
+                                    orders?.ordersList?.length > 0 ? (
+                                        orders?.ordersList?.map((order, index) => {
+                                            return (
+                                                <tr key={order?._id || index}>
                                                     <td><span className="text-blue font-weight-bold">{order?.paymentId}</span></td>
                                                     <td><span className="text-blue font-weight-bold cursor" onClick={() => showProducts(order?._id)}
                                                     >Click here to view</span>
@@ -115,13 +142,15 @@ const Orders = () => {
                                                         </Button>
                                                     </td>
                                                 </tr>
-
-
-
-                                            </>
-
-                                        )
-                                    })
+                                            )
+                                        })
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="12" className="text-center py-4">
+                                                <h6 className="mb-0 text-muted">No orders found for your account.</h6>
+                                            </td>
+                                        </tr>
+                                    )
                                 }
                             </tbody>
                         </table>
@@ -185,8 +214,17 @@ const Orders = () => {
                                             </span>
                                         </td>
                                         <td>
-                                            <div className="img">
-                                                <img src={item?.images} />
+                                            <div className="img" style={{ width: '60px', height: '60px', overflow: 'hidden', borderRadius: '6px', backgroundColor: '#f8f9fa' }}>
+                                                <img 
+                                                    src={getOrderProductImage(item)} 
+                                                    alt={item?.productTitle || 'product'} 
+                                                    className="w-100 h-100" 
+                                                    style={{ objectFit: 'cover' }}
+                                                    onError={(e) => {
+                                                        e.target.onerror = null;
+                                                        e.target.src = "https://via.placeholder.com/100?text=No+Image";
+                                                    }}
+                                                />
                                             </div>
                                         </td>
                                         <td>{item?.quantity}</td>

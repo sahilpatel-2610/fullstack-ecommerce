@@ -113,23 +113,41 @@ const MyAccount = () => {
         })
 
         const userStr = localStorage.getItem("user");
+        let userObj = context.user;
         if (userStr && userStr !== "undefined") {
-            const user = JSON.parse(userStr);
-
-        fetchDataFromApi(`/api/user/${user?._id || user?.id}`).then((res) => {
-            if (res && !res.error) {
-                setFormFields({
-                    name: res.name || "",
-                    email: res.email || "",
-                    phone: res.phone || ""
-                });
-                setPreviews(res.images || []);
-            } else {
-                console.error("Failed to fetch user details:", res?.msg);
-            }
-        });
+            try {
+                userObj = JSON.parse(userStr);
+            } catch (e) {}
         }
-    }, [history]);
+
+        const userId = userObj?._id || userObj?.id || userObj?.userId || context.user?._id || context.user?.id || context.user?.userId;
+
+        if (userObj) {
+            setFormFields({
+                name: userObj.name || "",
+                email: userObj.email || "",
+                phone: userObj.phone || ""
+            });
+            if (userObj.images && Array.isArray(userObj.images)) {
+                setPreviews(userObj.images);
+            }
+        }
+
+        if (userId) {
+            fetchDataFromApi(`/api/user/${userId}`).then((res) => {
+                if (res && !res.error) {
+                    setFormFields({
+                        name: res.name || "",
+                        email: res.email || "",
+                        phone: res.phone || ""
+                    });
+                    setPreviews(res.images || []);
+                } else {
+                    console.error("Failed to fetch user details:", res?.msg);
+                }
+            });
+        }
+    }, [history, context.user]);
 
 
     const changeInput = (e) => {

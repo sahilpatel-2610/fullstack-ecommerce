@@ -67,7 +67,7 @@ const Header = () => {
                                 <SearchBox />
 
                                 <div className='part3 d-flex align-items-center ml-auto'>
-                                    <a href="https://shop-admin-portal.netlify.app/" target="_blank" rel="noopener noreferrer">
+                                    <a href="https://fullstackecomm-admin.netlify.app/" target="_blank" rel="noopener noreferrer">
                                         <Button className="btn-blue mr-3">Admin Panel</Button>
                                     </a>
                                     {

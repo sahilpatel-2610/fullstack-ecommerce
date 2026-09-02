@@ -147,7 +147,7 @@ const SubCategory = () => {
 
                             <tbody>
                                 {
-                                    catData?.categoryList?.length !== 0 && catData?.categoryList?.map((item, index) => {
+                                    (Array.isArray(catData) ? catData : (catData?.categoryList || []))?.map((item, index) => {
                                         if (item?.children?.length !== 0) {
                                             return (
                                                 <tr key={index}>
