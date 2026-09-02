@@ -4,8 +4,6 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const fs = require("fs");
-const { error } = require('console');
-
 const cloudinary = require('cloudinary').v2;
 
 cloudinary.config({
@@ -15,24 +13,19 @@ cloudinary.config({
     secure: true
 });
 
-
-
-var imagesArr = [];
-
-
 const storage = multer.diskStorage({
-
     destination: function (req, file, cb) {
+        if (!fs.existsSync('uploads')) {
+            fs.mkdirSync('uploads', { recursive: true });
+        }
         cb(null, 'uploads');
     },
     filename: function (req, file, cb) {
         cb(null, `${Date.now()}_${file.originalname}`);
-        // imagesArr.push(`${Date.now()}-${file.originalname}`);
     },
-})
+});
 
 const upload = multer({ storage: storage });
-
 
 router.post(`/upload`, upload.array("images"), async (req, res) => {
     let imagesArr = [];
@@ -75,7 +68,6 @@ router.post(`/upload`, upload.array("images"), async (req, res) => {
     }
 });
 
-
 const createCategories = (categories, parentId = null) => {
     const categoryList = [];
     let category;
@@ -100,11 +92,12 @@ const createCategories = (categories, parentId = null) => {
     for (let cat of category) {
         categoryList.push({
             _id: cat._id,
+            id: cat._id,
             name: cat.name,
-            images: cat.images,
-            color: cat.color,
-            slug: cat.slug,
-            parentId: cat.parentId,
+            images: cat.images || [],
+            color: cat.color || '',
+            slug: cat.slug || cat.name.toLowerCase().replace(/ /g, '-'),
+            parentId: cat.parentId || null,
             children: createCategories(categories, cat._id)
         });
     }
@@ -117,7 +110,7 @@ router.get(`/`, async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const perPage = parseInt(req.query.perPage);
 
-        const categoryList = await Category.find();
+        const categoryList = await Category.find().sort({ createdAt: -1 });
 
         if (!categoryList) {
             return res.status(500).json({ success: false });
@@ -148,16 +141,11 @@ router.get(`/`, async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-
     try {
-        categoryEditId = req.params.id;
-
         const category = await Category.findById(req.params.id);
-
         if (!category) {
             return res.status(404).json({ success: false, message: "Category not found" });
         }
-
         return res.status(200).send(category);
     } catch (error) {
         console.error("Error fetching category:", error);
@@ -167,19 +155,19 @@ router.get('/:id', async (req, res) => {
 
 router.delete('/deleteImage', async (req, res) => {
     const imgUrl = req.query.img;
-
     if (!imgUrl) {
         return res.status(400).send("Image URL is required");
     }
 
-    const urlArr = imgUrl.split('/');
-    const image = urlArr[urlArr.length - 1];
-
-    const imageName = image.split('.')[0];
-
     try {
-        const response = await cloudinary.uploader.destroy(imageName);
-        return res.status(200).send(response || { success: true, message: "Image removed" });
+        const urlArr = imgUrl.split('/');
+        const image = urlArr[urlArr.length - 1];
+        const imageName = image.split('.')[0];
+
+        if (imageName && imgUrl.includes('cloudinary')) {
+            await cloudinary.uploader.destroy(imageName);
+        }
+        return res.status(200).send({ success: true, message: "Image removed" });
     } catch (error) {
         console.error("Cloudinary delete error:", error);
         return res.status(500).send(error);
@@ -189,7 +177,6 @@ router.delete('/deleteImage', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         const category = await Category.findById(req.params.id);
-
         if (!category) {
             return res.status(404).json({
                 message: 'Category not found!',
@@ -197,15 +184,12 @@ router.delete('/:id', async (req, res) => {
             });
         }
 
-        const images = category.images;
-
-        if (images && images.length !== 0) {
-            for (let img of images) {
+        if (category.images && category.images.length !== 0) {
+            for (let img of category.images) {
                 const urlArr = img.split('/');
                 const image = urlArr[urlArr.length - 1];
                 const imageName = image.split('.')[0];
-
-                if (imageName) {
+                if (imageName && img.includes('cloudinary')) {
                     await cloudinary.uploader.destroy(imageName);
                 }
             }
@@ -214,35 +198,23 @@ router.delete('/:id', async (req, res) => {
         const deletedCategory = await Category.findByIdAndDelete(req.params.id);
         
         if (deletedCategory) {
-            // Also delete all subcategories belonging to this category
+            // Also delete all child subcategories
             await Category.deleteMany({ parentId: req.params.id });
         }
 
-        if (!deletedCategory) {
-            return res.status(404).json({
-                message: 'Category not found!',
-                success: false
-            });
-        }
-
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: 'Category Deleted!'
         });
-
     } catch (error) {
         console.error("Delete category error:", error);
-        res.status(500).json({ success: false, error: error.message });
+        return res.status(500).json({ success: false, error: error.message });
     }
 });
 
-
-
 router.post('/create', async (req, res) => {
     try {
-        const catImages = (Array.isArray(req.body.images) && req.body.images.length > 0)
-            ? req.body.images
-            : imagesArr;
+        const catImages = Array.isArray(req.body.images) ? req.body.images : [];
 
         const baseSlug = req.body.slug || req.body.name || 'category';
         let slug = baseSlug.toString().toLowerCase().trim().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
@@ -260,14 +232,12 @@ router.post('/create', async (req, res) => {
             slug: slug,
         };
 
-        if (req.body.parentId) {
+        if (req.body.parentId && req.body.parentId !== "" && req.body.parentId !== "null") {
             catObj.parentId = req.body.parentId;
         }
 
         let category = new Category(catObj);
         category = await category.save();
-
-        imagesArr = [];
 
         return res.status(201).json(category);
     } catch (error) {
@@ -281,36 +251,50 @@ router.post('/create', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
     try {
-        const catImages = (Array.isArray(req.body.images) && req.body.images.length > 0)
-            ? req.body.images
-            : imagesArr;
+        const catImages = Array.isArray(req.body.images) ? req.body.images : (req.body.images ? [req.body.images] : []);
+
+        const baseSlug = req.body.slug || req.body.name || 'category';
+        let slug = baseSlug.toString().toLowerCase().trim().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+        if (!slug) slug = `category-${Date.now()}`;
+
+        const existingCategory = await Category.findOne({ slug: slug, _id: { $ne: req.params.id } });
+        if (existingCategory) {
+            slug = `${slug}-${Date.now()}`;
+        }
+
+        const updateData = {
+            name: req.body.name,
+            color: req.body.color || '',
+            slug: slug
+        };
+
+        if (catImages && catImages.length > 0) {
+            updateData.images = catImages;
+        }
+
+        if (req.body.parentId !== undefined) {
+            updateData.parentId = req.body.parentId;
+        }
 
         const category = await Category.findByIdAndUpdate(
             req.params.id,
-            {
-                name: req.body.name,
-                images: catImages,
-                color: req.body.color,
-                parentId: req.body.parentId
-            },
+            updateData,
             { new: true }
         );
 
         if (!category) {
-            return res.status(500).json({
+            return res.status(404).json({
                 message: 'Category cannot be updated!',
                 success: false
             });
         }
 
         return res.status(200).json(category);
-
     } catch (error) {
         console.error("Update category error:", error);
         return res.status(500).json({ success: false, error: error.message });
     }
 });
-
 
 router.get(`/get/count`, async (req, res) => {
     let query = { $or: [{ parentId: { $exists: false } }, { parentId: "" }, { parentId: null }] };
@@ -333,37 +317,21 @@ router.get(`/get/count`, async (req, res) => {
         }
     }
 
-    const categoryCount = await Category.countDocuments(query);
-
-    if (!categoryCount && categoryCount !== 0) {
-        res.status(500).json({ success: false })
+    try {
+        const categoryCount = await Category.countDocuments(query);
+        return res.status(200).json({ categoryCount: categoryCount });
+    } catch (error) {
+        return res.status(500).json({ success: false, error: error.message });
     }
-
-    res.send({
-        categoryCount: categoryCount
-    });
 });
-
 
 router.get(`/subCat/get/count`, async (req, res) => {
-    const categories = await Category.find();
-
-    if (!categories) {
-        res.status(500).json({ success: false })
-    } else {
-
-        const subCatList = [];
-        for (let cat of categories) {
-            if (cat.parentId !== undefined) {
-                subCatList.push(cat);
-            }
-        }
-
-        res.send({
-            subCatList: subCatList,
-        });
+    try {
+        const subCatCount = await Category.countDocuments({ parentId: { $exists: true, $ne: null, $ne: "" } });
+        return res.status(200).json({ subCatCount: subCatCount });
+    } catch (error) {
+        return res.status(500).json({ success: false, error: error.message });
     }
 });
-
 
 module.exports = router;
