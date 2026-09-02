@@ -1,4 +1,5 @@
 const { Category } = require('../models/category');
+const { SubCategory } = require('../models/subCat');
 const { ImageUpload } = require('../models/imageUpload');
 const express = require('express');
 const router = express.Router();
@@ -68,55 +69,46 @@ router.post(`/upload`, upload.array("images"), async (req, res) => {
     }
 });
 
-const createCategories = (categories, parentId = null) => {
-    const categoryList = [];
-    let category;
-    if (parentId == null) {
-        category = categories.filter((cat) => 
-            !cat.parentId || 
-            cat.parentId === "" || 
-            cat.parentId === null || 
-            cat.parentId === "undefined" || 
-            cat.parentId === "null"
-        );
-    } else {
-        category = categories.filter((cat) => 
-            cat.parentId && 
-            cat.parentId !== "" && 
-            cat.parentId !== "undefined" && 
-            cat.parentId !== "null" && 
-            cat.parentId.toString() === parentId.toString()
-        );
-    }
-
-    for (let cat of category) {
-        categoryList.push({
-            _id: cat._id,
-            id: cat._id,
-            name: cat.name,
-            images: cat.images || [],
-            color: cat.color || '',
-            slug: cat.slug || cat.name.toLowerCase().replace(/ /g, '-'),
-            parentId: cat.parentId || null,
-            children: createCategories(categories, cat._id)
-        });
-    }
-
-    return categoryList;
-};
-
 router.get(`/`, async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const perPage = parseInt(req.query.perPage);
 
         const categoryList = await Category.find().sort({ createdAt: -1 });
+        const allSubCats = await SubCategory.find().sort({ createdAt: -1 });
 
         if (!categoryList) {
             return res.status(500).json({ success: false });
         }
 
-        const categoryData = createCategories(categoryList);
+        const categoryData = categoryList.map(cat => {
+            const children = allSubCats
+                .filter(sub => (sub.category && sub.category.toString() === cat._id.toString()))
+                .map(sub => ({
+                    _id: sub._id,
+                    id: sub._id,
+                    name: sub.name || sub.subCat,
+                    subCat: sub.subCat || sub.name,
+                    slug: sub.slug,
+                    category: sub.category,
+                    createdAt: sub.createdAt,
+                    updatedAt: sub.updatedAt,
+                    dateCreated: sub.dateCreated
+                }));
+
+            return {
+                _id: cat._id,
+                id: cat._id,
+                name: cat.name,
+                images: cat.images || [],
+                color: cat.color || '',
+                slug: cat.slug || cat.name.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+                createdAt: cat.createdAt,
+                updatedAt: cat.updatedAt,
+                dateCreated: cat.dateCreated,
+                children: children
+            };
+        });
 
         if (perPage && perPage > 0) {
             const totalPosts = categoryData.length;
@@ -198,8 +190,8 @@ router.delete('/:id', async (req, res) => {
         const deletedCategory = await Category.findByIdAndDelete(req.params.id);
         
         if (deletedCategory) {
-            // Also delete all child subcategories
-            await Category.deleteMany({ parentId: req.params.id });
+            // Delete all subcategories belonging to this category in subcategories collection
+            await SubCategory.deleteMany({ category: req.params.id });
         }
 
         return res.status(200).json({
@@ -225,20 +217,15 @@ router.post('/create', async (req, res) => {
             slug = `${slug}-${Date.now()}`;
         }
 
-        let catObj = {
+        let category = new Category({
             name: req.body.name,
             images: catImages,
             color: req.body.color || '',
             slug: slug,
-        };
+            dateCreated: new Date()
+        });
 
-        if (req.body.parentId && req.body.parentId !== "" && req.body.parentId !== "null") {
-            catObj.parentId = req.body.parentId;
-        }
-
-        let category = new Category(catObj);
         category = await category.save();
-
         return res.status(201).json(category);
     } catch (error) {
         console.error("Create category error:", error);
@@ -265,15 +252,12 @@ router.put('/:id', async (req, res) => {
         const updateData = {
             name: req.body.name,
             color: req.body.color || '',
-            slug: slug
+            slug: slug,
+            updatedAt: new Date()
         };
 
         if (catImages && catImages.length > 0) {
             updateData.images = catImages;
-        }
-
-        if (req.body.parentId !== undefined) {
-            updateData.parentId = req.body.parentId;
         }
 
         const category = await Category.findByIdAndUpdate(
@@ -289,6 +273,12 @@ router.put('/:id', async (req, res) => {
             });
         }
 
+        // Update parent name in subcategories
+        await SubCategory.updateMany(
+            { category: req.params.id },
+            { $set: { categoryName: req.body.name } }
+        );
+
         return res.status(200).json(category);
     } catch (error) {
         console.error("Update category error:", error);
@@ -297,7 +287,7 @@ router.put('/:id', async (req, res) => {
 });
 
 router.get(`/get/count`, async (req, res) => {
-    let query = { $or: [{ parentId: { $exists: false } }, { parentId: "" }, { parentId: null }] };
+    let query = {};
     if (req.query.period !== undefined && req.query.period !== null && req.query.period !== "") {
         const today = new Date();
         let startDate;
@@ -320,15 +310,6 @@ router.get(`/get/count`, async (req, res) => {
     try {
         const categoryCount = await Category.countDocuments(query);
         return res.status(200).json({ categoryCount: categoryCount });
-    } catch (error) {
-        return res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-router.get(`/subCat/get/count`, async (req, res) => {
-    try {
-        const subCatCount = await Category.countDocuments({ parentId: { $exists: true, $ne: null, $ne: "" } });
-        return res.status(200).json({ subCatCount: subCatCount });
     } catch (error) {
         return res.status(500).json({ success: false, error: error.message });
     }

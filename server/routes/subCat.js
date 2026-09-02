@@ -1,3 +1,4 @@
+const { SubCategory } = require('../models/subCat');
 const { Category } = require('../models/category');
 const express = require('express');
 const router = express.Router();
@@ -7,41 +8,40 @@ router.get(`/`, async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const perPage = parseInt(req.query.perPage);
 
-        const allCategories = await Category.find().sort({ createdAt: -1 });
-        const subCats = allCategories.filter(c => c.parentId && c.parentId !== "" && c.parentId !== "null" && c.parentId !== "undefined");
-        
-        const enrichedList = subCats.map(sub => {
-            const parent = allCategories.find(p => p._id.toString() === (sub.parentId || '').toString());
-            return {
-                _id: sub._id,
-                id: sub._id,
-                name: sub.name,
-                subCat: sub.name,
-                category: parent ? { _id: parent._id, name: parent.name, images: parent.images, color: parent.color } : { _id: sub.parentId, name: "" },
-                parentId: sub.parentId,
-                slug: sub.slug,
-                color: sub.color || '',
-                images: sub.images || [],
-                createdAt: sub.createdAt || sub.dateCreated || new Date(),
-                updatedAt: sub.updatedAt || new Date(),
-                dateCreated: sub.dateCreated || sub.createdAt || new Date()
-            };
-        });
+        let subCategoryList = [];
+        let totalPages = 0;
 
-        if (perPage && perPage > 0) {
-            const totalPosts = enrichedList.length;
-            const totalPages = Math.ceil(totalPosts / perPage) || 1;
-            const paginated = enrichedList.slice((page - 1) * perPage, page * perPage);
-            return res.status(200).json({
-                subCategoryList: paginated,
-                totalPages: totalPages,
-                page: page,
-                totalPosts: totalPosts
-            });
+        if (req.query.page !== undefined && req.query.perPage !== undefined && perPage > 0) {
+            const totalPosts = await SubCategory.countDocuments({});
+            totalPages = Math.ceil(totalPosts / perPage) || 1;
+
+            subCategoryList = await SubCategory.find({})
+                .populate('category')
+                .sort({ createdAt: -1 })
+                .skip((page - 1) * perPage)
+                .limit(perPage)
+                .exec();
+        } else {
+            subCategoryList = await SubCategory.find({}).populate('category').sort({ createdAt: -1 });
         }
 
+        const formattedList = subCategoryList.map(item => ({
+            _id: item._id,
+            id: item._id,
+            category: item.category || { _id: item.category, name: item.categoryName || '' },
+            categoryName: item.categoryName || (item.category ? item.category.name : ''),
+            subCat: item.subCat || item.name,
+            name: item.name || item.subCat,
+            slug: item.slug,
+            dateCreated: item.dateCreated || item.createdAt || new Date(),
+            createdAt: item.createdAt || new Date(),
+            updatedAt: item.updatedAt || new Date()
+        }));
+
         return res.status(200).json({
-            subCategoryList: enrichedList
+            subCategoryList: formattedList,
+            totalPages: totalPages,
+            page: page
         });
     } catch (error) {
         console.error("SubCategory list error:", error);
@@ -51,27 +51,22 @@ router.get(`/`, async (req, res) => {
 
 router.get('/:id', async (req, res) => {
     try {
-        const subCat = await Category.findById(req.params.id);
+        const subCat = await SubCategory.findById(req.params.id).populate('category');
         if (!subCat) {
             return res.status(404).json({ success: false, message: 'Sub category not found' });
         }
-        let parentCat = null;
-        if (subCat.parentId) {
-            parentCat = await Category.findById(subCat.parentId);
-        }
+
         return res.status(200).json({
             _id: subCat._id,
             id: subCat._id,
-            name: subCat.name,
-            subCat: subCat.name,
-            category: parentCat ? { _id: parentCat._id, name: parentCat.name, images: parentCat.images } : { _id: subCat.parentId, name: "" },
-            parentId: subCat.parentId,
+            category: subCat.category || { _id: subCat.category, name: subCat.categoryName || '' },
+            categoryName: subCat.categoryName || (subCat.category ? subCat.category.name : ''),
+            subCat: subCat.subCat || subCat.name,
+            name: subCat.name || subCat.subCat,
             slug: subCat.slug,
-            color: subCat.color || '',
-            images: subCat.images || [],
-            createdAt: subCat.createdAt || sub.dateCreated || new Date(),
-            updatedAt: subCat.updatedAt || new Date(),
-            dateCreated: subCat.dateCreated || subCat.createdAt || new Date()
+            dateCreated: subCat.dateCreated || subCat.createdAt || new Date(),
+            createdAt: subCat.createdAt || new Date(),
+            updatedAt: subCat.updatedAt || new Date()
         });
     } catch (error) {
         console.error("Error fetching subCategory:", error);
@@ -81,33 +76,36 @@ router.get('/:id', async (req, res) => {
 
 router.post('/create', async (req, res) => {
     try {
-        const name = req.body.name || req.body.subCat;
-        const parentId = req.body.parentId || req.body.category;
+        const subCatName = req.body.subCat || req.body.name;
+        const categoryId = req.body.category || req.body.parentId;
 
-        if (!name || !parentId) {
+        if (!subCatName || !categoryId) {
             return res.status(400).json({ success: false, error: "Subcategory name and parent category are required." });
         }
 
-        let baseSlug = name.toString().toLowerCase().trim().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+        const parentCategory = await Category.findById(categoryId);
+        const categoryName = parentCategory ? parentCategory.name : '';
+
+        let baseSlug = subCatName.toString().toLowerCase().trim().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
         if (!baseSlug) baseSlug = `subcat-${Date.now()}`;
 
-        const existing = await Category.findOne({ slug: baseSlug });
+        const existing = await SubCategory.findOne({ slug: baseSlug });
         let slug = baseSlug;
         if (existing) {
             slug = `${baseSlug}-${Date.now()}`;
         }
 
-        let subCat = new Category({
-            name: name,
-            parentId: parentId,
+        let subCatDoc = new SubCategory({
+            category: categoryId,
+            categoryName: categoryName,
+            subCat: subCatName,
+            name: subCatName,
             slug: slug,
-            color: req.body.color || '',
-            images: req.body.images || [],
             dateCreated: new Date()
         });
 
-        subCat = await subCat.save();
-        return res.status(201).json(subCat);
+        subCatDoc = await subCatDoc.save();
+        return res.status(201).json(subCatDoc);
     } catch (err) {
         console.error("Error creating sub category:", err);
         return res.status(500).json({ success: false, error: err.message });
@@ -116,7 +114,7 @@ router.post('/create', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
     try {
-        const deletedSubCat = await Category.findByIdAndDelete(req.params.id);
+        const deletedSubCat = await SubCategory.findByIdAndDelete(req.params.id);
         if (!deletedSubCat) {
             return res.status(404).json({
                 message: 'Sub Category not found!',
@@ -136,28 +134,34 @@ router.delete('/:id', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
     try {
-        const name = req.body.name || req.body.subCat;
-        const parentId = req.body.parentId || req.body.category;
+        const subCatName = req.body.subCat || req.body.name;
+        const categoryId = req.body.category || req.body.parentId;
 
-        let baseSlug = name ? name.toString().toLowerCase().trim().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-') : null;
-        let slug = baseSlug;
-        if (slug) {
-            const existing = await Category.findOne({ slug: slug, _id: { $ne: req.params.id } });
-            if (existing) {
-                slug = `${slug}-${Date.now()}`;
-            }
+        let categoryName = '';
+        if (categoryId) {
+            const parentCategory = await Category.findById(categoryId);
+            if (parentCategory) categoryName = parentCategory.name;
+        }
+
+        let slug = undefined;
+        if (subCatName) {
+            let baseSlug = subCatName.toString().toLowerCase().trim().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+            const existing = await SubCategory.findOne({ slug: baseSlug, _id: { $ne: req.params.id } });
+            slug = existing ? `${baseSlug}-${Date.now()}` : baseSlug;
         }
 
         const updateData = {
             updatedAt: new Date()
         };
-        if (name) updateData.name = name;
-        if (parentId) updateData.parentId = parentId;
+        if (subCatName) {
+            updateData.subCat = subCatName;
+            updateData.name = subCatName;
+        }
+        if (categoryId) updateData.category = categoryId;
+        if (categoryName) updateData.categoryName = categoryName;
         if (slug) updateData.slug = slug;
-        if (req.body.color !== undefined) updateData.color = req.body.color;
-        if (req.body.images) updateData.images = req.body.images;
 
-        const subCat = await Category.findByIdAndUpdate(
+        const subCat = await SubCategory.findByIdAndUpdate(
             req.params.id,
             updateData,
             { new: true }
@@ -178,7 +182,7 @@ router.put('/:id', async (req, res) => {
 });
 
 router.get(`/get/count`, async (req, res) => {
-    let query = { parentId: { $exists: true, $ne: null, $ne: "" } };
+    let query = {};
     if (req.query.period !== undefined && req.query.period !== null && req.query.period !== "") {
         const today = new Date();
         let startDate;
@@ -199,7 +203,7 @@ router.get(`/get/count`, async (req, res) => {
     }
 
     try {
-        const subCatCount = await Category.countDocuments(query);
+        const subCatCount = await SubCategory.countDocuments(query);
         return res.status(200).json({ subCatCount: subCatCount });
     } catch (error) {
         return res.status(500).json({ success: false, error: error.message });

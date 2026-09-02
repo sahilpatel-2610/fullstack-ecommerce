@@ -81,13 +81,15 @@ const SubCategory = () => {
     }, []);
 
     const deleteSubCat = (id) => {
-
         context.setProgress(30);
-        deleteData(`/api/category/${id}`).then(res => {
+        deleteData(`/api/subCat/${id}`).then(res => {
             context.setProgress(100);
             fetchDataFromApi('/api/category').then((res) => {
                 setCatData(res);
                 context.setProgress(100);
+                if (typeof context.fetchCategory === 'function') {
+                    context.fetchCategory();
+                }
                 context.setAlertBox({
                     open: true,
                     error: false,

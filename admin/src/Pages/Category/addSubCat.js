@@ -98,21 +98,27 @@ const AddSubCat = () => {
         e.preventDefault();
 
         const data = {
-            ...formFields,
+            category: formFields.parentId,
+            subCat: formFields.name,
+            name: formFields.name,
             slug: formFields.name
         }
-
 
         if (formFields.name !== "" && formFields.parentId !== "") {
             setIsLoading(true);
 
-
-            postData('/api/category/create', data).then(res => {
+            postData('/api/subCat/create', data).then(res => {
                 setIsLoading(false);
 
-                deleteData("/api/imageUpload/deleteAllImages");
+                if (typeof context.fetchCategory === 'function') {
+                    context.fetchCategory();
+                }
 
+                deleteData("/api/imageUpload/deleteAllImages");
                 history('/subCategory');
+            }).catch(err => {
+                setIsLoading(false);
+                console.error(err);
             });
 
         } else {
@@ -122,7 +128,6 @@ const AddSubCat = () => {
                 msg: 'Please select a parent category and enter a name',
             });
         }
-
     }
 
 
