@@ -1,6 +1,9 @@
 const { SidebarBanner } = require('../models/sidebarBanner');
+const { Product } = require('../models/products');
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const fs = require('fs');
 const cloudinary = require('cloudinary').v2;
 
 cloudinary.config({
@@ -8,6 +11,70 @@ cloudinary.config({
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
     secure: true
+});
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        if (!fs.existsSync('uploads')) {
+            fs.mkdirSync('uploads', { recursive: true });
+        }
+        cb(null, 'uploads');
+    },
+    filename: function (req, file, cb) {
+        cb(null, `${Date.now()}_${file.originalname}`);
+    },
+});
+
+const upload = multer({ storage: storage });
+
+router.post(`/upload`, upload.array("images"), async (req, res) => {
+    let imagesArr = [];
+    try {
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ error: true, msg: "No image files provided." });
+        }
+
+        for (let i = 0; i < req.files.length; i++) {
+            const file = req.files[i];
+            try {
+                const options = {
+                    use_filename: true,
+                    unique_filename: false,
+                    overwrite: false,
+                };
+                const img = await cloudinary.uploader.upload(file.path, options);
+                imagesArr.push(img.secure_url);
+                if (fs.existsSync(`uploads/${file.filename}`)) {
+                    fs.unlinkSync(`uploads/${file.filename}`);
+                }
+            } catch (cloudErr) {
+                console.error("Cloudinary upload failed, using local fallback:", cloudErr.message || cloudErr);
+                const localUrl = `${req.protocol}://${req.get('host')}/uploads/${file.filename}`;
+                imagesArr.push(localUrl);
+            }
+        }
+
+        return res.status(200).json(imagesArr);
+    } catch (error) {
+        console.error("SidebarBanner Upload Error:", error);
+        return res.status(500).json({ error: true, msg: error.message || "Images Upload Failed" });
+    }
+});
+
+router.delete('/deleteImage', async (req, res) => {
+    const imgUrl = req.query.img;
+    if (!imgUrl) return res.status(400).json({ success: false, msg: "No image URL provided." });
+    try {
+        const urlArr = imgUrl.split('/');
+        const image = urlArr[urlArr.length - 1];
+        const imageName = image.split('.')[0];
+        if (imageName && imgUrl.includes('cloudinary')) {
+            await cloudinary.uploader.destroy(imageName);
+        }
+        return res.status(200).json({ success: true, msg: "Image deleted" });
+    } catch (err) {
+        return res.status(500).json({ success: false, error: err.message });
+    }
 });
 
 router.get(`/`, async (req, res) => {
@@ -50,8 +117,6 @@ router.get('/:id', async (req, res) => {
         return res.status(500).json({ success: false, error: error.message });
     }
 });
-
-const { Product } = require('../models/products');
 
 router.post('/create', async (req, res) => {
     try {

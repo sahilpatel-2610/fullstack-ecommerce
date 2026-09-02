@@ -276,7 +276,7 @@ const AddHomeBottomBanner = () => {
                                             </div>
                                         ) : (
                                             <>
-                                                <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/homeBanner/upload')} name="images" />
+                                                <input type="file" multiple onChange={(e) => onChangeFile(e, '/api/homeBottomBanners/upload')} name="images" />
                                                 <div className="info">
                                                     <FaRegImages />
                                                     <h5>image upload</h5>
