@@ -67,7 +67,7 @@ const Header = () => {
                                 <SearchBox />
 
                                 <div className='part3 d-flex align-items-center ml-auto'>
-                                    <a href="https://fullstackecomm-admin.netlify.app/" target="_blank" rel="noopener noreferrer">
+                                    <a href={window.location.hostname === 'localhost' ? 'http://localhost:3001' : 'https://fullstack-admin-panel-chi.vercel.app'} target="_blank" rel="noopener noreferrer">
                                         <Button className="btn-blue mr-3">Admin Panel</Button>
                                     </a>
                                     {
