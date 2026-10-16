@@ -1,8 +1,7 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay, Pagination } from "swiper/modules";
 import { Link } from "react-router-dom";
-import { MyContext } from "../../App";
 
 // Swiper styles
 import "swiper/css";
@@ -10,7 +9,6 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 
 const HomeBanner = (props) => {
-  const context = useContext(MyContext);
 
   const getBannerLink = (item, index) => {
     if (item?._id) return `/banner-products/${item._id}`;

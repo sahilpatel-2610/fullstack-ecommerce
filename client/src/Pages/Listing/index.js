@@ -81,12 +81,25 @@ const Listing = () => {
       }
     } else {
       if (context.subCategoryData?.length > 0) {
-        const sub = context.subCategoryData.find(item => item._id === id || item.id === id || item.name?.toLowerCase() === id?.toLowerCase() || encodeURIComponent(item.name)?.toLowerCase() === id?.toLowerCase());
+        const sub = context.subCategoryData.find(item => 
+          item._id === id || 
+          item.id === id || 
+          (item.name && id && item.name.toLowerCase() === String(id).toLowerCase()) || 
+          (item.name && id && encodeURIComponent(item.name).toLowerCase() === String(id).toLowerCase())
+        );
         if (sub) {
-          setCurrentSubCategory(sub.name);
-          const parent = context.categoryData?.find(cat => cat._id === sub.parentId || cat.id === sub.parentId || cat.name?.toLowerCase() === sub.category?.toLowerCase());
-          setCurrentCategory(parent?.name || sub.category || "");
-          if (sub.name?.toLowerCase() === "facial" || parent?.name?.toLowerCase() === "facial" || sub.name?.toLowerCase() === "wellness" || parent?.name?.toLowerCase() === "wellness") {
+          setCurrentSubCategory(sub.name || sub.subCat || "");
+          const subCatNameStr = typeof sub.category === 'string' ? sub.category : (sub.category?.name || sub.categoryName || "");
+          const parent = context.categoryData?.find(cat => 
+            cat._id === sub.parentId || 
+            cat.id === sub.parentId || 
+            (cat._id && sub.category?._id && String(cat._id) === String(sub.category._id)) ||
+            (cat.name && subCatNameStr && cat.name.toLowerCase() === subCatNameStr.toLowerCase())
+          );
+          setCurrentCategory(parent?.name || subCatNameStr || "");
+          const isSpecial = (sub.name && (sub.name.toLowerCase() === "facial" || sub.name.toLowerCase() === "wellness")) ||
+                            (parent?.name && (parent.name.toLowerCase() === "facial" || parent.name.toLowerCase() === "wellness"));
+          if (isSpecial) {
             setProductView('three');
           }
         } else {
@@ -215,11 +228,17 @@ const Listing = () => {
                     <CircularProgress />
                   </div>
                 ) : (
-                  productData?.map((item, index) => {
-                    return (
-                      <ProductItem key={index} itemView={productView} item={item} />
-                    )
-                  })
+                  productData?.length > 0 ? (
+                    productData.map((item, index) => {
+                      return (
+                        <ProductItem key={item?._id || index} itemView={productView} item={item} />
+                      )
+                    })
+                  ) : (
+                    <div className="d-flex align-items-center justify-content-center w-100" style={{ minHeight: '300px' }}>
+                      <h4 className="text-muted">No products found in this category.</h4>
+                    </div>
+                  )
                 )
               }
             </div>

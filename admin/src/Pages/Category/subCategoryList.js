@@ -90,6 +90,9 @@ const SubCategory = () => {
                 if (typeof context.fetchCategory === 'function') {
                     context.fetchCategory();
                 }
+                if (typeof context.fetchSubCategory === 'function') {
+                    context.fetchSubCategory();
+                }
                 context.setAlertBox({
                     open: true,
                     error: false,
@@ -172,9 +175,12 @@ const SubCategory = () => {
                                                         {
                                                             item?.children?.length !== 0 && item?.children?.map((subCat, index) => {
                                                                 return (
-                                                                    <span className="badge badge-primary mx-1">
-                                                                        {subCat.name}
-                                                                        <IoCloseSharp className="cursor ms-1" onClick={() => deleteSubCat(subCat._id)} />
+                                                                    <span className="badge badge-primary mx-1 d-inline-flex align-items-center" key={index}>
+                                                                        <Link to={`/subCategory/edit/${subCat._id}`} style={{ color: '#fff', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }} title="Edit Sub Category">
+                                                                            <span>{subCat.name}</span>
+                                                                            <FaPencilAlt className="cursor ms-1 me-1" style={{ fontSize: '10px' }} />
+                                                                        </Link>
+                                                                        <IoCloseSharp className="cursor ms-1" onClick={() => deleteSubCat(subCat._id)} title="Delete Sub Category" />
                                                                     </span>
                                                                 )
                                                             })

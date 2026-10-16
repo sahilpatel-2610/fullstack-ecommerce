@@ -20,7 +20,7 @@ const Sidebar = ({ filterByPrice, filterByRating, categoryId }) => {
 
     const [subCatId, setSubCatId] = useState('');
 
-    const [filterSubCat, setFilterSubCat] = React.useState();
+    const [filterSubCat, setFilterSubCat] = React.useState('');
     const [sidebarBanners, setSidebarBanners] = useState([]);
 
     const context = useContext(MyContext);
@@ -29,8 +29,8 @@ const Sidebar = ({ filterByPrice, filterByRating, categoryId }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        setSubCatId(id);
-        setFilterSubCat(id);
+        setSubCatId(id || '');
+        setFilterSubCat(id || '');
     }, [id]);
 
     useEffect(() => {
@@ -68,16 +68,16 @@ const Sidebar = ({ filterByPrice, filterByRating, categoryId }) => {
                         <RadioGroup
                             aria-labelledby="demo-controlled-radio-buttons-group"
                             name="controlled-radio-buttons-group"
-                            value={filterSubCat}
+                            value={filterSubCat || ''}
                             onChange={handleChange}
                         >
 
                             {
                                 context.subCategoryData?.length > 0 && context.subCategoryData
-                                    ?.filter(item => categoryId ? item.parentId === categoryId : true)
+                                    ?.filter(item => categoryId ? (item.parentId === categoryId || item.category?._id === categoryId || item.category === categoryId) : true)
                                     ?.map((item, index) => {
                                         return (
-                                            <FormControlLabel value={item?._id} control={<Radio />} key={index} label={item?.name} />
+                                            <FormControlLabel value={item?._id} control={<Radio />} key={item?._id || index} label={item?.name || item?.subCat} />
                                         )
                                     })
                             }

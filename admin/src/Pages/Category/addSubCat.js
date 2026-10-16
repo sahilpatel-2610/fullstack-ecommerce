@@ -74,6 +74,13 @@ const AddSubCat = () => {
     useEffect(() => {
         setCatData(context.catData);
         setSubCatData(context.subCatData);
+        if (!context.catData?.categoryList?.length) {
+            fetchDataFromApi('/api/category').then(res => {
+                if (res && res.categoryList) {
+                    setCatData(res);
+                }
+            });
+        }
     }, [context.catData, context.subCatData]);
 
 
@@ -110,14 +117,36 @@ const AddSubCat = () => {
             postData('/api/subCat/create', data).then(res => {
                 setIsLoading(false);
 
+                if (res?.error || res?.success === false) {
+                    context.setAlertBox({
+                        open: true,
+                        error: true,
+                        msg: res?.error || res?.message || 'Failed to create sub category!'
+                    });
+                    return;
+                }
+
                 if (typeof context.fetchCategory === 'function') {
                     context.fetchCategory();
                 }
+                if (typeof context.fetchSubCategory === 'function') {
+                    context.fetchSubCategory();
+                }
 
-                deleteData("/api/imageUpload/deleteAllImages");
+                context.setAlertBox({
+                    open: true,
+                    error: false,
+                    msg: 'Sub Category Created Successfully!'
+                });
+
                 history('/subCategory');
             }).catch(err => {
                 setIsLoading(false);
+                context.setAlertBox({
+                    open: true,
+                    error: true,
+                    msg: 'Server error while creating sub category'
+                });
                 console.error(err);
             });
 

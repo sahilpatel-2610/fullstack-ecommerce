@@ -7,35 +7,23 @@ import { IoBagCheckOutline } from "react-icons/io5";
 import { useContext } from "react";
 import { MyContext } from "../../App";
 import { useEffect } from "react";
-import { deleteData, editData, fetchDataFromApi, postData } from "../../utils/api";
+import { deleteData, editData } from "../../utils/api";
 import { useState } from "react";
-import { loadStripe } from "@stripe/stripe-js";
 
 const Cart = () => {
 
-    const [cartData, setCartData] = useState([]);
-    const [productQuantity, setProductQuantity] = useState();
-    let [cartFields, setCartFields] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [chengeQuantity, setChengeQuantity] = useState(0);
-    const [selectedQuantity, setSelectedQuantity] = useState();
 
     const context = useContext(MyContext);
     const history = useNavigate();
 
     useEffect(() => {
-        fetchDataFromApi(`/api/cart`).then((res) => {
-            if (res !== undefined && !res.error) {
-                setCartData(res);
-                setSelectedQuantity(res?.quantity);
-            } else {
-                setCartData([]);
-            }
-        })
+        context.getCartData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const quantity = (val) => {
-        setProductQuantity(val);
         setChengeQuantity(val);
     }
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
-import { FaHome, FaAngleRight, FaShoppingCart, FaEye } from "react-icons/fa";
+import { FaHome, FaAngleRight, FaShoppingCart } from "react-icons/fa";
 import Rating from '@mui/material/Rating';
 import { MyContext } from '../../App';
 import Dialog from '@mui/material/Dialog';
@@ -23,7 +23,7 @@ const BannerDetails = () => {
 
     const [bannerData, setBannerData] = useState(initialBanner);
     const [bannerImage, setBannerImage] = useState(initialImg);
-    const [loading, setLoading] = useState(!initialImg);
+    const [, setLoading] = useState(!initialImg);
     const [linkedProducts, setLinkedProducts] = useState([]);
     const [isOpenLightbox, setIsOpenLightbox] = useState(false);
     const [isHovered, setIsHovered] = useState(false);

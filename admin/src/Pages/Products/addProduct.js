@@ -145,22 +145,22 @@ const ProductUpload = () => {
     }, [context.countryList]);
 
 
-    useEffect(() => {
-        const subCatArr = [];
-
-        context.catData?.categoryList?.length !== 0 && context.catData?.categoryList?.map((cat, index) => {
-            if (cat?.children.length !== 0) {
-                cat?.children?.map((subCat) => {
-                    subCatArr.push(subCat);
-                })
-            }
-        })
-        setSubCatData(subCatArr);
-    }, [context.catData])
+    const [allSubCatList, setAllSubCatList] = useState([]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
-        setCatData(context.catData);
+
+        // Fetch fresh categories dynamically from database
+        fetchDataFromApi("/api/category").then((res) => {
+            setCatData(res);
+        });
+
+        // Fetch fresh subcategories dynamically from database
+        fetchDataFromApi("/api/subCat").then((res) => {
+            const list = res?.subCategoryList || (Array.isArray(res) ? res : []);
+            setAllSubCatList(list);
+        });
+
         fetchDataFromApi("/api/imageUpload").then((res) => {
             Array.isArray(res) && res?.map((item) => {
                 item?.image?.map((img) => {
@@ -185,43 +185,101 @@ const ProductUpload = () => {
 
     }, []);
 
+    useEffect(() => {
+        const availableCategories = catData?.categoryList?.length ? catData.categoryList : (context.catData?.categoryList || []);
 
-    // useEffect(() => {
-    //     if (!imgFiles) return;
+        if (categoryVal) {
+            const selectedCat = availableCategories.find(c => (c._id === categoryVal || c.id === categoryVal));
+            const selectedCatName = selectedCat ? selectedCat.name : '';
 
-    //     let tmp = [];
-    //     for (let i = 0; i < imgFiles.length; i++) {
-    //         tmp.push(URL.createObjectURL(imgFiles[i]));
-    //     }
+            // Filter from dynamic subcategories collection
+            const filtered = allSubCatList.filter(item => {
+                const itemCatId = item.category?._id || item.category?.id || (typeof item.category === 'string' ? item.category : '') || item.parentId;
+                const itemCatName = item.categoryName || item.category?.name || '';
+                return (
+                    (itemCatId && itemCatId.toString() === categoryVal.toString()) ||
+                    (selectedCatName && itemCatName && itemCatName.trim().toLowerCase() === selectedCatName.trim().toLowerCase())
+                );
+            });
 
-    //     const objectUrls = tmp;
-    //     setPreviews(objectUrls);
+            if (filtered.length > 0) {
+                setSubCatData(filtered);
+                return;
+            }
 
-    //     // free memory 
-    //     for (let i = 0; i < objectUrls.length; i++) {
-    //         return () => {
-    //             URL.revokeObjectURL(objectUrls[i]);
-    //         }
-    //     }
-    // }, [imgFiles]);
+            // Fallback to selectedCat.children
+            if (selectedCat && selectedCat.children && selectedCat.children.length > 0) {
+                setSubCatData(selectedCat.children);
+                return;
+            }
 
-
-
+            setSubCatData([]);
+        } else {
+            if (allSubCatList.length > 0) {
+                setSubCatData(allSubCatList);
+            } else {
+                const subCatArr = [];
+                availableCategories.forEach((cat) => {
+                    if (cat?.children && cat.children.length !== 0) {
+                        cat.children.forEach((subCat) => {
+                            subCatArr.push(subCat);
+                        });
+                    }
+                });
+                setSubCatData(subCatArr);
+            }
+        }
+    }, [categoryVal, allSubCatList, catData, context.catData]);
 
     const handleChangeCategory = (event) => {
-        setCategoryVal(event.target.value);
-        setFormFields(() => ({
-            ...formFields,
-            category: event.target.value
-        }))
+        const selectedCatId = event.target.value;
+        setCategoryVal(selectedCatId);
+        
+        const availableCategories = catData?.categoryList?.length ? catData.categoryList : (context.catData?.categoryList || []);
+        const selectedCatObj = availableCategories.find(cat => (cat._id === selectedCatId || cat.id === selectedCatId));
+        const catName = selectedCatObj ? selectedCatObj.name : '';
+
+        setSubCatVal('');
+
+        setFormFields((prev) => ({
+            ...prev,
+            category: selectedCatId,
+            catName: catName,
+            subCat: '',
+            subCatId: '',
+            subCatName: ''
+        }));
     };
 
     const handleChangeSubCategory = (event) => {
-        setSubCatVal(event.target.value);
-        setFormFields(() => ({
-            ...formFields,
-            subCat: event.target.value,
-            subCatId: event.target.value
+        const selectedSubId = event.target.value;
+        setSubCatVal(selectedSubId);
+
+        const selectedSubObj = subCatData?.find(s => (s._id === selectedSubId || s.id === selectedSubId));
+        const subName = selectedSubObj ? (selectedSubObj.name || selectedSubObj.subCat) : '';
+
+        // Auto-select category if not selected
+        let updatedCatId = categoryVal;
+        let updatedCatName = formFields.catName;
+        if (!categoryVal && selectedSubObj) {
+            const pId = selectedSubObj.category?._id || selectedSubObj.category?.id || selectedSubObj.category || selectedSubObj.parentId;
+            const pName = selectedSubObj.categoryName || selectedSubObj.category?.name;
+            if (pId) {
+                updatedCatId = pId;
+                setCategoryVal(pId);
+            }
+            if (pName) {
+                updatedCatName = pName;
+            }
+        }
+
+        setFormFields((prev) => ({
+            ...prev,
+            category: updatedCatId || prev.category,
+            catName: updatedCatName || prev.catName,
+            subCat: selectedSubId,
+            subCatId: selectedSubId,
+            subCatName: subName
         }));
     };
 
@@ -394,6 +452,10 @@ const ProductUpload = () => {
 
     const addProduct = (e) => {
         e.preventDefault();
+
+        formFields.category = categoryVal || formFields.category;
+        formFields.subCat = subCatVal || formFields.subCat;
+        formFields.subCatId = subCatVal || formFields.subCatId;
 
         const appendedArray = [...previews];
 
@@ -649,7 +711,7 @@ const ProductUpload = () => {
                                                 {
                                                     subCatData?.length !== 0 && subCatData?.map((subCat, index) => {
                                                         return (
-                                                            <MenuItem className="text-capitalize" value={subCat._id} key={index} >{subCat.name}</MenuItem>
+                                                            <MenuItem className="text-capitalize" value={subCat._id || subCat.id} key={subCat._id || subCat.id || index} >{subCat.name || subCat.subCat}</MenuItem>
                                                         )
                                                     })
                                                 }

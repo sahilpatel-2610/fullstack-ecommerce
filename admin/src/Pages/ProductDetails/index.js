@@ -155,7 +155,25 @@ const ProductDetails = () => {
                       <span>
                         <ul className="list list-inline tags sml">
                           <li className="list-inline-item">
-                            <span style={{ color: '#fff' }}>{productData?.catName}</span>
+                            <span style={{ color: '#fff' }}>{productData?.category?.name || productData?.catName || productData?.categoryName || '—'}</span>
+                          </li>
+                        </ul>
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="row">
+                    <div className="col-sm-3 d-flex align-items-center">
+                      <span className="icon"><BiSolidCategoryAlt /></span>
+                      <span className="name" style={{ color: 'rgba(255,255,255,0.8)' }}>Sub Category</span>
+                    </div>
+
+                    <div className="col-sm-9">
+                      <span>:</span>
+                      <span>
+                        <ul className="list list-inline tags sml">
+                          <li className="list-inline-item">
+                            <span style={{ color: '#fff' }}>{productData?.subCat?.name || productData?.subCat?.subCat || productData?.subCatName || productData?.subCategory || '—'}</span>
                           </li>
                         </ul>
                       </span>

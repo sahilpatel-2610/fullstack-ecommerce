@@ -39,6 +39,14 @@ const Orders = () => {
                 } else {
                     setOrders(res || { ordersList: [], totalPages: 1 });
                 }
+            }).catch(() => {
+                setOrders({ ordersList: [], totalPages: 1 });
+            });
+        } else if (email) {
+            fetchDataFromApi(`/api/orders?email=${email}&page=${pageNum}&perPage=8`).then((resEmail) => {
+                setOrders(resEmail || { ordersList: [], totalPages: 1 });
+            }).catch(() => {
+                setOrders({ ordersList: [], totalPages: 1 });
             });
         }
     };
@@ -46,6 +54,7 @@ const Orders = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
         fetchOrdersData(1);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [context.user]);
 
     const deleteOrder = (id) => {
@@ -135,7 +144,11 @@ const Orders = () => {
                                                             <span className="badge badge-success">{order?.status}</span>
                                                         }
                                                     </td>
-                                                    <td>{order?.date}</td>
+                                                    <td>
+                                                        {order?.date && order?.date.includes(':') 
+                                                            ? order?.date 
+                                                            : (order?.createdAt ? new Date(order.createdAt).toLocaleString("en-IN", { month: "short", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true }) : order?.date)}
+                                                    </td>
                                                     <td>
                                                         <Button className="btn-red" style={{ minWidth: '32px', height: '32px', padding: '0px', borderRadius: '4px' }} onClick={() => deleteOrder(order?._id)}>
                                                             <MdDelete style={{ fontSize: '18px', color: '#fff' }} />

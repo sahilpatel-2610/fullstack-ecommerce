@@ -33,7 +33,7 @@ const CountryDropdown = () => {
         setIsOpenModal(false);
         context.setSelectedCountry(country);
         localStorage.setItem('location', country);
-        window.location.href = window.location.href;
+        window.location.reload();
     }
 
     useEffect(() => {

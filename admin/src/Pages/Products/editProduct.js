@@ -134,15 +134,30 @@ const EditUpload = () => {
 
         fetchDataFromApi(`/api/products/${id}`).then((res) => {
             setProducts(res);
+            const catIdVal = res?.category?._id || res?.category || '';
+            let subCatIdVal = '';
+            if (res?.subCat && typeof res?.subCat === 'object') {
+                subCatIdVal = res?.subCat?._id || res?.subCat?.id || '';
+            } else if (typeof res?.subCat === 'string' && res.subCat !== '') {
+                subCatIdVal = res.subCat;
+            } else if (res?.subCatId && (res?.subCatName || res?.subCategory)) {
+                subCatIdVal = res.subCatId;
+            }
+
+            const catNameVal = res?.category?.name || res?.catName || '';
+            const subCatNameVal = res?.subCat?.name || res?.subCat?.subCat || res?.subCatName || res?.subCategory || '';
+
             setFormFields({
                 name: res.name,
                 description: res.description,
                 brand: res.brand,
                 price: res.price,
                 oldPrice: res.oldPrice,
-                catName: res.catName,
-                category: res.category,
-                subCat: res.subCat,
+                catName: catNameVal,
+                category: catIdVal,
+                subCat: subCatIdVal,
+                subCatId: subCatIdVal,
+                subCatName: subCatNameVal,
                 countInStock: res.countInStock,
                 rating: res.rating,
                 isFeatured: res.isFeatured,
@@ -170,8 +185,8 @@ const EditUpload = () => {
             setSelectedLocation(locationArr);
 
             setRatingValue(res.rating);
-            setCategoryVal(res.category);
-            setSubCatVal(res.subCat);
+            setCategoryVal(catIdVal);
+            setSubCatVal(subCatIdVal);
             setisFeaturedValue(res.isFeatured);
             setProductRams(res.productRam || []);
             setProductSize(res.size || []);
@@ -198,9 +213,20 @@ const EditUpload = () => {
             setProductSIZEData(res);
         });
 
+        // Fetch fresh categories dynamically from database
+        fetchDataFromApi("/api/category").then((res) => {
+            setCatData(res);
+        });
+
+        // Fetch fresh subcategories dynamically from database
+        fetchDataFromApi("/api/subCat").then((res) => {
+            const list = res?.subCategoryList || (Array.isArray(res) ? res : []);
+            setAllSubCatList(list);
+        });
 
     }, []);
 
+    const [allSubCatList, setAllSubCatList] = useState([]);
 
     useEffect(() => {
         formFields.location = context.selectedCountry;
@@ -216,35 +242,101 @@ const EditUpload = () => {
 
 
     useEffect(() => {
-        const subCatArr = [];
-        context.catData?.categoryList?.length !== 0 && context.catData?.categoryList?.map((cat, index) => {
-            if (cat?.children.length !== 0) {
-                cat?.children?.map((subCat) => {
-                    subCatArr.push(subCat);
-                })
+        const availableCategories = catData?.categoryList?.length ? catData.categoryList : (context.catData?.categoryList || []);
+
+        if (categoryVal) {
+            const selectedCat = availableCategories.find(c => (c._id === categoryVal || c.id === categoryVal));
+            const selectedCatName = selectedCat ? selectedCat.name : '';
+
+            // Filter from dynamic subcategories collection
+            const filtered = allSubCatList.filter(item => {
+                const itemCatId = item.category?._id || item.category?.id || (typeof item.category === 'string' ? item.category : '') || item.parentId;
+                const itemCatName = item.categoryName || item.category?.name || '';
+                return (
+                    (itemCatId && itemCatId.toString() === categoryVal.toString()) ||
+                    (selectedCatName && itemCatName && itemCatName.trim().toLowerCase() === selectedCatName.trim().toLowerCase())
+                );
+            });
+
+            if (filtered.length > 0) {
+                setSubCatData(filtered);
+                return;
             }
-        })
-        setSubCatData(subCatArr);
-    }, [context.catData]);
 
+            // Fallback to selectedCat.children
+            if (selectedCat && selectedCat.children && selectedCat.children.length > 0) {
+                setSubCatData(selectedCat.children);
+                return;
+            }
 
-
+            setSubCatData([]);
+        } else {
+            if (allSubCatList.length > 0) {
+                setSubCatData(allSubCatList);
+            } else {
+                const subCatArr = [];
+                availableCategories.forEach((cat) => {
+                    if (cat?.children && cat.children.length !== 0) {
+                        cat.children.forEach((subCat) => {
+                            subCatArr.push(subCat);
+                        });
+                    }
+                });
+                setSubCatData(subCatArr);
+            }
+        }
+    }, [categoryVal, allSubCatList, catData, context.catData]);
 
     const handleChangeCategory = (event) => {
-        setCategoryVal(event.target.value);
-        setFormFields(() => ({
-            ...formFields,
-            category: event.target.value
-        }))
+        const selectedCatId = event.target.value;
+        setCategoryVal(selectedCatId);
+
+        const availableCategories = catData?.categoryList?.length ? catData.categoryList : (context.catData?.categoryList || []);
+        const selectedCatObj = availableCategories.find(cat => (cat._id === selectedCatId || cat.id === selectedCatId));
+        const catName = selectedCatObj ? selectedCatObj.name : '';
+
+        setSubCatVal('');
+
+        setFormFields((prev) => ({
+            ...prev,
+            category: selectedCatId,
+            catName: catName,
+            subCat: '',
+            subCatId: '',
+            subCatName: ''
+        }));
     };
 
     const handleChangeSubCategory = (event) => {
-        setSubCatVal(event.target.value);
-        setFormFields(() => ({
-            ...formFields,
-            subCat: event.target.value,
-            subCatId: event.target.value
-        }))
+        const selectedSubId = event.target.value;
+        setSubCatVal(selectedSubId);
+
+        const selectedSubObj = subCatData?.find(s => (s._id === selectedSubId || s.id === selectedSubId));
+        const subName = selectedSubObj ? (selectedSubObj.name || selectedSubObj.subCat) : '';
+
+        // Auto-select category if not selected
+        let updatedCatId = categoryVal;
+        let updatedCatName = formFields.catName;
+        if (!categoryVal && selectedSubObj) {
+            const pId = selectedSubObj.category?._id || selectedSubObj.category?.id || selectedSubObj.category || selectedSubObj.parentId;
+            const pName = selectedSubObj.categoryName || selectedSubObj.category?.name;
+            if (pId) {
+                updatedCatId = pId;
+                setCategoryVal(pId);
+            }
+            if (pName) {
+                updatedCatName = pName;
+            }
+        }
+
+        setFormFields((prev) => ({
+            ...prev,
+            category: updatedCatId || prev.category,
+            catName: updatedCatName || prev.catName,
+            subCat: selectedSubId,
+            subCatId: selectedSubId,
+            subCatName: subName
+        }));
     };
 
     const handleChangeisFeaturedValue = (event) => {
@@ -432,28 +524,22 @@ const EditUpload = () => {
     const editProduct = (e) => {
         e.preventDefault();
 
-        formFields.location = selectedLocation;
+        const catId = (typeof categoryVal === 'object' ? categoryVal?._id : categoryVal) || (typeof formFields.category === 'object' ? formFields.category?._id : formFields.category) || '';
+        const subId = (typeof subCatVal === 'object' ? subCatVal?._id : subCatVal) || (typeof formFields.subCat === 'object' ? formFields.subCat?._id : formFields.subCat) || '';
 
-        formdata.append('name', formFields.name);
-        formdata.append('description', formFields.description);
-        formdata.append('brand', formFields.brand);
-        formdata.append('price', formFields.price);
-        formdata.append('oldPrice', formFields.oldPrice);
-        formdata.append('catName', formFields.catName);
-        formdata.append('subCatId', formFields.subCatId);
-        formdata.append('category', formFields.category);
-        formdata.append('subCat', formFields.subCat);
-        formdata.append('countInStock', formFields.countInStock);
-        formdata.append('rating', formFields.rating);
-        formdata.append('isFeatured', formFields.isFeatured);
-        formdata.append('discount', formFields.discount);
-        formdata.append('productRam', formFields.productRam);
-        formdata.append('size', formFields.size);
-        formdata.append('productWeight', formFields.productWeight);
-        formdata.append('location', formFields.location);
+        const selectedSubObj = subCatData?.find(s => (s._id === subId || s.id === subId));
+        const subName = selectedSubObj ? (selectedSubObj.name || selectedSubObj.subCat) : (formFields.subCatName || '');
+
+        const availableCategories = catData?.categoryList?.length ? catData.categoryList : (context.catData?.categoryList || []);
+        const selectedCatObj = availableCategories.find(c => (c._id === catId || c.id === catId));
+        const catName = selectedCatObj ? selectedCatObj.name : (formFields.catName || '');
 
         formFields.location = selectedLocation;
-
+        formFields.category = catId;
+        formFields.catName = catName;
+        formFields.subCat = subId;
+        formFields.subCatId = subId ? String(subId) : '';
+        formFields.subCatName = subName;
 
         if (formFields.name === "") {
             context.setAlertBox({
@@ -482,7 +568,7 @@ const EditUpload = () => {
             return false;
         }
 
-        if (formFields.price === null) {
+        if (formFields.price === null || formFields.price === '') {
             context.setAlertBox({
                 open: true,
                 msg: 'please add product price',
@@ -491,7 +577,7 @@ const EditUpload = () => {
             return false;
         }
 
-        if (formFields.oldPrice === null) {
+        if (formFields.oldPrice === null || formFields.oldPrice === '') {
             context.setAlertBox({
                 open: true,
                 msg: 'please add product oldPrice',
@@ -500,24 +586,18 @@ const EditUpload = () => {
             return false;
         }
 
-        if (formFields.category === "") {
+        if (!formFields.category) {
             context.setAlertBox({
                 open: true,
                 msg: 'please select a category',
                 error: true
-            })
+            });
+            return false;
         }
 
-        if (formFields.subCat === "") {
-            context.setAlertBox({
-                open: true,
-                msg: 'please select a sub category',
-                error: true
-            })
-        }
+        // subcategory is optional (if unselected, it saves as null in DB)
 
-
-        if (formFields.countInStock === null) {
+        if (formFields.countInStock === null || formFields.countInStock === '') {
             context.setAlertBox({
                 open: true,
                 msg: 'please add product count in stock',
@@ -535,7 +615,7 @@ const EditUpload = () => {
             return false;
         }
 
-        if (formFields.isFeatured === null) {
+        if (formFields.isFeatured === null || formFields.isFeatured === undefined) {
             context.setAlertBox({
                 open: true,
                 msg: 'please select the product is a featured or not',
@@ -544,7 +624,7 @@ const EditUpload = () => {
             return false;
         }
 
-        if (formFields.discount === null) {
+        if (formFields.discount === null || formFields.discount === '') {
             context.setAlertBox({
                 open: true,
                 msg: 'please select the product discount',
@@ -567,16 +647,25 @@ const EditUpload = () => {
         setIsLoading(true);
 
         editData(`/api/products/${id}`, formFields).then((res) => {
+            setIsLoading(false);
+
+            if (res?.error || res?.status === false || res?.success === false) {
+                context.setAlertBox({
+                    open: true,
+                    msg: res?.msg || res?.message || res?.error || 'Failed to update product!',
+                    error: true
+                });
+                return;
+            }
+
             context.setAlertBox({
                 open: true,
                 msg: 'The product is updated!',
                 error: false
             });
 
-            setIsLoading(false);
-
             history('/products');
-        })
+        });
     }
 
 
@@ -639,10 +728,9 @@ const EditUpload = () => {
                                                     <em value={null}>None</em>
                                                 </MenuItem>
                                                 {
-                                                    context.catData?.categoryList?.length !== 0 && context.catData?.categoryList?.map((cat, index) => {
-                                                        // catData?.categoryList?.map((cat, index) => {
+                                                    (catData?.categoryList?.length ? catData.categoryList : (context.catData?.categoryList || []))?.map((cat, index) => {
                                                         return (
-                                                            <MenuItem className="text-capitalize" value={cat._id} key={index}
+                                                            <MenuItem className="text-capitalize" value={cat._id} key={cat._id || index}
                                                                 onClick={() => selectCat(cat.name)}
                                                             >{cat.name}</MenuItem>
                                                         )
@@ -667,21 +755,13 @@ const EditUpload = () => {
                                                 <MenuItem value="">
                                                     <em value={null}>None</em>
                                                 </MenuItem>
-                                                {/* {
-                                                    context.subCatData?.subCategoryList?.length !== 0 && context.subCatData?.subCategoryList?.map((subCat,index)=>{
-                                                    // catData?.categoryList?.map((cat, index) => {
-                                                        return(
-                                                            <MenuItem className="text-capitalize" value={subCat._id} key={index} >{subCat.subCat}</MenuItem>
-                                                        )
-                                                    })
-                                                } */}
 
                                                 {
                                                     subCatData?.length !== 0 &&
                                                     subCatData?.map((subCat, index) => {
                                                         return (
-                                                            <MenuItem value={subCat._id} key={index}>
-                                                                {subCat.name}
+                                                            <MenuItem value={subCat._id || subCat.id} key={subCat._id || subCat.id || index}>
+                                                                {subCat.name || subCat.subCat}
                                                             </MenuItem>
                                                         )
                                                     })

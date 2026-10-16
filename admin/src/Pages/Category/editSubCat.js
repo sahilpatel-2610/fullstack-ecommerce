@@ -37,8 +37,10 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 
 
 const EditSubCat = () => {
+    let { id } = useParams();
 
     const [data, setData] = useState([]);
+    const [catData, setCatData] = useState([]);
     const [categoryVal, setCategoryVal] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [formFields, setFormFields] = useState({
@@ -50,10 +52,21 @@ const EditSubCat = () => {
     const context = useContext(MyContext);
 
     useEffect(() => {
+        if (!context.catData?.categoryList?.length) {
+            fetchDataFromApi('/api/category').then(res => {
+                if (res && res.categoryList) {
+                    setCatData(res);
+                }
+            });
+        }
+    }, [context.catData]);
+
+    useEffect(() => {
+        if (!id) return;
         fetchDataFromApi(`/api/subCat/${id}`).then((res) => {
             if (res) {
                 setData(res);
-                const parentCatId = (res.category && res.category._id) ? res.category._id : (res.parentId || '');
+                const parentCatId = (res.category && res.category._id) ? res.category._id : (res.category || res.parentId || '');
                 setCategoryVal(parentCatId);
                 setFormFields({
                     category: parentCatId,
@@ -107,8 +120,19 @@ const EditSubCat = () => {
 
         editData(`/api/subCat/${id}`, formFields).then(res => {
             setIsLoading(false);
+            if (res?.error || res?.success === false) {
+                context.setAlertBox({
+                    open: true,
+                    error: true,
+                    msg: res?.error || res?.message || 'Failed to update sub category!'
+                });
+                return;
+            }
             if (typeof context.fetchCategory === 'function') {
                 context.fetchCategory();
+            }
+            if (typeof context.fetchSubCategory === 'function') {
+                context.fetchSubCategory();
             }
             context.setAlertBox({
                 open: true,
@@ -118,6 +142,11 @@ const EditSubCat = () => {
             history('/subCategory');
         }).catch(err => {
             setIsLoading(false);
+            context.setAlertBox({
+                open: true,
+                error: true,
+                msg: 'Server error while updating sub category'
+            });
             console.error(err);
         });
     }
@@ -167,10 +196,9 @@ const EditSubCat = () => {
                                                 <em value={null}>None</em>
                                             </MenuItem>
                                             {
-                                                context.catData?.categoryList?.length !== 0 && context.catData?.categoryList?.map((cat, index) => {
-                                                    // catData?.categoryList?.map((cat, index) => {
+                                                (context.catData?.categoryList || catData?.categoryList || []).map((cat, index) => {
                                                     return (
-                                                        <MenuItem className="text-capitalize" value={cat._id} key={index} >{cat.name}</MenuItem>
+                                                        <MenuItem className="text-capitalize" value={cat._id} key={cat._id || index} >{cat.name}</MenuItem>
                                                     )
                                                 })
                                             }

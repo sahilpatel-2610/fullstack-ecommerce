@@ -211,7 +211,11 @@ const Orders = () => {
                                                             <span className="badge badge-success cursor" onClick={() => orderStatus("pending", order?._id)}>{order?.status}</span>
                                                         }
                                                     </td>
-                                                    <td>{order?.date}</td>
+                                                    <td>
+                                                        {order?.date && order?.date.includes(':') 
+                                                            ? order?.date 
+                                                            : (order?.createdAt ? new Date(order.createdAt).toLocaleString("en-IN", { month: "short", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true }) : order?.date)}
+                                                    </td>
                                                     <td>
                                                         <Button className="btn-red" style={{ minWidth: '32px', height: '32px', padding: '0px', borderRadius: '4px' }} onClick={() => deleteOrder(order?._id)}>
                                                             <MdDelete style={{ fontSize: '18px', color: '#fff' }} />

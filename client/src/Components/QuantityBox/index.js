@@ -32,6 +32,7 @@ const QuantityBox = (props) => {
     if (typeof props.selectedItem === 'function') {
       props.selectedItem(props.item, inputVal);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputVal]);
 
 

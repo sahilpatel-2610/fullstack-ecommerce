@@ -41,7 +41,11 @@ const peoductSchema = mongoose.Schema({
     },
     subCat: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Category',
+        ref: 'SubCategory',
+    },
+    subCatName: {
+        type: String,
+        default: '',
     },
     countInStock: {
         type: Number,

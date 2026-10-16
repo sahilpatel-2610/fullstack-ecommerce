@@ -66,13 +66,6 @@ const MyAccount = () => {
 
     const context = useContext(MyContext);
 
-    const [userData, setUserData] = useState({
-        name: "",
-        email: "",
-        phone: "",
-        password: ""
-    });
-
 
 
 
@@ -249,15 +242,18 @@ const MyAccount = () => {
             if (userStr && userStr !== "undefined") {
                 const user = JSON.parse(userStr);
 
-                editData(`/api/user/${user?._id || user?.id}`, updatedFields).then(res => {
-                    context.fetchUser();
-                    deleteImage("/api/imageUpload/deleteAllImages");
-                    context.setAlertBox({
-                        open: true,
-                        error: false,
-                        msg: "User Updated Successfully!"
-                    })
-                })
+                const targetUserId = user?._id || user?.id || user?.userId;
+                if (targetUserId && targetUserId !== "undefined") {
+                    editData(`/api/user/${targetUserId}`, updatedFields).then(res => {
+                        context.fetchUser();
+                        deleteImage("/api/imageUpload/deleteAllImages");
+                        context.setAlertBox({
+                            open: true,
+                            error: false,
+                            msg: "User Updated Successfully!"
+                        });
+                    });
+                }
             }
         } else {
             context.setAlertBox({

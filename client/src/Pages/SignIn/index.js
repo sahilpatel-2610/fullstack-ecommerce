@@ -100,8 +100,6 @@ const SignIn = () => {
     const signInWithGoogle = () => {
         signInWithPopup(auth, googleProvider)
             .then((result) => {
-                const credential = GoogleAuthProvider.credentialFromResult(result);
-                const token = credential.accessToken;
                 // The signed-in user info.
                 const user = result.user;
 
@@ -147,17 +145,10 @@ const SignIn = () => {
                 });
             })
             .catch((error) => {
-                // Handle Errors here.
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                // The email of the user's account used.
-                const email = error.customData.email;
-                // The AuthCredential type that was used.
-                const credential = GoogleAuthProvider.credentialFromError(error);
                 context.setAlertBox({
                     open: true,
                     error: true,
-                    msg: errorMessage,
+                    msg: error.message || "Failed to sign in with Google",
                 });
             });
     };

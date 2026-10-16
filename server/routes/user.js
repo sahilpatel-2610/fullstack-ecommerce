@@ -308,36 +308,49 @@ router.delete('/:id', async (req, res) => {
 
 
 router.put('/:id', async (req, res) => {
-
-    const { name, phone, email } = req.body;
-
-    const userExist = await User.findById(req.params.id);
-
-    if (req.body.password) {
-        newPassword = bcrypt.hashSync(req.body.password, 10)
-    } else {
-        newPassword = userExist.password;
-    }
-
-    const user = await User.findByIdAndUpdate(
-        req.params.id,
-        {
-            name: name,
-            phone: phone,
-            email: email,
-            password: newPassword,
-            images: req.body.images
-        },
-        {
-            new: true
+    try {
+        if (!req.params.id || req.params.id === 'undefined' || !mongoose.isValidObjectId(req.params.id)) {
+            return res.status(400).json({ error: true, message: "Invalid user ID" });
         }
-    )
 
-    if (!user)
-        return res.status(404).json('the user cannot be updated!')
+        const { name, phone, email } = req.body;
+        const userExist = await User.findById(req.params.id);
 
-    res.send(user);
-})
+        if (!userExist) {
+            return res.status(404).json({ error: true, message: "User not found!" });
+        }
+
+        let newPassword;
+        if (req.body.password) {
+            newPassword = bcrypt.hashSync(req.body.password, 10);
+        } else {
+            newPassword = userExist.password;
+        }
+
+        const user = await User.findByIdAndUpdate(
+            req.params.id,
+            {
+                name: name,
+                phone: phone,
+                email: email,
+                password: newPassword,
+                images: req.body.images
+            },
+            {
+                new: true
+            }
+        );
+
+        if (!user) {
+            return res.status(404).json({ error: true, message: 'The user cannot be updated!' });
+        }
+
+        return res.status(200).send(user);
+    } catch (err) {
+        console.error("Error updating user:", err.message || err);
+        return res.status(500).json({ error: true, message: err.message || "Failed to update user" });
+    }
+});
 
 // router.put('/:id', async (req, res) => {
 

@@ -5,17 +5,42 @@ const router = express.Router();
 
 router.get(`/`, async (req, res) => {
     try {
-
         const myList = await MyList.find(req.query);
 
-        if (!myList) {
-            return res.status(500).json({ success: false })
+        if (!myList || myList.length === 0) {
+            return res.status(200).json([]);
         }
 
-        return res.status(200).json(myList);
+        let validMyList = myList;
+        try {
+            const { Product } = require('../models/products');
+            const activeProducts = await Product.find({}, '_id').lean();
+            const activeProductSet = new Set(activeProducts.map(p => p._id.toString()));
+
+            const filtered = [];
+            const orphanedListIds = [];
+
+            for (const item of myList) {
+                const pId = item.productId ? item.productId.toString() : null;
+                if (pId && activeProductSet.has(pId)) {
+                    filtered.push(item);
+                } else {
+                    orphanedListIds.push(item._id);
+                }
+            }
+
+            if (orphanedListIds.length > 0) {
+                MyList.deleteMany({ _id: { $in: orphanedListIds } }).exec().catch(err => console.error("Clean orphaned myList error:", err));
+            }
+            validMyList = filtered;
+        } catch (e) {
+            console.error("MyList active product filter error:", e);
+        }
+
+        return res.status(200).json(validMyList);
 
     } catch (error) {
-        res.status(500).json({ success: false })
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 
@@ -98,17 +123,23 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+const mongoose = require('mongoose');
+
 router.get('/:id', async (req, res) => {
-
-    const item = await MyList.findById(req.params.id);
-
-    if (!item) {
-        return res.status(500).json({
-            message: 'The item with given ID was not found.',
-        });
+    try {
+        if (!req.params.id || req.params.id === 'undefined' || !mongoose.isValidObjectId(req.params.id)) {
+            return res.status(400).json({ success: false, message: 'Invalid ID' });
+        }
+        const item = await MyList.findById(req.params.id);
+        if (!item) {
+            return res.status(404).json({
+                message: 'The item with given ID was not found.',
+            });
+        }
+        return res.status(200).send(item);
+    } catch (error) {
+        return res.status(500).json({ success: false, error: error.message });
     }
-    return res.status(200).send(item);
-
 });
 
 

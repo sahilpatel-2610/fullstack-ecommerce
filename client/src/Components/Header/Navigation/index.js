@@ -5,7 +5,7 @@ import Slide from '@mui/material/Slide';
 import { IoIosMenu } from "react-icons/io";
 import { FaAngleDown, FaAngleRight, FaAngleLeft } from "react-icons/fa6";
 import { MdClose } from "react-icons/md";
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { MyContext } from '../../../App';
 
 const Transition = React.forwardRef(function Transition(props, ref) {

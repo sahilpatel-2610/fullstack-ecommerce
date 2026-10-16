@@ -36,6 +36,7 @@ const Header = () => {
         if (token && token !== "undefined") {
             context.setisLogin(true);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const logout = () => {
@@ -67,9 +68,6 @@ const Header = () => {
                                 <SearchBox />
 
                                 <div className='part3 d-flex align-items-center ml-auto'>
-                                    <a href={window.location.hostname === 'localhost' ? 'http://localhost:3001' : 'https://fullstack-admin-panel-chi.vercel.app'} target="_blank" rel="noopener noreferrer">
-                                        <Button className="btn-blue mr-3">Admin Panel</Button>
-                                    </a>
                                     {
                                         (context.isLogin !== true && localStorage.getItem("token") === null) ? <Link to="/signIn"><Button className="btn-blue mr-3">Sign In</Button></Link> :
                                             <>

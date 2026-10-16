@@ -61,7 +61,14 @@ const orderSchema = mongoose.Schema({
     },
     date: {
         type: String,
-        default: new Date().toLocaleString("en-US", { month: "short", day: "2-digit", year: "numeric" })
+        default: () => new Date().toLocaleString("en-IN", { 
+            month: "short", 
+            day: "2-digit", 
+            year: "numeric", 
+            hour: "2-digit", 
+            minute: "2-digit", 
+            hour12: true 
+        })
     }
 }, { timestamps: true });
 

@@ -11,7 +11,6 @@ import { useEffect, useState } from "react";
 import ProductItem from "../../Components/ProductItem";
 import Pagination from '@mui/material/Pagination';
 import { MyContext } from "../../App";
-import CircularProgress from '@mui/material/CircularProgress';
 import { useContext } from "react";
 import NewsLetter from "../../Components/NewsLetter";
 
@@ -22,12 +21,9 @@ const SearchPage = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [productView, setProductView] = useState('four'); // default 4-grid
   const [filterPrice, setFilterPrice] = useState([100, 500000]);
-  const [filterRating, setFilterRating] = useState();
-  const [productData, setProductData] = useState([]);
-  const [totalPages, setTotalPages] = useState(1);
+  const [filterRating, setFilterRating] = useState(null);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [isLoading, setisLoading] = useState(false);
   const openDropdown = Boolean(anchorEl);
 
   const handleClick = (event) => {
@@ -46,17 +42,22 @@ const SearchPage = () => {
     setPage(1);
     setFilterPrice([100, 500000]);
     setFilterRating(null);
-
-    setisLoading(true);
-    setProductData(context.searchData);
-    setisLoading(false);
-
   }, [context.searchData]);
 
+  const filteredProducts = (context.searchData || []).filter(item => {
+    const price = Number(item.price) || 0;
+    const passesPrice = price >= filterPrice[0] && price <= filterPrice[1];
+    const passesRating = filterRating ? Number(item.rating) >= Number(filterRating) : true;
+    return passesPrice && passesRating;
+  });
 
-  const filterByPrice = (price, subId) => {
+  const totalPages = Math.ceil(filteredProducts.length / perPage) || 1;
+  const paginatedProducts = filteredProducts.slice((page - 1) * perPage, page * perPage);
+
+  const filterByPrice = (price) => {
     setFilterPrice(price);
-  }
+    setPage(1);
+  };
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -83,7 +84,7 @@ const SearchPage = () => {
 
             <div className="listingHeader mb-4">
               <h1 className="hd text-capitalize mb-0" style={{ fontSize: '22px' }}>Search Results</h1>
-              <p className="text-muted text-sml">Showing {productData?.length} results</p>
+              <p className="text-muted text-sml">Showing {filteredProducts.length} results</p>
             </div>
 
             {/* Toolbar */}
@@ -140,22 +141,16 @@ const SearchPage = () => {
             {/* Product Items */}
             <div className={`productsWrapper ${productView}`}>
               {
-                isLoading === true ? (
-                  <div className="d-flex align-items-center justify-content-center w-100" style={{ minHeight: '300px' }}>
-                    <CircularProgress />
-                  </div>
+                Array.isArray(paginatedProducts) && paginatedProducts.length > 0 ? (
+                  paginatedProducts.map((item, index) => {
+                    return (
+                      <ProductItem key={index} itemView={productView} item={item} />
+                    )
+                  })
                 ) : (
-                  Array.isArray(productData) && productData.length > 0 ? (
-                    productData.map((item, index) => {
-                      return (
-                        <ProductItem key={index} itemView={productView} item={item} />
-                      )
-                    })
-                  ) : (
-                    <div className="d-flex align-items-center justify-content-center w-100" style={{ minHeight: '300px' }}>
-                      <h4 className="text-muted">No products found for this search.</h4>
-                    </div>
-                  )
+                  <div className="d-flex align-items-center justify-content-center w-100" style={{ minHeight: '300px' }}>
+                    <h4 className="text-muted">No products found for this search.</h4>
+                  </div>
                 )
               }
             </div>

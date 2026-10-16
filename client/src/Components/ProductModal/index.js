@@ -249,6 +249,7 @@ const ProductModal = (props) => {
         }
       } catch (e) {}
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props?.data?._id]);
 
 

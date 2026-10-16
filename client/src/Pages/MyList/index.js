@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import { useContext } from "react";
 import { MyContext } from "../../App";
 import { useEffect } from "react";
-import { deleteData, fetchDataFromApi } from "../../utils/api";
+import { deleteData } from "../../utils/api";
 import { useState } from "react";
 import { FaHome } from "react-icons/fa";
 
@@ -17,6 +17,7 @@ const MyList = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
         context.getMyListData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const removeItem = (id) => {

@@ -260,7 +260,7 @@ const Products = () => {
                                 {
                                     productList?.products?.length !== 0 && productList?.products?.map((item, index) => {
                                         return (
-                                            <tr>
+                                            <tr key={item._id || index}>
                                                 {/* <td>
                                                 <div className="d-flex align-items-center">
                                                     <Checkbox {...label} />  <span>#1</span>
@@ -270,7 +270,7 @@ const Products = () => {
                                                     <div className="d-flex align-items-center productBox">
                                                         <div className="imgWrapper">
                                                             <div className="img card shadow m-0">
-                                                                <img src={item?.images[0]} className="w-100" />
+                                                                <img src={item?.images?.[0]} className="w-100" alt={item?.name} />
                                                             </div>
                                                         </div>
                                                         <div className="info pl-0">
@@ -279,8 +279,8 @@ const Products = () => {
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td>{item?.category?.name}</td>
-                                                <td>{item?.subCat?.name}</td>
+                                                <td>{item?.category?.name || item?.catName || item?.categoryName || (typeof item?.category === 'string' ? item?.category : '') || '—'}</td>
+                                                <td>{item?.subCat?.name || item?.subCat?.subCat || item?.subCatName || item?.subCategory || (typeof item?.subCat === 'string' ? item?.subCat : '') || '—'}</td>
                                                 <td><span className="brand">{item?.brand}</span></td>
                                                 <td>
                                                     <div className="d-flex align-items-center price-wrap">

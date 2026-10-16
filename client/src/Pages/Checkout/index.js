@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { IoBagCheckOutline } from "react-icons/io5";
-import { loadStripe } from "@stripe/stripe-js";
-
 import { MyContext } from '../../App';
 import { postData, deleteData } from '../../utils/api';
 
@@ -22,8 +20,6 @@ const Checkout = () => {
         phoneNumber: '',
         email: '',
     });
-
-    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -82,19 +78,9 @@ const Checkout = () => {
                 return (price || 0) * (item.quantity || 1);
             }).reduce((total, value) => total + value, 0) : 0;
 
-        // Warning for High Amount (MobiKwik/Wallet Limit Fix)
-        if (totalAmount > 50000) {
-            const message = totalAmount > 100000 
-                ? `This high-value order (₹${totalAmount.toLocaleString()}) exceeds wallet limits. Please use Credit/Debit Card, Netbanking, or EMI for a successful transaction. Cards have no such limits. Do you want to proceed?`
-                : "For payments above ₹50,000, wallets like MobiKwik may not work due to limit restrictions. Please use Credit/Debit Card or Netbanking. Do you want to proceed?";
-            
-            const confirmPayment = window.confirm(message);
-            if (!confirmPayment) return false;
-        }
-
         const options = {
             key: process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_test_lhO6WJjtmN7Evj",
-            amount: totalAmount * 100,
+            amount: Math.round(totalAmount * 100),
             currency: "INR",
             name: "E-Commerce",
             description: "Shopping Payment",
@@ -126,7 +112,14 @@ const Checkout = () => {
                         subTotal: item.subTotal
                     })),
                     status: "Pending",
-                    date: new Date().toLocaleString("en-US", { month: "short", day: "2-digit", year: "numeric" })
+                    date: new Date().toLocaleString("en-IN", { 
+                        month: "short", 
+                        day: "2-digit", 
+                        year: "numeric", 
+                        hour: "2-digit", 
+                        minute: "2-digit", 
+                        hour12: true 
+                    })
                 };
 
                 postData(`/api/orders/create`, payLoad).then((res) => {
@@ -170,9 +163,7 @@ const Checkout = () => {
         if (window.Razorpay) {
             var pay = new window.Razorpay(options);
             pay.open();
-            setIsLoading(false);
         } else {
-            setIsLoading(false);
             context.setAlertBox({
                 open: true,
                 error: true,

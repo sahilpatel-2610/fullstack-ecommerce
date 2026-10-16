@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./Pages/Home";
 import Header from "./Components/Header";
 import { createContext } from "react";
-import axios from "axios";
 import countriesData from './utils/countries.json';
 import { useState } from "react";
 import { useEffect } from "react";
@@ -146,6 +145,7 @@ function App() {
         }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLogin]);
 
   const getMyListData = () => {
@@ -218,6 +218,7 @@ function App() {
     } else {
       setisLogin(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLogin]);
 
   useEffect(() => {

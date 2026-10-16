@@ -2,34 +2,30 @@ const { Category } = require("../models/category.js");
 const { ProductRams } = require("../models/productRAMS.js");
 const express = require('express');
 const router = express.Router();
-
+const mongoose = require('mongoose');
 
 router.get(`/`, async (req, res) => {
-
     try {
         const productRAMSList = await ProductRams.find();
-
-        if (!productRAMSList) {
-            res.status(500).json({ success: false })
-        }
-
-        return res.status(200).json(productRAMSList);
-
+        return res.status(200).json(productRAMSList || []);
     } catch (error) {
-        res.status(500).json({ success: false })
+        return res.status(500).json({ success: false, error: error.message });
     }
-
-
 });
 
 router.get('/:id', async (req, res) => {
-
-    const item = await ProductRams.findById(req.params.id);
-
-    if (!item) {
-        res.status(500).json({ message: 'The item with the given ID was not found.' })
+    try {
+        if (!req.params.id || req.params.id === 'undefined' || !mongoose.isValidObjectId(req.params.id)) {
+            return res.status(400).json({ success: false, message: 'Invalid ID' });
+        }
+        const item = await ProductRams.findById(req.params.id);
+        if (!item) {
+            return res.status(404).json({ message: 'The item with the given ID was not found.' });
+        }
+        return res.status(200).send(item);
+    } catch (error) {
+        return res.status(500).json({ success: false, error: error.message });
     }
-    return res.status(200).send(item);
 });
 
 

@@ -1,6 +1,7 @@
 const { Cart } = require('../models/cart');
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 
 
 router.get(`/`, async (req, res) => {
@@ -16,15 +17,42 @@ router.get(`/`, async (req, res) => {
 
         const cartList = await Cart.find(query);
 
-        if (!cartList) {
+        if (!cartList || cartList.length === 0) {
             return res.status(200).json([]);
+        }
+
+        // Filter out deleted products from cartList and remove them from Cart collection
+        let validCartList = cartList;
+        try {
+            const { Product } = require('../models/products');
+            const activeProducts = await Product.find({}, '_id').lean();
+            const activeProductSet = new Set(activeProducts.map(p => p._id.toString()));
+
+            const filtered = [];
+            const orphanedCartIds = [];
+
+            for (const item of cartList) {
+                const pId = item.productId ? item.productId.toString() : null;
+                if (pId && activeProductSet.has(pId)) {
+                    filtered.push(item);
+                } else {
+                    orphanedCartIds.push(item._id);
+                }
+            }
+
+            if (orphanedCartIds.length > 0) {
+                Cart.deleteMany({ _id: { $in: orphanedCartIds } }).exec().catch(err => console.error("Clean orphaned cart error:", err));
+            }
+            validCartList = filtered;
+        } catch (e) {
+            console.error("Cart active product filter error:", e);
         }
 
         // Deduplicate duplicate items if any exist for the same product & options
         const uniqueCartMap = new Map();
         const duplicatesToDelete = [];
 
-        for (const item of cartList) {
+        for (const item of validCartList) {
             const key = `${item.userId}_${item.productId}_${item.size || ''}_${item.weight || ''}_${item.ram || ''}`;
             if (!uniqueCartMap.has(key)) {
                 uniqueCartMap.set(key, item);
@@ -118,6 +146,9 @@ router.post('/add', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
     try {
+        if (!req.params.id || req.params.id === 'undefined' || !mongoose.isValidObjectId(req.params.id)) {
+            return res.status(400).json({ success: false, message: 'Invalid cart item ID' });
+        }
         const cartItem = await Cart.findById(req.params.id);
 
         if (!cartItem) {
@@ -150,7 +181,9 @@ router.delete('/:id', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
     try {
-
+        if (!req.params.id || req.params.id === 'undefined' || !mongoose.isValidObjectId(req.params.id)) {
+            return res.status(400).json({ success: false, message: 'Invalid cart item ID' });
+        }
         const cartList = await Cart.findByIdAndUpdate(
             req.params.id,
             {

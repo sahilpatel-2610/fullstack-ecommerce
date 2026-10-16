@@ -129,13 +129,15 @@ const ProductItem = (props) => {
         })
     }
 
+    const targetProductId = props.item?.id || props.item?._id || props.item?.productId;
+
     return (
         <>
-            <div className={`productItem ${props.itemView}`}
-                onMouseEnter={() => handleMouseEnter(props?.itemView === 'recentlyView' ? props.item?.productId : props.item?._id)}
+            <div className={`productItem ${props.itemView || ''}`}
+                onMouseEnter={() => handleMouseEnter(targetProductId)}
                 onMouseLeave={handleMouseLeave}>
                 <div className="img_rapper">
-                    <Link to={`/product/${props?.itemView === 'recentlyView' ? props.item?.productId : props.item?._id}`}>
+                    <Link to={`/product/${targetProductId}`}>
                         <div className='sliderWrapper'>
                             {
                                 isHovered === true ?
@@ -144,7 +146,7 @@ const ProductItem = (props) => {
                                             props.item?.images?.map((img, index) => {
                                                 return (
                                                     <div className='slick-slide' key={index}>
-                                                        <img src={img} className='w-100' alt="product" />
+                                                        <img src={img} className='w-100' alt="product" onError={(e) => { e.target.style.display = 'none'; }} />
                                                     </div>
                                                 )
                                             })
@@ -161,7 +163,11 @@ const ProductItem = (props) => {
                                         <IoIosImages />
                                     </Skeleton>
                                     :
-                                    <img src={props?.item?.images[0]} className='w-100' alt="product" />
+                                    <img 
+                                        src={props?.item?.images?.[0]} 
+                                        className='w-100' 
+                                        alt={props?.item?.name || "product"} 
+                                    />
                             ) : null
                         }
                     </Link>
@@ -169,8 +175,8 @@ const ProductItem = (props) => {
                     <span className="badge badge-primary">{props?.item?.discount}%</span>
 
                     <div className="actions">
-                        <Button onClick={() => viewProductDetails(props?.itemView === 'recentlyView' ? props.item?.productId : props.item?._id)}><TfiFullscreen /></Button>
-                        <Button className={isAddedToMyList === true && 'active'} onClick={() => addToMyList(props?.itemView === 'recentlyView' ? props.item?.productId : props.item?._id)}>
+                        <Button onClick={() => viewProductDetails(targetProductId)}><TfiFullscreen /></Button>
+                        <Button className={isAddedToMyList === true && 'active'} onClick={() => addToMyList(targetProductId)}>
                             {
                                 isAddedToMyList === true ?
                                     <FaHeart style={{ fontSize: '20px' }} />
@@ -182,7 +188,7 @@ const ProductItem = (props) => {
                 </div>
 
                 <div className="info">
-                    <Link to={`/product/${props?.itemView === 'recentlyView' ? props.item?.productId : props.item?._id}`}>
+                    <Link to={`/product/${targetProductId}`}>
                         <h4>{props?.item?.name?.substr(0, 30) + '...'}</h4>
                     </Link>
                     <span className="text-success d-block">In Stock</span>

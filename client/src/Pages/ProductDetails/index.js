@@ -373,7 +373,6 @@ const ProductDetails = (props) => {
   const [isAddedToMyList, setIsAddedToMyList] = useState(false);
 
 
-  let [cartFields, setCartFields] = useState({});
   let [productQuantity, setProductQuantity] = useState();
   const [tabError, setTabError] = useState(false);
 

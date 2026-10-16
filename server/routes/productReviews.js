@@ -1,40 +1,70 @@
 const { ProductReviews } = require('../models/productReviews');
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 
+router.get(`/get/count`, async (req, res) => {
+    try {
+        let query = {};
+        if (req.query.period !== undefined && req.query.period !== null && req.query.period !== "") {
+            const today = new Date();
+            let startDate;
+
+            if (req.query.period === "lastDay") {
+                startDate = new Date(today.setDate(today.getDate() - 1));
+            } else if (req.query.period === "lastWeek") {
+                startDate = new Date(today.setDate(today.getDate() - 7));
+            } else if (req.query.period === "lastMonth") {
+                startDate = new Date(today.setMonth(today.getMonth() - 1));
+            } else if (req.query.period === "lastYear") {
+                startDate = new Date(today.setFullYear(today.getFullYear() - 1));
+            }
+
+            if (startDate) {
+                query.createdAt = { $gte: startDate };
+            }
+        }
+
+        const reviewsCount = await ProductReviews.countDocuments(query);
+        return res.status(200).send({
+            reviewsCount: reviewsCount || 0
+        });
+    } catch (err) {
+        console.error("Reviews count error:", err);
+        return res.status(500).json({ success: false, error: err.message });
+    }
+});
 
 router.get(`/`, async (req, res) => {
-
     let reviews = [];
-
     try {
-
         if (req.query.productId !== undefined && req.query.productId !== null && req.query.productId !== "") {
             reviews = await ProductReviews.find({ productId: req.query.productId });
         } else {
             reviews = await ProductReviews.find();
         }
 
-        if (!reviews) {
-            res.status(500).json({ success: false })
-        }
-
-        return res.status(200).json(reviews);
-
+        return res.status(200).json(reviews || []);
     } catch (error) {
-        res.status(500).json({ success: false })
+        return res.status(500).json({ success: false, error: error.message });
     }
 });
 
 router.get(`/:id`, async (req, res) => {
+    try {
+        if (!req.params.id || req.params.id === 'undefined' || !mongoose.isValidObjectId(req.params.id)) {
+            return res.status(400).json({ success: false, message: 'Invalid review ID' });
+        }
 
-    const review = await ProductReviews.findById(req.params.id);
+        const review = await ProductReviews.findById(req.params.id);
+        if (!review) {
+            return res.status(404).json({ success: false, message: 'The review with the given ID was not found.' });
+        }
 
-    if (!review) {
-        res.status(500).json({ message: 'The review with the given ID was not found.' })
+        return res.status(200).json(review);
+    } catch (error) {
+        return res.status(500).json({ success: false, error: error.message });
     }
-
-    return res.status(200).json(review);
 });
 
 
@@ -140,37 +170,5 @@ router.post('/add', async (req, res) => {
 //     }
 // });
 
-
-router.get(`/get/count`, async (req, res) => {
-    let query = {};
-    if (req.query.period !== undefined && req.query.period !== null && req.query.period !== "") {
-        const today = new Date();
-        let startDate;
-
-        if (req.query.period === "lastDay") {
-            startDate = new Date(today.setDate(today.getDate() - 1));
-        } else if (req.query.period === "lastWeek") {
-            startDate = new Date(today.setDate(today.getDate() - 7));
-        } else if (req.query.period === "lastMonth") {
-            startDate = new Date(today.setMonth(today.getMonth() - 1));
-        } else if (req.query.period === "lastYear") {
-            startDate = new Date(today.setFullYear(today.getFullYear() - 1));
-        }
-
-        if (startDate) {
-            query.createdAt = { $gte: startDate };
-        }
-    }
-
-    const reviewsCount = await ProductReviews.countDocuments(query);
-
-    if (!reviewsCount && reviewsCount !== 0) {
-        res.status(500).json({ success: false })
-    }
-
-    res.send({
-        reviewsCount: reviewsCount
-    });
-});
 
 module.exports = router;

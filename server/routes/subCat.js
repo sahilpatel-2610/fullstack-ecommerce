@@ -1,7 +1,38 @@
 const { SubCategory } = require('../models/subCat');
 const { Category } = require('../models/category');
+const { Product } = require('../models/products');
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
+
+router.get(`/get/count`, async (req, res) => {
+    let query = {};
+    if (req.query.period !== undefined && req.query.period !== null && req.query.period !== "") {
+        const today = new Date();
+        let startDate;
+
+        if (req.query.period === "lastDay") {
+            startDate = new Date(today.setDate(today.getDate() - 1));
+        } else if (req.query.period === "lastWeek") {
+            startDate = new Date(today.setDate(today.getDate() - 7));
+        } else if (req.query.period === "lastMonth") {
+            startDate = new Date(today.setMonth(today.getMonth() - 1));
+        } else if (req.query.period === "lastYear") {
+            startDate = new Date(today.setFullYear(today.getFullYear() - 1));
+        }
+
+        if (startDate) {
+            query.createdAt = { $gte: startDate };
+        }
+    }
+
+    try {
+        const subCatCount = await SubCategory.countDocuments(query);
+        return res.status(200).json({ subCatCount: subCatCount || 0 });
+    } catch (error) {
+        return res.status(500).json({ success: false, error: error.message });
+    }
+});
 
 router.get(`/`, async (req, res) => {
     try {
@@ -10,24 +41,31 @@ router.get(`/`, async (req, res) => {
 
         let subCategoryList = [];
         let totalPages = 0;
+        let filterQuery = {};
+
+        const catFilter = req.query.category || req.query.parentId;
+        if (catFilter && catFilter !== "undefined" && catFilter !== "null" && catFilter !== "all") {
+            filterQuery.category = catFilter;
+        }
 
         if (req.query.page !== undefined && req.query.perPage !== undefined && perPage > 0) {
-            const totalPosts = await SubCategory.countDocuments({});
+            const totalPosts = await SubCategory.countDocuments(filterQuery);
             totalPages = Math.ceil(totalPosts / perPage) || 1;
 
-            subCategoryList = await SubCategory.find({})
+            subCategoryList = await SubCategory.find(filterQuery)
                 .populate('category')
                 .sort({ createdAt: 1 })
                 .skip((page - 1) * perPage)
                 .limit(perPage)
                 .exec();
         } else {
-            subCategoryList = await SubCategory.find({}).populate('category').sort({ createdAt: 1 });
+            subCategoryList = await SubCategory.find(filterQuery).populate('category').sort({ createdAt: 1 });
         }
 
         const formattedList = subCategoryList.map(item => ({
             _id: item._id,
             id: item._id,
+            parentId: item.category?._id || item.category || '',
             category: item.category || { _id: item.category, name: item.categoryName || '' },
             categoryName: item.categoryName || (item.category ? item.category.name : ''),
             subCat: item.subCat || item.name,
@@ -51,6 +89,10 @@ router.get(`/`, async (req, res) => {
 
 router.get('/:id', async (req, res) => {
     try {
+        if (!req.params.id || req.params.id === 'undefined' || !mongoose.isValidObjectId(req.params.id)) {
+            return res.status(400).json({ success: false, message: 'Invalid subcategory ID' });
+        }
+
         const subCat = await SubCategory.findById(req.params.id).populate('category');
         if (!subCat) {
             return res.status(404).json({ success: false, message: 'Sub category not found' });
@@ -105,6 +147,13 @@ router.post('/create', async (req, res) => {
         });
 
         subCatDoc = await subCatDoc.save();
+
+        if (parentCategory) {
+            await Category.findByIdAndUpdate(categoryId, {
+                $addToSet: { subCategories: subCatName }
+            }).catch(e => console.warn("Could not sync subCat to Category:", e.message));
+        }
+
         return res.status(201).json(subCatDoc);
     } catch (err) {
         console.error("Error creating sub category:", err);
@@ -114,17 +163,53 @@ router.post('/create', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
     try {
-        const deletedSubCat = await SubCategory.findByIdAndDelete(req.params.id);
-        if (!deletedSubCat) {
+        const subCatToDelete = await SubCategory.findById(req.params.id);
+        if (!subCatToDelete) {
             return res.status(404).json({
                 message: 'Sub Category not found!',
                 success: false
             });
         }
 
+        const subCatName = subCatToDelete.name || subCatToDelete.subCat;
+        const subCatId = req.params.id;
+
+        // Delete from SubCategory collection
+        await SubCategory.findByIdAndDelete(subCatId);
+
+        // Remove subcategory from all associated products in database
+        const orConditions = [
+            { subCat: subCatId },
+            { subCatId: String(subCatId) }
+        ];
+        if (subCatName) {
+            orConditions.push({ subCatName: subCatName });
+            orConditions.push({ subCategory: subCatName });
+        }
+
+        await Product.updateMany(
+            { $or: orConditions },
+            {
+                $set: {
+                    subCat: null,
+                    subCatId: '',
+                    subCatName: '',
+                    subCategory: ''
+                }
+            }
+        );
+
+        // Remove from Category subCategories list if present
+        if (subCatName) {
+            await Category.updateMany(
+                { subCategories: subCatName },
+                { $pull: { subCategories: subCatName } }
+            );
+        }
+
         return res.status(200).json({
             success: true,
-            message: 'Sub Category Deleted!'
+            message: 'Sub Category Deleted and removed from associated products!'
         });
     } catch (err) {
         console.error("Error deleting sub category:", err);
@@ -174,38 +259,27 @@ router.put('/:id', async (req, res) => {
             });
         }
 
+        // Update all associated products with new subcategory name
+        if (subCatName) {
+            await Product.updateMany(
+                {
+                    $or: [
+                        { subCat: req.params.id },
+                        { subCatId: String(req.params.id) }
+                    ]
+                },
+                {
+                    $set: {
+                        subCatName: subCatName,
+                        subCategory: subCatName
+                    }
+                }
+            ).catch(e => console.warn("Could not sync subCat update to products:", e.message));
+        }
+
         return res.status(200).json(subCat);
     } catch (error) {
         console.error("Update subCategory error:", error);
-        return res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-router.get(`/get/count`, async (req, res) => {
-    let query = {};
-    if (req.query.period !== undefined && req.query.period !== null && req.query.period !== "") {
-        const today = new Date();
-        let startDate;
-
-        if (req.query.period === "lastDay") {
-            startDate = new Date(today.setDate(today.getDate() - 1));
-        } else if (req.query.period === "lastWeek") {
-            startDate = new Date(today.setDate(today.getDate() - 7));
-        } else if (req.query.period === "lastMonth") {
-            startDate = new Date(today.setMonth(today.getMonth() - 1));
-        } else if (req.query.period === "lastYear") {
-            startDate = new Date(today.setFullYear(today.getFullYear() - 1));
-        }
-
-        if (startDate) {
-            query.createdAt = { $gte: startDate };
-        }
-    }
-
-    try {
-        const subCatCount = await SubCategory.countDocuments(query);
-        return res.status(200).json({ subCatCount: subCatCount });
-    } catch (error) {
         return res.status(500).json({ success: false, error: error.message });
     }
 });

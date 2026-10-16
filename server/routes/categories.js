@@ -83,14 +83,20 @@ router.get(`/`, async (req, res) => {
 
         const categoryData = categoryList.map(cat => {
             const children = allSubCats
-                .filter(sub => (sub.category && sub.category.toString() === cat._id.toString()))
+                .filter(sub => {
+                    const subCatId = sub.category?._id ? sub.category._id.toString() : (sub.category ? sub.category.toString() : '');
+                    const subCatName = sub.categoryName || '';
+                    return subCatId === cat._id.toString() || (subCatName && cat.name && subCatName.trim().toLowerCase() === cat.name.trim().toLowerCase());
+                })
                 .map(sub => ({
                     _id: sub._id,
                     id: sub._id,
+                    parentId: cat._id,
                     name: sub.name || sub.subCat,
                     subCat: sub.subCat || sub.name,
                     slug: sub.slug,
                     category: sub.category,
+                    categoryName: sub.categoryName || cat.name,
                     createdAt: sub.createdAt,
                     updatedAt: sub.updatedAt,
                     dateCreated: sub.dateCreated
@@ -132,8 +138,43 @@ router.get(`/`, async (req, res) => {
     }
 });
 
+const mongoose = require('mongoose');
+
+router.get(`/get/count`, async (req, res) => {
+    let query = {};
+    if (req.query.period !== undefined && req.query.period !== null && req.query.period !== "") {
+        const today = new Date();
+        let startDate;
+
+        if (req.query.period === "lastDay") {
+            startDate = new Date(today.setDate(today.getDate() - 1));
+        } else if (req.query.period === "lastWeek") {
+            startDate = new Date(today.setDate(today.getDate() - 7));
+        } else if (req.query.period === "lastMonth") {
+            startDate = new Date(today.setMonth(today.getMonth() - 1));
+        } else if (req.query.period === "lastYear") {
+            startDate = new Date(today.setFullYear(today.getFullYear() - 1));
+        }
+
+        if (startDate) {
+            query.createdAt = { $gte: startDate };
+        }
+    }
+
+    try {
+        const categoryCount = await Category.countDocuments(query);
+        return res.status(200).json({ categoryCount: categoryCount || 0 });
+    } catch (error) {
+        return res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 router.get('/:id', async (req, res) => {
     try {
+        if (!req.params.id || req.params.id === 'undefined' || !mongoose.isValidObjectId(req.params.id)) {
+            return res.status(400).json({ success: false, message: 'Invalid category ID' });
+        }
+
         const category = await Category.findById(req.params.id);
         if (!category) {
             return res.status(404).json({ success: false, message: "Category not found" });
@@ -282,35 +323,6 @@ router.put('/:id', async (req, res) => {
         return res.status(200).json(category);
     } catch (error) {
         console.error("Update category error:", error);
-        return res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-router.get(`/get/count`, async (req, res) => {
-    let query = {};
-    if (req.query.period !== undefined && req.query.period !== null && req.query.period !== "") {
-        const today = new Date();
-        let startDate;
-
-        if (req.query.period === "lastDay") {
-            startDate = new Date(today.setDate(today.getDate() - 1));
-        } else if (req.query.period === "lastWeek") {
-            startDate = new Date(today.setDate(today.getDate() - 7));
-        } else if (req.query.period === "lastMonth") {
-            startDate = new Date(today.setMonth(today.getMonth() - 1));
-        } else if (req.query.period === "lastYear") {
-            startDate = new Date(today.setFullYear(today.getFullYear() - 1));
-        }
-
-        if (startDate) {
-            query.createdAt = { $gte: startDate };
-        }
-    }
-
-    try {
-        const categoryCount = await Category.countDocuments(query);
-        return res.status(200).json({ categoryCount: categoryCount });
-    } catch (error) {
         return res.status(500).json({ success: false, error: error.message });
     }
 });

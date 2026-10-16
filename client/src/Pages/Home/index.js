@@ -8,8 +8,6 @@ import 'swiper/css/navigation';
 import { Navigation, Autoplay } from 'swiper/modules';
 import ProductItem from "../../Components/ProductItem";
 import HomeCat from "../../Components/HomeCat";
-import newsLetterImg from "../../assets/images/coupon.png";
-import { IoMailOutline } from "react-icons/io5";
 import { fetchDataFromApi } from "../../utils/api";
 import { useState, useEffect, useContext } from "react";
 import { MyContext } from "../../App";
@@ -266,7 +264,7 @@ const Home = () => {
                 {
                   productsData?.products?.length > 0 && productsData?.products?.map((item, index) => {
                     return (
-                      <div className="col-md-3 col-6 mb-4"><ProductItem key={index} item={item} /></div>
+                      <div className="col-md-3 col-6 mb-4" key={item?._id || index}><ProductItem item={item} /></div>
                     )
                   })
                 }

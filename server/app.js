@@ -1,6 +1,14 @@
 const dns = require('dns');
 dns.setServers(['8.8.8.8', '1.1.1.1']);
 
+process.on('uncaughtException', (err) => {
+    console.error('CRITICAL Uncaught Exception:', err.message || err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('CRITICAL Unhandled Rejection:', reason?.message || reason);
+});
+
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
